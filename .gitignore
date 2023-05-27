@@ -1,0 +1,11 @@
+node_modules
+dist
+test
+oss_upload.py
+oss.js
+*/test
+.idea
+.vscode
+scripts/*
+.eslintcache
+build/accessKey.txt
