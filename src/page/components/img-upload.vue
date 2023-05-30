@@ -32,18 +32,10 @@ export default {
       // 上传前的钩子函数
       this.file = file; // 保存文件对象
       this.imageUrl = URL.createObjectURL(file); // 使用本地预览图片
+      this.$emit('iconUpSourceChange', file);
       return false; // 阻止上传动作
     },
     handleUploadSuccess(response) {
-      console.log('xxxx');
-      console.log(response);
-      console.log(response.data);
-      this.$emit('iconUpSourceChange', response.data);
-    },
-    changeAvatar() {
-      // 更换头像操作
-      this.file = null; // 清空文件对象
-      this.imageUrl = ''; // 清空图片链接
     },
   },
 };

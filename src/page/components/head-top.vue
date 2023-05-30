@@ -48,7 +48,7 @@ export default {
   },
   created() {
     this.isCollapse = this.collapse;
-    this.isTestMode = this.$mode === this.MODECONFIG.SAASBOX.mode;
+    this.isTestMode = this.$mode === this.MODECONFIG.SANDBOX.mode;
   },
   methods: {
     changeCollapse() {
@@ -57,12 +57,18 @@ export default {
     },
     checkoutMode() {
       this.isTestMode = !this.isTestMode;
-      if (this.$mode === this.MODECONFIG.SAASBOX.mode) {
-        this.$mode = this.MODECONFIG.PRODUCTION.mode
-        window.location.href = window.location.href.replace(this.MODECONFIG.SAASBOX.basePath, this.MODECONFIG.PRODUCTION.basePath);
+      if (this.$mode === this.MODECONFIG.SANDBOX.mode) {
+        this.$mode = this.MODECONFIG.PRODUCTION.mode;
+        // 去掉根路径的/sandbox
+        const currentUrl = new URL(window.location.href);
+        currentUrl.pathname = currentUrl.pathname.replace(this.MODECONFIG.SANDBOX.basePath, '');
+        window.location.href = currentUrl.href;
       } else {
-        this.$mode = this.MODECONFIG.SAASBOX.mode;
-        window.location.href = window.location.href.replace(this.MODECONFIG.PRODUCTION.basePath, this.MODECONFIG.SAASBOX.basePath);
+        this.$mode = this.MODECONFIG.SANDBOX.mode;
+        // 在path前加入/sandbox
+        const currentUrl = new URL(window.location.href);
+        currentUrl.pathname = this.MODECONFIG.SANDBOX.basePath + currentUrl.pathname;
+        window.location.href = currentUrl.href;
       }
     }
   }

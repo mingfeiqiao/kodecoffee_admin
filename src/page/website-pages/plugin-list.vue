@@ -1,75 +1,51 @@
 <template>
   <div style="flex-wrap: wrap; display: flex;">
     <div  class="card" >
-      <el-card :body-style="{padding: '0px',width: '300px',height:'130px'}">
+      <el-card :body-style="{padding: '0px',width: '300px',height:'150px'}" shadow="hover">
         <div style="display: flex;justify-content: center;align-items: center;height: 100%" @click="operatePluginCard({}, 'add')">
           +添加插件
         </div>
       </el-card>
     </div>
     <div class="card" v-for="pluginData in pluginList"><plugin-card :data="pluginData" @operatePluginCard="operatePluginCard"></plugin-card></div>
-    <add-plugin-dialog :visible="dialogFormVisible" @visibleChange="visibleChange" :operationType="operationType" :chosenPluginData="chosenPluginData">
+    <add-plugin-dialog :visible="dialogFormVisible" @visibleChange="visibleChange" :operationType="operationType" @operateSuccess="operateSuccess" :chosenPluginData="chosenPluginData">
     </add-plugin-dialog>
   </div>
 </template>
 <script>
 import pluginCard from "../components/plugin-card.vue";
+import {pluginList} from "../../api/interface";
 import addPluginDialog from "../components/add-plugin-dialog.vue";
 export default {
   data () {
     return {
-      pluginList: [
-        {
-          extensionName: '插件名称',
-          remark: '插件备注说明',
-          extension_id: '插件ID',
-          application_id: '应用ID',
-          icon: 'https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png',
-          storeAddress: 'https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png'
-        },
-        {
-          extensionName: '插件名称',
-          remark: '插件备注说明',
-          extension_id: '插件ID',
-          application_id: '应用ID',
-          icon: 'https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png',
-          storeAddress: 'https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png'
-        },
-        {
-          extensionName: '插件名称',
-          remark: '插件备注说明',
-          extension_id: '插件ID',
-          application_id: '应用ID',
-          icon: 'https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png',
-          storeAddress: 'https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png'
-        },
-        {
-          extensionName: '插件名称',
-          remark: '插件备注说明',
-          extension_id: '插件ID',
-          application_id: '应用ID',
-          icon: 'https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png',
-          storeAddress: 'https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png'
-        },
-        {
-          extensionName: '插件名称',
-          remark: '插件备注说明',
-          extension_id: '插件ID',
-          application_id: '应用ID',
-          icon: 'https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png',
-          storeAddress: 'https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png'
-        }
-      ],
+      pluginList: [],
       chosenPluginData: {},
       dialogFormVisible: false,
       operationType: 'add'
     }
+  },
+  created() {
+    // this.getPluginList();
   },
   computed: {
   },
   watch: {
   },
   methods: {
+    getPluginList() {
+      pluginList().then(res => {
+        if (parseInt(res.data.code) === 10000) {
+          let data = res.data.data;
+          data.forEach(item => {
+            item.icon = 'https://kodepay-oss.oss-us-west-1.aliyuncs.com/' + item.icon;
+          });
+          this.pluginList = data;
+        }
+      }).catch(err => {
+        console.log(err);
+      });
+    },
     /**
      * 操作插件卡片
      * @param pluginData
@@ -95,6 +71,9 @@ export default {
      */
     visibleChange (visible) {
       this.dialogFormVisible = visible;
+    },
+    operateSuccess () {
+      this.getPluginList();
     }
   },
   components: {

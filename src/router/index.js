@@ -18,9 +18,7 @@ import payAllOrderLayout from "../page/website-pages/pay-all-order-layout.vue";
 import extensionLogin from '../page/extension/extension-login.vue';
 import extensionPayManage from "../page/extension/extension-pay-manage.vue";
 import extensionPayStatus from "../page/extension/extension-pay-status.vue";
-
 Vue.use(Router);
-
 const routes = [
   {
     path: '/',
@@ -107,6 +105,14 @@ const routes = [
     ]
   },
   {
+    path: '/vendor',
+    redirect: '/',
+  },
+  {
+    path: '/vendor-sandbox',
+    redirect: '/',
+  },
+  {
     path: '/extension/login',
     component: extensionLogin
   },
@@ -124,24 +130,22 @@ const router = new Router({
   routes,
   strict: process.env.NODE_ENV !== 'production',
 });
-
-// 在全局导航守卫中处理切换按钮的点击事件
-router.beforeEach((to, from, next) => {
-  if (Vue.prototype.$mode === Vue.prototype.MODECONFIG.PRODUCTION.mode) {
-    const basePath = Vue.prototype.MODECONFIG.PRODUCTION.basePath;
-    if (window.location.pathname.startsWith(basePath) || to.path.startsWith(basePath)) {
-      next();
-    } else {
-      next(basePath + to.fullPath);
-    }
-  } else {
-    const basePath = Vue.prototype.MODECONFIG.SAASBOX.basePath;
-    if (window.location.pathname.startsWith(basePath) || to.path.startsWith(basePath)) {
-      next();
-    } else {
-      next(basePath + to.fullPath);
-    }
-  }
-});
-
+// // 在全局导航守卫中处理切换按钮的点击事件
+// router.beforeEach((to, from, next) => {
+//   if (Vue.prototype.$mode === Vue.prototype.MODECONFIG.PRODUCTION.mode) {
+//     const basePath = Vue.prototype.MODECONFIG.PRODUCTION.basePath;
+//     if (window.location.pathname.startsWith(basePath) || to.path.startsWith(basePath)) {
+//       next();
+//     } else {
+//       next(basePath + to.fullPath);
+//     }
+//   } else {
+//     const basePath = Vue.prototype.MODECONFIG.SANDBOX.basePath;
+//     if (window.location.pathname.startsWith(basePath) || to.path.startsWith(basePath)) {
+//       next();
+//     } else {
+//       next(basePath + to.fullPath);
+//     }
+//   }
+// });
 export default router;

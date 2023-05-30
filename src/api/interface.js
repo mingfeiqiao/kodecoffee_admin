@@ -1,24 +1,33 @@
 import axios from "axios";
 import qs from "qs";
+import Vue from "vue";
 
 const baseURL = 'http://localhost:8001/sandbox';
 // 创建一个axios实例
 const instance = axios.create({
   baseURL: baseURL, // 设置API的基础URL
-  timeout: 5000, // 请求超时时间
+  timeout: 10 * 60 * 1000, // 请求超时时间
 });
 // 响应拦截器
 instance.interceptors.response.use(
     response => {
+      console.log(Vue.prototype.$mode);
+      const token = response.headers['x-auth-token']; // 获取响应中的Token
+      console.log('响应token',token,'response header:', response.headers);
+      const applicationKey = response.headers['x-application-key']; // 获取响应中的Token
+      if (applicationKey) {
+        localStorage.setItem(Vue.prototype.$mode + 'applicationKey', applicationKey);
+      }
+      if (token) {
+        localStorage.setItem(Vue.prototype.$mode + 'token', token);
+      }
       // 如果用户token已经过期，那么我需要重定向到登录页面
       if (response.data.code === 401) { // 这里是token过期
         // 清空本地存储的token和cookie
-        localStorage.removeItem('token');
+        localStorage.removeItem(Vue.prototype.$mode + 'applicationKey');
+        localStorage.removeItem(Vue.prototype.$mode + 'userInfo')
+        localStorage.removeItem(Vue.prototype.$mode + 'token');
         window.location.href = '/login';
-      }
-      const token = response.headers['x-auth-token']; // 获取响应中的Token
-      if (token) {
-        localStorage.setItem('token', token);
       }
       return response;
     },
@@ -30,16 +39,12 @@ instance.interceptors.response.use(
 // 请求拦截器
 instance.interceptors.request.use(
     config => {
-      console.log('ss');
-      // 在发送请求之前做些什么
-      if (localStorage.getItem('token')) {
-        config.headers.Authorization = localStorage.getItem('token');
+      let token = localStorage.getItem(Vue.prototype.$mode + 'token');
+      console.log(token);
+      if (token) {
+        config.headers.Authorization = token;
+        config.headers.applicationKey = localStorage.getItem(Vue.prototype.$mode + 'applicationKey');
       }
-      // // 添加Cookie到请求标头
-      // const cookie = document.cookie; // 获取本地Cookie
-      // if (cookie) {
-      //   config.headers['Cookie'] = cookie;
-      // }
       return config;
     },
     error => {
@@ -49,16 +54,21 @@ instance.interceptors.request.use(
 );
 export const zbUserInfo = () => instance.get('/zbase/user-info');
 export const postUserInfo = data => {
-  console.log('xxx');
   const formData = qs.stringify(data);
-  console.log('instance',instance);
   return instance.post('/account/login', formData);
 };
-export const loginOut = () => instance.get('/user/login-out');
+export const loginOut = () => instance.post('/account/login-out');
 // plugin 相关
-export const addPlugin = data => instance.post('/plugin/add', data);
+export const addPlugin = data => {
+  const formData = new FormData();
+  formData.append('plugin_name', data.name);
+  formData.append('icon', data.icon);
+  formData.append('description', data.description);
+  formData.append('store_address', data.storeAddress);
+  return instance.post('/plugin/add-plugin', formData);
+};
 export const updatePlugin = data => instance.post('/plugin/update-plugin', data);
-export const pluginList = () => instance.get('/plugin/list');
+export const pluginList = () => instance.post('/plugin/plugin-list');
 // plan 相关
 export const planList = () => instance.get('/plan/list');
 export const addPlan = data => instance.post('/plan/add', data);

@@ -47,16 +47,7 @@ export default {
     };
   },
   created() {
-    // this.$router.push({path: '/extension/pay-manage', query: this.$route.query});
-    console.log(this.$route.query);
-    // this.loading = true;
-    // this.getPayStatus()
-    //     .then((response) => {
-    //       this.loading = false;
-    //     })
-    //     .catch((error) => {
-    //       this.loading = false;
-    //     });
+
   },
   methods: {
     // 获取用户信息，3s一次，最多重试15次，最长1分钟，如果获取到用户订单信息（不论成功还是失败）,停止重试， 第一次请求不设置延时

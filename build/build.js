@@ -53,12 +53,6 @@ rm(path.join(config.build.assetsRoot, config.build.assetsSubDirectory), (err) =>
 				chunkModules: false,
 			}) + '\n\n'
 		);
-
-		// 尝试读取PHP配置文件
-		let setPath = 'C:\\Users\\yuanshaokai\\zinfont\\php-aso\\fs_aso\\zbase_modules\\fs_aso_module\\assets\\AppAsset.php';
-		let content = '';
-		let data = fs.readFileSync(setPath, 'utf-8');
-		content = data.toString();
 		let index = 0;
 
 		// 读取资源文件，上传cdn
@@ -71,28 +65,9 @@ rm(path.join(config.build.assetsRoot, config.build.assetsSubDirectory), (err) =>
 					files.forEach(async (file) => {
 						let fileStream = fs.createReadStream(dirPath + '/' + dir + '/' + file);
 						let result = await client.putStream('aso/static/' + dir + '/' + file, fileStream);
-
-						if (content != '') {
-							// 尝试替换PHP文件内容
-							if (file.indexOf('app.') == 0 && file.lastIndexOf('.css') > 0) {
-								content = content.replace(/app.(\S*).css/, file);
-							} else if (file.indexOf('vendor.') == 0 && file.lastIndexOf('.js') > 0) {
-								content = content.replace(/vendor.(\S*).js/, file);
-							} else if (file.indexOf('app.') == 0 && file.lastIndexOf('.js') > 0) {
-								content = content.replace(/app.(\S*).js/, file);
-							} else if (file.indexOf('manifest.') == 0 && file.lastIndexOf('.js') > 0) {
-								content = content.replace(/manifest.(\S*).js/, file);
-							}
-						}
 						// 打印cdn地址
 						console.log(result.url);
 						index += 1;
-						if (index < 7 && content != '') {
-							fs.writeFileSync(setPath, content, 'utf-8');
-							
-						}
-						console.log('ASO配置修改完成~');
-
 						if (result.res.status !== 200 || result.res.statusCode !== 200) {
 							console.log(result);
 							console.error('Upload Error!');

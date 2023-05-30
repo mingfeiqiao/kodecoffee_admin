@@ -6,25 +6,25 @@ import VueI18n from 'vue-i18n';
 import messages from './locales/locales.json';
 import router from './router';
 
-Vue.prototype.URL = 'https://host.com';
+Vue.prototype.URL = 'wsx.tc.com:8080';
 Vue.prototype.MODECONFIG = {
   PRODUCTION: {
-    mode: 'production',
-    basePath:'/production',
-    baseURL: `${Vue.prototype.URL}/production`,
+    mode: 'vendor',
+    basePath:'/vendor',
+    baseURL: `${Vue.prototype.URL}/vendor`,
     apiURL: `${Vue.prototype.URL}/production/api`,
   },
-  SAASBOX: {
-    mode: 'saasbox',
-    basePath:'/saasbox',
-    baseURL: `${Vue.prototype.URL}/saasbox`,
-    apiURL: `${Vue.prototype.URL}/saasbox/api`,
+  SANDBOX: {
+    mode: 'vendor-sandbox',
+    basePath:'/vendor-sandbox',
+    baseURL: `${Vue.prototype.URL}/vendor-sandbox`,
+    apiURL: `${Vue.prototype.URL}/sandbox/api`,
   }
 }
-if (window.location.pathname.startsWith('/production')) {
-  Vue.prototype.$mode = Vue.prototype.MODECONFIG.PRODUCTION.mode;
+if (window.location.pathname.startsWith(Vue.prototype.MODECONFIG.SANDBOX.basePath)) {
+  Vue.prototype.$mode = Vue.prototype.MODECONFIG.SANDBOX.mode;
 } else {
-  Vue.prototype.$mode = Vue.prototype.MODECONFIG.SAASBOX.mode;
+  Vue.prototype.$mode = Vue.prototype.MODECONFIG.PRODUCTION.mode;
 }
 Vue.use(VueI18n);
 const i18n = new VueI18n({

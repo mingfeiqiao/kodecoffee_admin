@@ -1,28 +1,40 @@
 <template>
-  <el-card :body-style="{padding: '0px',width: '300px',height:'130px'}">
+  <el-card :body-style="{padding: '0px',width: '300px',height:'150px'}" shadow="hover">
     <div>
-      <div style="display: flex;align-items: center;padding:16px;">
-        <div>
-          <img width="32" height="32" :src="data.icon" alt="cc" style="border-radius: 16px;">
+      <div style="display: flex;align-items: center;padding:8px;height: 100px;">
+        <div style="width: 50px">
+          <el-image
+            style="width: 50px; height: 50px;border-radius: 50%"
+            :src="data.icon"
+            fit="fit"></el-image>
         </div>
         <div style="padding: 0 12px;">
           <div>
-            <div>{{data.name}}</div>
+            <div class="text-container">
+              <el-tooltip :content="data.name">
+                <div class="text-content">{{ data.name }}</div>
+              </el-tooltip>
+            </div>
           </div>
           <div>
-            <div>{{data.remark}}</div>
+            <div class="text-container">
+              <el-tooltip :content="data.client_key">
+                <div class="text-content">{{ data.client_key }}</div>
+              </el-tooltip>
+            </div>
           </div>
           <div>
-            <div>{{data.extension_id}}</div>
-          </div>
-          <div>
-            <div>{{data.application_id}}</div>
+            <div class="text-container">
+              <el-tooltip :content="data.description">
+                <div class="text-content">{{ data.description }}</div>
+              </el-tooltip>
           </div>
         </div>
       </div>
+      </div>
       <div style="display: flex;justify-content: center;align-items: center;padding: 6px 0;border-top: 1px solid rgb(217,217,217);" >
         <div style="width: 50%;"></div>
-        <div style="width: 50%;text-align: center;border-left: 1px solid rgba(217, 217, 217, 1);" @click="editPluginCard">编辑</div>
+        <div style="width: 50%;text-align: center;border-left: 1px solid rgba(217, 217, 217, 1);cursor: pointer" @click="editPluginCard">编辑</div>
       </div>
     </div>
   </el-card>
@@ -64,7 +76,16 @@ export default {
   font-size: 13px;
   color: #999;
 }
+.text-container {
+  display: inline-block;
+}
 
+.text-content {
+  max-width: 220px; /* 控制文本容器的最大宽度 */
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
 .bottom {
   margin-top: 13px;
   line-height: 12px;
