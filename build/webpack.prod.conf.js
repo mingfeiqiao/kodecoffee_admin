@@ -28,12 +28,6 @@ const webpackConfig = merge(baseWebpackConfig, {
 		filename: utils.assetsPath('js/[name].[chunkhash].js'),
 		chunkFilename: utils.assetsPath('js/[id].[chunkhash].js'),
 	},
-	// 自定义目录配置
-	// output: {
-	//     filename: '[name].[hash].bundle.js',
-	//     path: path.resolve(__dirname, '../dist/as/static/'),
-	//     publicPath: 'http://appcdn-global.zingfront.com/static_module/'
-	// },
 	plugins: [
 		// http://vuejs.github.io/vue-loader/en/workflow/production.html
 		new webpack.DefinePlugin({
@@ -103,19 +97,6 @@ const webpackConfig = merge(baseWebpackConfig, {
 				ignore: ['.*'],
 			},
 		]),
-		// 配置自动上传cdn
-		// new WebpackAliyunOss({
-		//   from: ['./dist/**', '!./dist/**/*.html'],
-		//   dist: '/static_module/',
-		//   region: oss.region,
-		//   accessKeyId: oss.accessKeyId,
-		//   accessKeySecret: oss.accessKeySecret,
-		//   bucket: oss.bucket,
-		//   // setOssPath(filePath) {
-		//   //   // filePath为当前文件路径，函数应该返回路径+文件名，如/new/path/to/file.js，则最终上传路径为 path/in/alioss/new/path/to/file.js
-		//   //   return '/static_module/index.js';
-		//   // }
-		// })
 	],
 });
 

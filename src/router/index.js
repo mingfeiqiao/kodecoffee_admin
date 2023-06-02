@@ -4,7 +4,7 @@ import dashboard from '../page/website-pages/dashboard.vue';
 import payAllOrder from '../page/website-pages/pay-all-order.vue';
 import paySubscription from '../page/website-pages/pay-subscription.vue';
 import pluginList from '../page/website-pages/plugin-list.vue';
-import productList from '../page/website-pages/product-list.vue';
+import productList from '../page/website-pages/plan-list.vue';
 import userList from '../page/website-pages/user-list.vue';
 import mainMenu from "../page/main-menu.vue";
 import subscriptionDetail from "../page/website-pages/subscription-detail.vue";
@@ -105,11 +105,11 @@ const routes = [
     ]
   },
   {
-    path: '/vendor',
+    path: '/vendors',
     redirect: '/',
   },
   {
-    path: '/vendor-sandbox',
+    path: '/sandbox-vendors',
     redirect: '/',
   },
   {

@@ -26,7 +26,7 @@ export default {
     }
   },
   created() {
-    // this.getPluginList();
+    this.getPluginList();
   },
   computed: {
   },

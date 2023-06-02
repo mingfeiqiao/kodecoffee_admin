@@ -1,6 +1,4 @@
-import config from './config';
 const install = function (Vue) {
-  Vue.prototype.$config = config; // 注册配置文件
   Vue.prototype.$mode = 'sandbox'; // 默认为沙盒模式
   let checkWebp = function () {
     try {

@@ -15,21 +15,14 @@
   </div>
 </template>
 <script>
-import {loginOut, postUserInfo} from "../../api/interface";
+import {loginOut, postUserInfo, zbUserInfo} from "../../api/interface";
 export default {
   data () {
     return {
-      userInfo: {
-      }
+      userInfo: {}
     }
   },
   created() {
-    // fetch('https://kodepay.io/user/v2/userinfo').then(res => {
-    //   console.log(res);
-    // // 获取不到用户信息跳转到登录页面
-    // }).catch(err => {
-    //   window.location.href = 'https://kodepay.io/login';
-    // });
     // 确定当前环境，如果是测试环境，那么就需要确实测试环境是否有用户信息，如果没有，那么需要接口调用获取用户信息
     let lUserInfo = localStorage.getItem(this.$mode + 'userInfo')
     console.log(lUserInfo)
@@ -41,46 +34,28 @@ export default {
 
   },
   methods: {
-    loginOrRegisterUser() {
-      let zbaseUserInfo = {
-        "user_id": 28410,
-        "email": "1173813923@qq.com",
-        "username": "",
-        "created_at": "2023-05-25 02:59:11",
-        "phone_number": ""
+    async loginOrRegisterUser() {
+      let res = await zbUserInfo();
+      res = res.data;
+      if (parseInt(res.code) === 100000) {
+        let user_info = res.userinfo;
+        this.userInfo = {
+          zbase_user_id: user_info.user_id,
+          email: user_info.email ? user_info.email : '',
+          account_name: user_info.username ? user_info.username : '',
+          phone_number: user_info.phone_number ? user_info.phone_number : '',
+          area: user_info.area ? user_info.area : '',
+        };
+        console.log('this.userInfo', this.userInfo);
+        let vm = this;
+        postUserInfo(vm.userInfo).then(function(res) {
+          console.log('res2', res);
+          localStorage.setItem(vm.$mode + 'userInfo', JSON.stringify(vm.userInfo));
+          this.$store.commit('setLoginStatus', true);
+        }).catch(function(err) {
+          console.log(err);
+        });
       }
-      this.userInfo = {
-        zbase_user_id: zbaseUserInfo.user_id,
-        email:zbaseUserInfo.email,
-        account_name:zbaseUserInfo.username,
-        phone_number:zbaseUserInfo.phone_number,
-        area: zbaseUserInfo.area ? zbaseUserInfo.area : '',
-      }
-      postUserInfo(this.userInfo).then(res => {
-        localStorage.setItem(this.$mode + 'userInfo', JSON.stringify(this.userInfo));
-      }).catch(err => {
-        console.log(err);
-      })
-      // fetch('https://kodepay.io/user/v2/userinfo').then(res => {
-      //   if (parseInt(res.data.code) === 100000) {
-      //     let user_info = res.data.data.userinfo;
-      //     this.userInfo = {
-      //       zbase_user_id: user_info.user_id,
-      //       email:user_info.email ? user_info.email : '',
-      //       account_name:user_info.username ? user_info.username : '',
-      //       phone_number:user_info.phone_number ? user_info.phone_number : '',
-      //       area: user_info.area ? user_info.area : '',
-      //     }
-      //     postUserInfo(this.userInfo).then(res => {
-      //       localStorage.setItem(this.$mode + 'userInfo', JSON.stringify(this.userInfo));
-      //     }).catch(err => {
-      //       console.log(err);
-      //     })
-      //   }
-      //   // 获取不到用户信息跳转到登录页面
-      // }).catch(err => {
-      //   window.location.href = 'https://kodepay.io/user/login';
-      // });
     },
     webLoginOut() {
       loginOut().then(res => {

@@ -13,6 +13,7 @@
               <div @click="submitEmail" class="send-button">发送-></div>
             </div>
             <div>
+              {{ 'xx' + !isEmailValid}}
               <div v-if="!isEmailValid" style="color:red">
                 邮箱格式不正确，请重新输入
               </div>
@@ -23,9 +24,6 @@
           </div>
           <div v-else>
             <div>
-              <div style="color:red">
-                邮箱格式不正确，请重新输入
-              </div>
               <div>
                 已经向xxxxx@xxx.com邮箱发送一封验证邮件，请登录该邮箱并点击验证链接以激活登录，请登录邮箱并点击验证链接，即可登录
               </div>
@@ -64,20 +62,32 @@ export default {
   },
   methods: {
     isEmail(mail) {
-      const regex = /^[\w-]+(\.[\w-]+)*@([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$/i;
+      const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       return regex.test(mail);
     },
     submitEmail() {
+      console.log(this.input);
       if (!this.isEmail(this.input)) {
+        console.log('xxxx');
         this.isEmailValid = false;
         this.emailErrorMessage = "邮箱格式不正确，请重新输入";
+        return;
       } else {
         this.isEmailValid = true;
         this.emailErrorMessage = "";
         this.isSendEmail = true;
-        // extensionLogin({headers: this.$route.query, email: this.input}).then(res => {
-        //   console.log(res);
-        // });
+        let headers = {};
+        for (let key in this.$route.query) {
+          let newKey = key.replace(/_/g, "-");
+          headers[newKey] = this.$route.query[key];
+        }
+        headers["Content-Type"] = "application/json";
+        let body = {
+          email: this.input
+        };
+        extensionLogin(headers, JSON.stringify(body)).then(res => {
+          console.log(res);
+        });
       }
     }
   }

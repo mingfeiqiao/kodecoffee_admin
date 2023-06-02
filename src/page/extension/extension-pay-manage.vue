@@ -13,30 +13,44 @@
                 <div>
                   <div style="display: flex;padding-bottom: 16px" class="title-14">
                     <span>用户ID:</span>
-                    <span>12123143242</span>
+                    <span>{{userInfo.user_id}}</span>
                   </div>
                   <div style="display: flex;padding-bottom: 16px" class="title-14">
                     <span>邮箱:</span>
-                    <span>121213@gmail.com</span>
+                    <span>{{userInfo.email}}</span>
                   </div>
-
                 </div>
               </div>
               <div style="border: 1px solid rgba(232, 232, 232, 1);"></div>
               <div style="padding: 16px 0;" class="title-16">当前订阅信息</div>
               <div class="tab-container">
-                <el-table :data="billTableData" style="width: 100%">
-                  <el-table-column prop="subscription" :label="$t('Subscriptions')" min-width="120" max-width="180">
+                <el-table :data="subscription_list" style="width: 100%">
+                  <el-table-column prop="plan_name" :label="$t('Subscriptions')" min-width="120" max-width="180">
                   </el-table-column>
-                  <el-table-column prop="status" :label="$t('Status')" width="80">
-                  </el-table-column>
-                  <el-table-column prop="next_pay" :label="$t('Next-pay-time')" width="120" >
-                  </el-table-column>
-                  <el-table-column prop="operation" :label="$t('Operation')">
+                  <el-table-column prop="pay_status" :label="$t('Status')" width="80">
                     <template slot-scope="scope">
-                  <span style="color: #1980ff;cursor: pointer" @click="cancelSubscription(scope.row)">
-                    取消
-                  </span>
+                      <span>
+                        {{scope.row.pay_status}}
+                      </span>
+                    </template>
+                  </el-table-column>
+                  <el-table-column prop="plan_end" :label="$t('Next-pay-time')" width="120" >
+                    <template slot-scope="scope">
+                      <span style="color: #1980ff;cursor: pointer;display: flex;flex-direction: column;align-items: center;">
+                        <span>
+                          {{scope.row.order_status}}
+                        </span>
+                        <span>
+                          {{scope.row.plan_end}}
+                        </span>
+                      </span>
+                    </template>
+                  </el-table-column>
+                  <el-table-column :label="$t('Operation')">
+                    <template slot-scope="scope">
+                      <span style="color: #1980ff;cursor: pointer" @click="cancelSubscription(scope.row)">
+                         取消
+                      </span>
                     </template>
                   </el-table-column>
                 </el-table>
@@ -72,38 +86,12 @@
 </template>
 
 <script>
-import {getUserInfo} from "../../api/interface";
+import {extensionUserInfo} from "../../api/interface";
 export default {
   data() {
     return {
       userInfo: {},
-      subscriptionInfo: [],
-      billTableData: [
-        {
-          "next_pay": '2016-05-03',
-          status: '王小虎',
-          subscription: '上海',
-          operation: '删除'
-        },
-        {
-          "next_pay": '2016-05-03',
-          status: '王小虎',
-          subscription: '上海',
-          operation: '删除'
-        },
-        {
-          "next_pay": '2016-05-03',
-          status: '王小虎',
-          subscription: '上海',
-          operation: '删除'
-        },
-        {
-          "next_pay": '2016-05-03',
-          status: '王小虎',
-          subscription: '上海',
-          operation: '删除'
-        },
-      ],
+      subscription_list:[],
       activeName: '1',
       payRecordTableData:[
         {
@@ -116,15 +104,37 @@ export default {
     };
   },
   created() {
-    getUserInfo().then(res => {
-      console.log(res)
+    let headers = {};
+    for (let key in this.$route.query) {
+      let newKey = key.replace(/_/g, "-");
+      headers[newKey] = this.$route.query[key];
+    }
+    headers["Content-Type"] = "application/json";
+    extensionUserInfo(headers).then(res => {
+      let resData = res.data;
+      if (parseInt(resData.code) === 100000) {
+        this.userInfo = data.userinfo;
+        // 筛选出来所有的plan_type = recurring的记录, 并把plan_end（时间戳）转换成当前时间
+        this.subscription_list = data.payinfo.filter(item => item.plan_type === 'recurring').map(item => {
+          item.plan_end = this.timestampToDateString(item.plan_end);
+          return item;
+        });
+      }
     });
   },
   methods: {
+    timestampToDateString(timestamp) {
+      const date = new Date(timestamp * 1000); // 将秒级别的时间戳转换为毫秒级别
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    },
     cancelSubscription (row) {
       console.log(row)
     },
     handleClick(tab, event) {
+      console.log(this.activeName);
       console.log(tab, event);
     },
     openBillUrl (url) {

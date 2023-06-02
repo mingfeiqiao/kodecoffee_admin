@@ -5,20 +5,22 @@ import 'element-ui/lib/theme-chalk/index.css'
 import VueI18n from 'vue-i18n';
 import messages from './locales/locales.json';
 import router from './router';
+import store from './vuex/store';
 
-Vue.prototype.URL = 'wsx.tc.com:8080';
+Vue.prototype.URL = 'https://kodepay.io';
+Vue.prototype.API_URL = 'https://api.kodepay.io';
 Vue.prototype.MODECONFIG = {
   PRODUCTION: {
-    mode: 'vendor',
-    basePath:'/vendor',
-    baseURL: `${Vue.prototype.URL}/vendor`,
-    apiURL: `${Vue.prototype.URL}/production/api`,
+    mode: 'vendors',
+    basePath:'/vendors',
+    baseURL: `${Vue.prototype.URL}/vendors`,
+    apiURL: `${Vue.prototype.API_URL}/production/api`,
   },
   SANDBOX: {
-    mode: 'vendor-sandbox',
-    basePath:'/vendor-sandbox',
-    baseURL: `${Vue.prototype.URL}/vendor-sandbox`,
-    apiURL: `${Vue.prototype.URL}/sandbox/api`,
+    mode: 'sandbox-vendors',
+    basePath:'/sandbox-vendors',
+    baseURL: `${Vue.prototype.URL}/sandbox-vendors`,
+    apiURL: `${Vue.prototype.API_URL}/sandbox`,
   }
 }
 if (window.location.pathname.startsWith(Vue.prototype.MODECONFIG.SANDBOX.basePath)) {
@@ -37,6 +39,7 @@ Vue.use(ElementUI);
 new Vue({
   el: '#app',
   i18n,
+  store,
   router,
   template: '<App/>',
   components: { App }

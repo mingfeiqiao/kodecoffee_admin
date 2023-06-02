@@ -1,8 +1,13 @@
+import Vue from "vue";
 import axios from "axios";
 import qs from "qs";
-import Vue from "vue";
-
-const baseURL = 'http://localhost:8001/sandbox';
+let baseURL = '';
+if (window.location.pathname.startsWith('/sandbox-vendors')) {
+  baseURL = 'https://api.kodepay.io/sandbox';
+} else {
+  baseURL = 'https://api.kodepay.io/production';
+}
+baseURL = 'http://localhost:8001'
 // 创建一个axios实例
 const instance = axios.create({
   baseURL: baseURL, // 设置API的基础URL
@@ -27,7 +32,7 @@ instance.interceptors.response.use(
         localStorage.removeItem(Vue.prototype.$mode + 'applicationKey');
         localStorage.removeItem(Vue.prototype.$mode + 'userInfo')
         localStorage.removeItem(Vue.prototype.$mode + 'token');
-        window.location.href = '/login';
+        // window.location.href = 'https://kodepay.io/user/login';
       }
       return response;
     },
@@ -43,7 +48,7 @@ instance.interceptors.request.use(
       console.log(token);
       if (token) {
         config.headers.Authorization = token;
-        config.headers.applicationKey = localStorage.getItem(Vue.prototype.$mode + 'applicationKey');
+        config.headers['application-key']= localStorage.getItem(Vue.prototype.$mode + 'applicationKey');
       }
       return config;
     },
@@ -52,7 +57,9 @@ instance.interceptors.request.use(
       return Promise.reject(error);
     }
 );
-export const zbUserInfo = () => instance.get('/zbase/user-info');
+export const zbUserInfo = () => {
+  return instance.get('https://kodepay.io/user/v2/userinfo');
+};
 export const postUserInfo = data => {
   const formData = qs.stringify(data);
   return instance.post('/account/login', formData);
@@ -61,17 +68,27 @@ export const loginOut = () => instance.post('/account/login-out');
 // plugin 相关
 export const addPlugin = data => {
   const formData = new FormData();
-  formData.append('plugin_name', data.name);
-  formData.append('icon', data.icon);
-  formData.append('description', data.description);
-  formData.append('store_address', data.storeAddress);
+  // 使用for循环，将对象中的每个属性都添加到formData中
+  for (let key in data) {
+    formData.append(key, data[key]);
+  }
   return instance.post('/plugin/add-plugin', formData);
 };
+// export const addPlan = data => {
+//   const formData = new FormData();
+//   // 使用for循环，将对象中的每个属性都添加到formData中
+//   for (let key in data) {
+//     formData.append(key, data[key]);
+//   }
+//   return instance.post('/product/save', formData);
+// };
+
+export const addPlan = data => instance.post('/product/save', data);
+
 export const updatePlugin = data => instance.post('/plugin/update-plugin', data);
 export const pluginList = () => instance.post('/plugin/plugin-list');
 // plan 相关
-export const planList = () => instance.get('/plan/list');
-export const addPlan = data => instance.post('/plan/add', data);
+export const planList = params => instance.get('/plan/list', {params});
 export const updatePlan = data => instance.post('/plan/update-plan', data);
 // 订单相关
 export const orderList = () => instance.get('/order/order-list');
@@ -86,7 +103,16 @@ export const extensionPayRecord = () => instance.get('/extension/pay-record');
 // 取消订阅接口
 export const cancelSubscription = data => instance.post('/extension/cancel-subscription', data);
 export const extensionPayStatus = () => instance.get('/extension/pay-status');
-export const extensionUserInfo = () => instance.get('/extension/user-info');
 export const getUserInfo = () => instance.get('/user/info');
-export const extensionLogin = () => instance.get('/user/login-in');
+
+
+export const extensionUserInfo = (headers, data) => {
+  return instance.post('/api/extension/user-info', data, {headers ,method: 'POST'});
+}
+export const extensionPayRecordList = (headers, data) => {
+  return instance.post('/api/extension/pay-record', data, {headers ,method: 'POST'});
+}
+export const extensionLogin = (headers, data) => {
+  return instance.post('/api/extension/login', data, {headers ,method: 'POST'});
+}
 export default instance;

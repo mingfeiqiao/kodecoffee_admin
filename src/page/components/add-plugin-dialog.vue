@@ -10,12 +10,12 @@
           </el-input>
         </el-form-item>
         <el-form-item label="icon:" prop="icon">
-          <img-upload @iconUpSourceChange="iconUpSourceChange"></img-upload>
+          <img-upload :icon_url="pluginData.icon" @iconUpSourceChange="iconUpSourceChange"></img-upload>
         </el-form-item>
         <el-form-item label="说明:" prop="desc">
           <el-input type="textarea" v-model="pluginData.description"></el-input>
         </el-form-item>
-        <el-form-item label="商店地址:" prop="storeAddress">
+        <el-form-item label="商店地址:" prop="store_address">
           <el-input v-model="pluginData.store_address"></el-input>
         </el-form-item>
         <el-form-item>
@@ -35,7 +35,7 @@ import imgUpload from "./img-upload.vue";
 export default {
   data () {
     return {
-      iconChanged: false,
+      icon_file: null,
       rules: {
         name: [
           { required: true, message: '请输入插件名称', trigger: 'blur' },
@@ -90,10 +90,6 @@ export default {
     }
   },
   methods : {
-    iconUpSourceChange(newValue) {
-      this.iconChanged = true;
-      this.pluginData.icon = newValue;
-    },
     /**
      *
      * @param formName
@@ -108,7 +104,12 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          addPlugin(this.pluginData).then((res) => {
+          let args = this.pluginData;
+          if (this.icon_file) {
+            args.icon = this.icon_file;
+          }
+          console.log(args);
+          addPlugin(args).then((res) => {
             if (res.data.code === 10000) {
               this.$message({
                 message: '操作成功',
@@ -130,6 +131,13 @@ export default {
         }
       });
     },
+    /**
+     * 图标上传
+     * @param file
+     */
+    iconUpSourceChange(file) {
+      this.icon_file = file;
+    }
   }
 }
 </script>

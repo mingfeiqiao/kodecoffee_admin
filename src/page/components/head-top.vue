@@ -57,15 +57,14 @@ export default {
     },
     checkoutMode() {
       this.isTestMode = !this.isTestMode;
+      console.log('mode', this.$mode);
       if (this.$mode === this.MODECONFIG.SANDBOX.mode) {
         this.$mode = this.MODECONFIG.PRODUCTION.mode;
-        // 去掉根路径的/sandbox
         const currentUrl = new URL(window.location.href);
         currentUrl.pathname = currentUrl.pathname.replace(this.MODECONFIG.SANDBOX.basePath, '');
         window.location.href = currentUrl.href;
       } else {
         this.$mode = this.MODECONFIG.SANDBOX.mode;
-        // 在path前加入/sandbox
         const currentUrl = new URL(window.location.href);
         currentUrl.pathname = this.MODECONFIG.SANDBOX.basePath + currentUrl.pathname;
         window.location.href = currentUrl.href;

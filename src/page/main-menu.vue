@@ -51,8 +51,12 @@
           {{this.$route.name}}
         </div>
       </div>
-      <el-main>
-        <router-view></router-view>
+      <el-main v-if="isLoginIn" style="padding: 24px; background-color: #f0f0f0;">
+        <div style="height: 100%; overflow: auto;">
+          <div style="width: 100%; height: 100%; background-color: #ffffff;">
+            <router-view></router-view>
+          </div>
+        </div>
       </el-main>
     </el-container>
   </el-container>
@@ -89,10 +93,20 @@ export default {
       }
       return breadcrumbs;
     },
+    isLoginIn: {
+      get() {
+        return this.$store.getters.isLoginIn;
+      },
+      set(value) {
+        this.$store.commit('setLoginStatus', value);
+      },
+    },
   },
   watch: {
   },
   created() {
+    this.isLoginIn =  !!localStorage.getItem(this.$mode + 'userInfo');
+    console.log('是否：',this.isLoginIn)
   },
   methods: {
     collapseChange(collapse) {

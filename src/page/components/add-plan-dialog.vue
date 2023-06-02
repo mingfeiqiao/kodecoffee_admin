@@ -1,24 +1,20 @@
 <template>
   <div>
     <el-dialog :title="operationType === 'add' ? '添加套餐' : '更新套餐'" :visible.sync="dialogFormVisible"  width="50%" :modal-append-to-body="false">
-     <el-form ref="form" :model="plan" label-width="80px" label-position="top" size="mini">
-       <div style="display:flex;align-items: center;justify-content: flex-start">
+     <el-form ref="form" :model="plan"  label-width="80px" label-position="top" size="mini">
+       <div style="display:flex;align-items: center;justify-content: space-between;">
          <div style="min-width: 250px;">
-           <el-form-item label="所属插件">
-             <el-select v-model="plan.extensionId"  placeholder="请选择" :disabled="unableModify">
-               <el-option v-for="item in pluginOption" :key="item.value" :label="item.label" :value="item.value"></el-option>
-             </el-select>
-           </el-form-item>
            <el-form-item label="名称">
-             <el-input  v-model="plan.planName"></el-input>
+             <el-input v-model="plan.name"></el-input>
            </el-form-item>
            <el-form-item label="描述">
-             <el-input type="textarea" v-model="plan.planDescription"></el-input>
+             <el-input type="textarea" v-model="plan.desc"></el-input>
            </el-form-item>
          </div>
-         <div style="padding-left: 150px">
-           <div>图标</div>
-           <img-upload @iconUpSourceChange="iconUpSourceChange"></img-upload>
+         <div>
+           <el-form-item label="图标">
+             <img-upload :icon_url="plan.icon" @iconUpSourceChange="iconUpSourceChange"></img-upload>
+           </el-form-item>
          </div>
        </div>
        <div>
@@ -27,17 +23,19 @@
              <div style="padding-right: 20px">
                计费方式
              </div>
-             <el-radio :disabled="unableModify" v-model="plan.payMode" :label="option.value" v-for="option of payModeOption" :key="option.value">{{option.label}}</el-radio>
+             <el-radio :disabled="unableModify" v-model="plan.type" :label="option.value" v-for="option of type_option" :key="option.value">
+               {{option.label}}
+             </el-radio>
            </div>
          </el-form-item>
-         <el-form-item v-if="plan.payMode === 1">
+         <el-form-item v-if="plan.type === 'recurring'">
            <div style="display: flex;align-items: center;padding-left: 60px">
              <div>每</div>
              <div>
-               <el-input-number  :disabled="unableModify" v-model="plan.billingCycleNum" controls-position="right"></el-input-number>
-               <el-select :disabled="unableModify" v-model="plan.billingCycle" placeholder="请选择">
+               <el-input-number :disabled="unableModify" v-model="plan.interval_count" controls-position="right"></el-input-number>
+               <el-select :disabled="unableModify" v-model="plan.interval" placeholder="请选择">
                  <el-option
-                     v-for="item in billingCycleOptions"
+                     v-for="item in interval_option"
                      :key="item.value"
                      :label="item.label"
                      :value="item.value">
@@ -47,14 +45,14 @@
            </div>
          </el-form-item>
          <el-form-item>
-           <el-switch :disabled="unableModify" v-model="plan.isTrial" inactive-text="免费试用">
+           <el-switch :disabled="unableModify" v-model="plan.is_trial" inactive-text="免费试用">
            </el-switch>
          </el-form-item>
-         <el-form-item v-if="plan.isTrial">
+         <el-form-item v-if="plan.is_trial">
            <div style="display: flex;padding-left: 60px">
              <div>试用天数</div>
              <div>
-               <el-input-number :disabled="unableModify" v-model="plan.trialDays" controls-position="right"></el-input-number>
+               <el-input-number :disabled="unableModify" v-model="plan.trial_days" controls-position="right"></el-input-number>
              </div>
            </div>
          </el-form-item>
@@ -69,8 +67,9 @@
                    </div>
                    <div>
                      <el-select :disabled="unableModify" v-model="price.currency" placeholder="选择币种">
-                       <el-option label="人民币" value="CNY"></el-option>
-                       <el-option label="美元" value="USD"></el-option>
+                       <el-option
+                         v-for="item in currency_option" :key="item.value" :label="item.label" :value="item.value">
+                       </el-option>
                      </el-select>
                    </div>
                    <div style="padding-left: 5px;cursor: pointer">
@@ -92,7 +91,6 @@
              </div>
            </div>
          </el-form-item>
-
        </div>
        <div>
          <el-form-item>
@@ -113,39 +111,38 @@
 </template>
 <script>
 import imgUpload from "../components/img-upload.vue";
+import {addPlan, updatePlan} from "../../api/interface";
+
 export default {
   data() {
     return {
+      icon_file:null,
       unableModify: false,
       plan: {},
-      pluginOption:[
+      currency_option:[
         {
-          label: '插件1',
-          value: 'adf23'
+          label: '人民币',
+          value: 'CNY'
         },
         {
-          label: '插件2',
-          value: '13es'
+          label: '美元',
+          value: 'USD'
         }
       ],
-      payModeOption: [
+      type_option: [
         {
           label: '周期付费',
-          value: 1
+          value: 'recurring'
         },
         {
           label: '一次性付费',
-          value: 2
+          value: 'one_time'
         }
       ],
-      billingCycleOptions: [
+      interval_option: [
         {
-          value: 1,
-          label: '月'
-        },
-        {
-          value: 2,
-          label: '年'
+          label: '月',
+          value: 'month'
         }
       ],
       dialogFormVisible: false
@@ -154,9 +151,6 @@ export default {
   components: {
     imgUpload
   },
-  created() {
-    this.plan = this.chosenPlanData;
-  },
   props: {
     operationType: {
       type: String,
@@ -164,30 +158,7 @@ export default {
     },
     chosenPlanData: {
       type: Object,
-      default: () => {
-        return {
-          extensionName: '',
-          extensionId: '13es',
-          planName: '',
-          planIcon: null,
-          planDescription: '',
-          payMode: 1, // 计费方式 1 循环支付 2 一次性支付
-          billingCycle: 1, // 循环周期 1 月 2 年
-          billingCycleNum: 1, // 循环时间跨度数字 与 billingCycle 组合使用 1（）年 或者2月
-          isTrial: true, // 是否试用
-          trialDays: 1, // 试用天数
-          price: [ // 价格
-            {
-              currency: 'USD',
-              price: 1
-            },
-            {
-              currency: 'CNY',
-              price: 2
-            }
-          ]
-        }
-      }
+      default: () => {}
     },
     visible: {
       type: Boolean,
@@ -208,7 +179,6 @@ export default {
       return newValue;
     },
     chosenPlanData(newValue) {
-      console.log(newValue);
       this.plan = newValue;
     },
     operationType(newValue) {
@@ -217,20 +187,80 @@ export default {
   },
   methods: {
     iconUpSourceChange(file) {
-      console.log('xxx');
-      this.plan.planIcon = file;
+      this.icon_file = file;
     },
     onSubmit() {
-      console.log('submit!');
+      // submit
+      if (this.operationType === 'add') {
+        console.log(this.plan);
+        let app_price = [];
+        let p1 = {
+          type:this.plan.type,
+          currency: 'USD',
+          amount: 1.99,
+          interval: 'month',
+          interval_count: 1,
+          currency_options:[
+            {
+              currency: 'USD',
+              amount: 1.99
+            },
+            {
+              currency: 'CNY',
+              amount: 14.99
+            }
+          ]
+        };
+        app_price.push(p1);
+        let args = {
+          name: this.plan.name,
+          desc: this.plan.desc,
+          // icon: this.icon_file,
+          is_trial: this.plan.is_trial,
+          trial_days: this.plan.trial_days,
+          app_price: app_price
+        };
+        console.log(args);
+        addPlan(args).then(res => {
+          this.$message({
+            message: '添加成功',
+            type: 'success'
+          });
+          this.dialogFormVisible = false;
+          this.$emit('addPlan', res.data);
+        }).catch(err => {
+          this.$message({
+            message: '添加失败',
+            type: 'error'
+          });
+        })
+      } else {
+        updatePlan(this.plan).then(res => {
+          this.$message({
+            message: '更新成功',
+            type: 'success'
+          });
+          this.dialogFormVisible = false;
+          this.$emit('updatePlan', res.data);
+        }).catch(err => {
+          this.$message({
+            message: '更新失败',
+            type: 'error'
+          });
+        })
+      }
     },
     addPrice() {
+      if (!this.plan.price) {
+        this.$set(this.plan, 'price', []);
+      }
       this.plan.price.push({
         currency: 'USD',
         price: 1
       })
     },
     removePrice(index) {
-      this.plan.price.splice(index, 1)
+      this.$delete(this.plan.price, index);
     }
   }
 }

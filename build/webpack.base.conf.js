@@ -8,6 +8,7 @@ let webpack = require('webpack');
 function resolve (dir) {
 	return path.join(__dirname, '..', dir);
 }
+console.log('process.env.NODE_ENV', process.env.NODE_ENV);
 module.exports = {
 	entry: {
 		app: './src/main.js'
@@ -110,5 +111,4 @@ module.exports = {
 		}),
 		new BundleAnalyzerPlugin()
 	]
-	// plugins: []
 };
