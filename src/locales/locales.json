@@ -11,7 +11,7 @@
     "Home": "Home",
 
     "Status": "Status",
-    "Next-pay-time": "Next Pay Time",
+    "subscription_expired_time": "Expired Time",
     "Operation": "Operation"
   },
   "zh-cn": {
@@ -26,7 +26,7 @@
     "Home": "首页",
 
     "Status": "状态",
-    "Next-pay-time": "下次付款时间",
+    "subscription_expired_time": "到期时间",
     "Operation": "操作"
   }
 }

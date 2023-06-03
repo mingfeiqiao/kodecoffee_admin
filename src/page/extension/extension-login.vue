@@ -25,12 +25,15 @@
           <div v-else>
             <div>
               <div>
-                已经向xxxxx@xxx.com邮箱发送一封验证邮件，请登录该邮箱并点击验证链接以激活登录，请登录邮箱并点击验证链接，即可登录
+                已经向{{input}}邮箱发送一封验证邮件，请登录该邮箱并点击验证链接以激活登录，请登录邮箱并点击验证链接，即可登录
+              </div>
+              <div style="color: #1090FF;cursor: pointer" @click="toSubscription()">
+                已经验证？前往订阅页面
               </div>
               <div>
                 <span>未收到邮件？</span>
-                <span @click="submitEmail" style="color: #1090FF">重新发送</span>
-                <span style="color: #1090FF" @click="isSendEmail = false">修改邮箱</span>
+                <span @click="submitEmail" style="color: #1090FF;cursor: pointer">重新发送</span>
+                <span style="color: #1090FF;cursor: pointer" @click="isSendEmail = false">修改邮箱</span>
               </div>
             </div>
           </div>
@@ -41,7 +44,7 @@
 </template>
 
 <script>
-import {extensionLogin} from "../../api/interface";
+import {extensionLogin, extensionUserInfo} from "../../api/interface";
 export default {
   data() {
     return {
@@ -58,12 +61,34 @@ export default {
     };
   },
   created() {
-    console.log(this.$route.query);
+    let headers = {};
+    for (let key in this.$route.query) {
+      let newKey = key.replace(/_/g, "-");
+      headers[newKey] = this.$route.query[key];
+    }
+    extensionUserInfo(headers).then(res => {
+      let resData = res.data;
+      if (parseInt(resData.code) === 100000) {
+        this.$router.push({
+          path: "/extension/pay-manage",
+          query: this.$route.query
+        });
+      }
+    });
   },
   methods: {
     isEmail(mail) {
       const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       return regex.test(mail);
+    },
+    /**
+     * 跳转到订阅页面
+     */
+    toSubscription() {
+      this.$router.push({
+        path: "/extension/pay-manage",
+        query: this.$route.query
+      });
     },
     submitEmail() {
       console.log(this.input);
@@ -81,11 +106,10 @@ export default {
           let newKey = key.replace(/_/g, "-");
           headers[newKey] = this.$route.query[key];
         }
-        headers["Content-Type"] = "application/json";
         let body = {
           email: this.input
         };
-        extensionLogin(headers, JSON.stringify(body)).then(res => {
+        extensionLogin(headers, body).then(res => {
           console.log(res);
         });
       }

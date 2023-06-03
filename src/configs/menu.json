@@ -3,58 +3,53 @@
     {
       "title": "Dashboard",
       "url": "dashboard",
-      "icon": "el-icon-platform-eleme"
+      "icon": "dashboard-icon"
     },
     {
       "title": "Payment List",
       "url": "payment-list",
-      "icon": "el-icon-s-order",
+      "icon": "payment-list-icon",
       "children": [
         {
           "title": "All Orders",
-          "icon": "el-icon-s-order",
           "url": "/pay-all-order"
         },
         {
           "title": "Subscriptions",
-          "icon": "el-icon-s-order",
           "url": "/pay-subscription"
         }
       ]
     },
     {
       "title": "User List",
-      "icon": "el-icon-user",
+      "icon": "custom-list-icon",
       "url": "/user-list"
     },
     {
       "title": "Plugin List",
-      "icon": "el-icon-s-custom",
+      "icon": "plugin-list-icon",
       "url": "/plugin-list"
     },
     {
       "title": "Product List",
-      "icon": "el-icon-s-custom",
+      "icon": "subscription-list-icon",
       "url": "/product-list"
     },
     {
       "title": "Settings",
-      "icon": "el-icon-setting",
+      "icon": "settings-icon",
       "url": "settings",
       "children": [
         {
           "title": "Balance Settings",
-          "icon": "el-icon-s-order",
           "url": "/balance-settings"
         },
         {
           "title": "Event Callback Settings",
-          "icon": "el-icon-s-order",
           "url": "/event-callback-settings"
         },
         {
           "title": "Payment Channel Settings",
-          "icon": "el-icon-s-order",
           "url": "/payment-channel-settings"
         }
       ]

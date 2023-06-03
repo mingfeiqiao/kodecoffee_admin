@@ -6,23 +6,10 @@ import VueI18n from 'vue-i18n';
 import messages from './locales/locales.json';
 import router from './router';
 import store from './vuex/store';
-
-Vue.prototype.URL = 'https://kodepay.io';
-Vue.prototype.API_URL = 'https://api.kodepay.io';
-Vue.prototype.MODECONFIG = {
-  PRODUCTION: {
-    mode: 'vendors',
-    basePath:'/vendors',
-    baseURL: `${Vue.prototype.URL}/vendors`,
-    apiURL: `${Vue.prototype.API_URL}/production/api`,
-  },
-  SANDBOX: {
-    mode: 'sandbox-vendors',
-    basePath:'/sandbox-vendors',
-    baseURL: `${Vue.prototype.URL}/sandbox-vendors`,
-    apiURL: `${Vue.prototype.API_URL}/sandbox`,
-  }
-}
+import config from './configs/config';
+Vue.prototype.URL = config.URL;
+Vue.prototype.API_URL = config.API_URL;
+Vue.prototype.MODECONFIG = config.MODECONFIG;
 if (window.location.pathname.startsWith(Vue.prototype.MODECONFIG.SANDBOX.basePath)) {
   Vue.prototype.$mode = Vue.prototype.MODECONFIG.SANDBOX.mode;
 } else {

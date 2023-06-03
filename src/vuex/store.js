@@ -16,6 +16,7 @@ const store = new Vuex.Store({
   },
   mutations: {
     setLoginStatus(state, isLoginIn) {
+      console.log('sss:',state, isLoginIn);
       state.isLoginIn = isLoginIn;
     },
   },

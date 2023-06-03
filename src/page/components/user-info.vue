@@ -37,7 +37,37 @@ export default {
     async loginOrRegisterUser() {
       let res = await zbUserInfo();
       res = res.data;
+      // let res = {
+      //   "code": 100000,
+      //   "message": "success",
+      //   "product_id": 70,
+      //   "product_mark": 70,
+      //   "userinfo": {
+      //     "user_id": 2857824,
+      //     "email": "ligoogel1918@gmail.com",
+      //     "username": "李谷歌",
+      //     "created_at": "2023-05-29 20:27:01",
+      //     "phone_number": ""
+      //   },
+      //   "payinfo": {
+      //     "is_subscribed": "0",
+      //     "plan_start": "",
+      //     "plan_end": "",
+      //     "plan_price": "",
+      //     "plan_name": "No Plan",
+      //     "plan_date": "No upcoming payments",
+      //     "is_recurly": "0",
+      //     "channel": "0",
+      //     "status": "0"
+      //   }
+      // };
       if (parseInt(res.code) === 100000) {
+        console.log(res);
+        if (!res.userinfo) {
+          this.$message.error('获取用户信息失败，请重新登录');
+          window.location.href = 'https://kodepay.io/user/login'
+          return;
+        }
         let user_info = res.userinfo;
         this.userInfo = {
           zbase_user_id: user_info.user_id,
@@ -49,12 +79,14 @@ export default {
         console.log('this.userInfo', this.userInfo);
         let vm = this;
         postUserInfo(vm.userInfo).then(function(res) {
-          console.log('res2', res);
           localStorage.setItem(vm.$mode + 'userInfo', JSON.stringify(vm.userInfo));
-          this.$store.commit('setLoginStatus', true);
+          vm.$store.commit('setLoginStatus', true); // 修改这一行
         }).catch(function(err) {
           console.log(err);
         });
+      } else {
+        // this.$message.error('获取用户信息失败，请重新登录');
+        // window.location.href = 'https://kodepay.io/user/login'
       }
     },
     webLoginOut() {

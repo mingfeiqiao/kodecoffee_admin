@@ -3,7 +3,8 @@
     <el-tabs v-model="activeOrderType" @tab-click="handleClick">
       <el-tab-pane v-for="(option, index) in subscriptionOption" :key="index" :label="option.label" :name="option.value">
         <div>
-          <el-table :data="tableData" style="width: 100%" @row-click="openSubscriptionDetail">
+          <el-table :data="tableData" style="width: 100%" @row-click="openSubscriptionDetail"
+                    :header-cell-style="{'background-color': 'var(--header-cell-background-color)','color': 'var(--header-cell-color)','font-weight': 'var(--header-cell-font-weight)'}"          >
             <el-table-column prop="email" label="用户"  width="auto">
             </el-table-column>
             <el-table-column prop="planName" label="产品" width="auto" >

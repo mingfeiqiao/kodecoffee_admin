@@ -9,7 +9,7 @@ module.exports = {
 		env: require('./prod.env'),
 		index: path.resolve(__dirname, '../static/index.html'),
 		assetsRoot: path.resolve(__dirname, '../static'),
-		assetsSubDirectory: 'static',
+		assetsSubDirectory: '',
 		// 打包路径这边记得替换绝对路径,这边上传要匹配后台https,该配置会影响js文件生成
 		assetsPublicPath: '',
 		productionSourceMap: false,

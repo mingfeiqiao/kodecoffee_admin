@@ -84,7 +84,9 @@
     <div>
       <div>订单详情</div>
       <div>
-        <el-table :data="tableData" style="width: 100%">
+        <el-table :data="tableData" style="width: 100%"
+                  :header-cell-style="{'background-color': 'var(--header-cell-background-color)','color': 'var(--header-cell-color)','font-weight': 'var(--header-cell-font-weight)'}"
+        >
           <el-table-column prop="orderId" label="订单ID" width="180"></el-table-column>
           <el-table-column prop="price" label="金额" width="180"></el-table-column>
           <el-table-column prop="status" label="状态" width="180"></el-table-column>

@@ -40,7 +40,9 @@
             </div>
           </div>
           <div>
-            <el-table :data="tableData" style="width: 100%">
+            <el-table :data="tableData" style="width: 100%"
+                      :header-cell-style="{'background-color': 'var(--header-cell-background-color)','color': 'var(--header-cell-color)','font-weight': 'var(--header-cell-font-weight)'}"
+            >
               <el-table-column prop="planName" label="产品"  width="auto">
               </el-table-column>
               <el-table-column prop="price" label="金额" width="auto" >

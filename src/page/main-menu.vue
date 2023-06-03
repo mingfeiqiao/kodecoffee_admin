@@ -1,18 +1,31 @@
 <template>
   <el-container style="width: 100%;height: 100%">
-    <el-aside :width="this.isCollapse ? '64px' : '300px'" ref="sidebar">
-      <el-menu :default-active="currentMenu" :collapse="isCollapse" router style="height: calc(100% - 10px); bottom: 0;" >
+    <el-aside :width="this.isCollapse ? '64px' : '256px'" ref="sidebar">
+      <el-menu :default-active="currentMenu" :collapse="isCollapse" router style="height: calc(100% - 10px); bottom: 0;"
+               background-color="#001529"
+               text-color="#FFF"
+               active-text-color="#FFF"
+               active-background-color="#409eff"
+      >
+        <el-menu-item index="top" style="height: 64px;">
+          <div style="display: flex; align-items: center; justify-content: center; height: 100%;">
+            <img src="https://zbase-global.zingfront.com/saasbox/product/icon/8ea7800dcf7c5da442c7c04a0e7d5b55.png" alt="" style="width: 200px; height: 30px;">
+          </div>
+        </el-menu-item>
         <template v-for="menu of MENU">
           <template v-if="menu.children">
             <el-submenu :index="menu.url">
               <template slot="title">
-                <i :class="menu.icon"></i>
-                <span slot="title">{{$t(menu.title)}}</span>
+                <div style="display: flex;align-items: center">
+                  <svg width="18" height="18" style="padding-right: 8px" fill="#fff">
+                    <use :xlink:href="'#' + menu.icon"></use>
+                  </svg>
+                  <span slot="title">{{$t(menu.title)}}</span>
+                </div>
               </template>
               <el-menu-item-group>
                 <template v-for="item of menu.children">
                   <el-menu-item :index="item.url"  @click="handleMenuItemClick(item.url)">
-                    <i :class="item.icon"></i>
                     <span slot="title">{{$t(item.title)}}</span>
                   </el-menu-item>
                 </template>
@@ -21,13 +34,18 @@
           </template>
           <template v-else>
             <el-menu-item :index="menu.url"  @click="handleMenuItemClick(menu.url)">
-              <i :class="menu.icon"></i>
-              <span slot="title">{{$t(menu.title)}}</span>
+              <span slot="title">
+                  <svg width="18" height="18" style="padding-right: 8px" fill="#fff">
+                    <use :xlink:href="'#' + menu.icon"></use>
+                  </svg>
+                {{$t(menu.title)}}</span>
             </el-menu-item>
           </template>
         </template>
-        <el-menu-item index="bottom" style="position: absolute; bottom: 0;">
-          <i class="el-icon-s-order"></i>
+        <el-menu-item index="bottom" style="position: absolute; bottom: 0;" >
+          <svg width="18" height="18" style="padding-right: 8px" fill="#fff">
+            <use xlink:href="'#dashboard-icon"></use>
+          </svg>
           <span slot="title">{{'xxxx'}}</span>
         </el-menu-item>
       </el-menu>
@@ -65,7 +83,6 @@
 import menuList from '../configs/menu.json'
 import headTop from "./components/head-top.vue";
 import breadCrumb from "./components/bread-crumb.vue";
-
 export default {
   data () {
     return {
@@ -132,7 +149,8 @@ export default {
   }
 }
 </script>
-<style>
+<style scoped lang="less">
+@import '../css/global.less';
 .breadcrumb {
   margin-bottom: 20px;
 }
@@ -148,5 +166,8 @@ export default {
 
 .breadcrumb span:last-child {
   font-weight: bold;
+}
+.el-menu-item.is-active {
+  background-color: @theme-main-color !important;
 }
 </style>

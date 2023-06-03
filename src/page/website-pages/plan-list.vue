@@ -22,7 +22,8 @@
     <div>
       <div style="display: flex;align-items: center;flex-direction: column">
         <el-table :data="tableData" style="width: 100%"
-                  :header-cell-style="{'background-color' : 'rgba(250, 250, 250, 1)', 'color': '#101010'}">
+                  :header-cell-style="{'background-color': 'var(--header-cell-background-color)','color': 'var(--header-cell-color)','font-weight': 'var(--header-cell-font-weight)'}"
+        >
           <el-table-column prop="planId" label="Plan Id"  width="auto" >
           </el-table-column>
           <el-table-column width="auto">
@@ -124,29 +125,7 @@ export default {
         q: "",
       },
       total: 0,
-      tableData:[
-        {
-          id: 1,
-          icon: 'https://appcdn-global.zingfront.com/imgs/7d4439ed88c469d655e00b4ad78349e0.jpg?x-oss-process=image/resize,w_72,h_72/format,webp',
-          name: "产品的名称",
-          desc: "产品的描述",
-          type: 'month',
-          interval: 'recurring',
-          interval_count: 1,
-          is_trial: true,
-          trial_days:7, // 试用时间
-          price:[
-            {
-              currency: "USD",
-              price: 1
-            },
-            {
-              currency: "CNY",
-              price: 6
-            }
-          ],
-        }
-      ],
+      tableData:[],
       paymentModes: [
         {
           name: "搜索",
@@ -180,10 +159,11 @@ export default {
      */
     getPlanList () {
       let args = this.args;
+      let vm = this;
       planList(args).then(res => {
-        if (parseInt(res.data.code )=== 10000) {
-          this.tableData = res.data.data;
-          this.total = res.data.total;
+        if (parseInt(res.data.code )=== 100000) {
+          vm.tableData = res.data.data;
+          vm.total = res.data.total;
         }
       })
     },

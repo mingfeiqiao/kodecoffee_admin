@@ -53,7 +53,8 @@
     <div>
       <div>提现记录</div>
       <div>
-        <el-table :data="tableData" style="width: 100%">
+        <el-table :data="tableData" style="width: 100%"
+                  :header-cell-style="{'background-color': 'var(--header-cell-background-color)','color': 'var(--header-cell-color)','font-weight': 'var(--header-cell-font-weight)'}"        >
           <el-table-column prop="balance" label="金额"></el-table-column>
           <el-table-column prop="account" label="账户"></el-table-column>
           <el-table-column prop="time" label="提现时间"></el-table-column>

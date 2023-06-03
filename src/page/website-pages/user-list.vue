@@ -5,7 +5,9 @@
         <el-input v-model="input" placeholder="请输入内容"  size="mini"  suffix-icon="el-icon-search"></el-input>
       </div>
       <div>
-        <el-table :data="tableData" :pagination="paginationConfig" :sort="sortConfig" @sort-change="handleSortChange" @current-change="handleCurrentChange">
+        <el-table :data="tableData" :pagination="paginationConfig" :sort="sortConfig" @sort-change="handleSortChange" @current-change="handleCurrentChange"
+                  :header-cell-style="{'background-color': 'var(--header-cell-background-color)','color': 'var(--header-cell-color)','font-weight': 'var(--header-cell-font-weight)'}"
+        >
           <el-table-column prop="email" label="用户邮箱"></el-table-column>
           <el-table-column prop="accumulatedExpense" label="累计消费" sortable></el-table-column>
           <el-table-column prop="totalTransactions" label="消费次数" sortable></el-table-column>

@@ -1,13 +1,13 @@
 import Vue from "vue";
 import axios from "axios";
 import qs from "qs";
-let baseURL = '';
-if (window.location.pathname.startsWith('/sandbox-vendors')) {
-  baseURL = 'https://api.kodepay.io/sandbox';
+import config from '../configs/config';
+let baseURL = config.API_URL;
+if (window.location.pathname.startsWith(config.MODECONFIG.SANDBOX.basePath)) {
+  baseURL = config.MODECONFIG.SANDBOX.apiURL;
 } else {
-  baseURL = 'https://api.kodepay.io/production';
+  baseURL = config.MODECONFIG.PRODUCTION.apiURL;
 }
-baseURL = 'http://localhost:8001'
 // 创建一个axios实例
 const instance = axios.create({
   baseURL: baseURL, // 设置API的基础URL
@@ -101,18 +101,29 @@ export const extensionLoginIn = () => instance.get('/extension/login');
 export const extensionUpdateEmail = data => instance.post('/extension/update-email', data);
 export const extensionPayRecord = () => instance.get('/extension/pay-record');
 // 取消订阅接口
-export const cancelSubscription = data => instance.post('/extension/cancel-subscription', data);
 export const extensionPayStatus = () => instance.get('/extension/pay-status');
 export const getUserInfo = () => instance.get('/user/info');
 
 
+
+export const extensionCancelSubscription = (headers, data) => {
+  headers['Content-Type'] = 'application/json';
+  data = JSON.stringify(data);
+  return instance.post('/api/extension/cancel-subscription', data, {headers ,method: 'POST'});
+}
 export const extensionUserInfo = (headers, data) => {
+  headers['Content-Type'] = 'application/json';
+  data = JSON.stringify(data);
   return instance.post('/api/extension/user-info', data, {headers ,method: 'POST'});
 }
 export const extensionPayRecordList = (headers, data) => {
+  headers['Content-Type'] = 'application/json';
+  data = JSON.stringify(data);
   return instance.post('/api/extension/pay-record', data, {headers ,method: 'POST'});
 }
 export const extensionLogin = (headers, data) => {
+  headers['Content-Type'] = 'application/json';
+  data = JSON.stringify(data);
   return instance.post('/api/extension/login', data, {headers ,method: 'POST'});
 }
 export default instance;

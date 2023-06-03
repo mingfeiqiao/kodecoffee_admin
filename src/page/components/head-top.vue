@@ -28,6 +28,7 @@
 </template>
 <script>
 import userInfo from "./user-info.vue";
+
 export default {
   data () {
     return {
@@ -57,17 +58,13 @@ export default {
     },
     checkoutMode() {
       this.isTestMode = !this.isTestMode;
-      console.log('mode', this.$mode);
-      if (this.$mode === this.MODECONFIG.SANDBOX.mode) {
-        this.$mode = this.MODECONFIG.PRODUCTION.mode;
-        const currentUrl = new URL(window.location.href);
-        currentUrl.pathname = currentUrl.pathname.replace(this.MODECONFIG.SANDBOX.basePath, '');
-        window.location.href = currentUrl.href;
+      // 获取当前 URL 路径
+      if(this.$mode === this.MODECONFIG.SANDBOX.mode)  {
+        // 跳转到正式环境
+        window.location.href = this.MODECONFIG.PRODUCTION.baseURL;
       } else {
-        this.$mode = this.MODECONFIG.SANDBOX.mode;
-        const currentUrl = new URL(window.location.href);
-        currentUrl.pathname = this.MODECONFIG.SANDBOX.basePath + currentUrl.pathname;
-        window.location.href = currentUrl.href;
+        // 跳转到沙箱环境
+        window.location.href = this.MODECONFIG.SANDBOX.baseURL;
       }
     }
   }

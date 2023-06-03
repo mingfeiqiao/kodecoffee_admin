@@ -152,6 +152,10 @@ export default {
     imgUpload
   },
   props: {
+    operateSuccess: {
+      type: Function,
+      default: () => {}
+    },
     operationType: {
       type: String,
       default: 'add'
@@ -194,61 +198,76 @@ export default {
       if (this.operationType === 'add') {
         console.log(this.plan);
         let app_price = [];
-        let p1 = {
+        let currency_options = [];
+        // 找到价格列表中的currency = USD 的币种
+        this.plan.price.forEach(item => {
+          currency_options.push({
+            currency: item.currency,
+            amount: parseInt(item.price)
+          });
+        });
+        let usd_price = this.getUSDPrice()
+        app_price.push({
+          currency: usd_price.currency,
+          amount: parseInt(usd_price.price),
+          interval: this.plan.interval,
+          interval_count: this.plan.interval_count,
+          is_trial: this.plan.is_trial,
+          trial_days: this.plan.trial_days,
+          currency_options: currency_options,
           type:this.plan.type,
-          currency: 'USD',
-          amount: 1.99,
-          interval: 'month',
-          interval_count: 1,
-          currency_options:[
-            {
-              currency: 'USD',
-              amount: 1.99
-            },
-            {
-              currency: 'CNY',
-              amount: 14.99
-            }
-          ]
-        };
-        app_price.push(p1);
+        });
         let args = {
           name: this.plan.name,
           desc: this.plan.desc,
-          // icon: this.icon_file,
-          is_trial: this.plan.is_trial,
-          trial_days: this.plan.trial_days,
           app_price: app_price
         };
         console.log(args);
+        let vm = this;
         addPlan(args).then(res => {
-          this.$message({
-            message: '添加成功',
-            type: 'success'
-          });
-          this.dialogFormVisible = false;
-          this.$emit('addPlan', res.data);
+          if (parseInt(res.data.code) === 100000) {
+            vm.$message({
+              message: '添加成功',
+              type: 'success'
+            });
+            vm.dialogFormVisible = vm;
+            vm.$emit('operateSuccess');
+          } else {
+            vm.$message({
+              message: '添加失败',
+              type: 'error'
+            });
+          }
         }).catch(err => {
-          this.$message({
+          vm.$message({
             message: '添加失败',
             type: 'error'
           });
         })
       } else {
-        updatePlan(this.plan).then(res => {
+        let vm = this;
+        updatePlan(vm.plan).then(res => {
           this.$message({
             message: '更新成功',
             type: 'success'
           });
-          this.dialogFormVisible = false;
-          this.$emit('updatePlan', res.data);
+          vm.dialogFormVisible = false;
+          vm.$emit('operateSuccess');
         }).catch(err => {
-          this.$message({
+          vm.$message({
             message: '更新失败',
             type: 'error'
           });
         })
       }
+    },
+    getUSDPrice() {
+      let a = this.plan.price.filter(item => {
+        if (item.currency === 'USD') {
+         return item;
+        }
+      });
+      return a[0];
     },
     addPrice() {
       if (!this.plan.price) {
