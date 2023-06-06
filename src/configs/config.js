@@ -1,5 +1,6 @@
 const URL ='https://kodepay.io';
 const API_URL = 'https://api.kodepay.io';
+// const URL ='http://localhost:8080';
 // const API_URL = 'http://localhost:8001';
 export default Object.freeze({
   URL: URL,

@@ -29,7 +29,7 @@
   </el-dialog>
 </template>
 <script>
-import {addPlugin} from "../../api/interface";
+import {addPlugin, uploadFile, updatePlugin} from "../../api/interface";
 import imgUpload from "./img-upload.vue";
 
 export default {
@@ -59,7 +59,9 @@ export default {
       return newValue;
     },
     chosenPluginData(newValue) {
-      this.pluginData = newValue;
+      if (newValue && Object.keys(newValue).length > 0) {
+        this.pluginData = JSON.parse(JSON.stringify(newValue));
+      }
     }
   },
   props: {
@@ -97,34 +99,101 @@ export default {
     resetForm(formName) {
       this.$refs[formName].resetFields();
     },
+
+    /**
+     *
+     * @param path
+     * @param file
+     * @returns {Promise<*>}
+     */
+    async getIconUrl(path, file) {
+      let response = await uploadFile({path: path, icon: file})
+      if (parseInt(response.data.code) === 100000) {
+        return response.data.data.url;
+      } else {
+        this.$message({
+          message: '上传图片失败',
+          type: 'error'
+        });
+      }
+    },
+    /**
+     * 新增
+     * @returns {Promise<void>}
+     */
+    async addPluginData () {
+      let args = this.pluginData;
+      if (this.icon_file) {
+        let icon = await this.getIconUrl('plugin', this.icon_file);
+        if (icon) {
+          args.icon = icon;
+        }
+      }
+      console.log('args',args);
+      addPlugin(args).then((res) => {
+        if (parseInt(res.data.code) === 100000) {
+          this.$message({
+            message: '操作成功',
+            type: 'success'
+          });
+          this.dialogFormVisible = false;
+          this.$emit('operateSuccess');
+        }
+      }).catch((err) => {
+        this.$message({
+          message: '操作失败',
+          type: 'error'
+        });
+      });
+    },
+
+    /**
+     * 更新
+     * @returns {Promise<void>}
+     */
+    async updatePluginData() {
+      // 对比this.pluginData 和 this.chosenPluginData，把不同的值赋值给args
+      let args = {};
+      for (let key in this.pluginData) {
+        if (this.pluginData[key] !== this.chosenPluginData[key]) {
+          args[key] = this.pluginData[key];
+        }
+      }
+      if (this.icon_file) {
+        let icon = await this.getIconUrl('plugin', this.icon_file);
+        if (icon) {
+          args.icon = icon;
+        }
+      }
+      args.client_key = this.chosenPluginData.client_key;
+      updatePlugin(args).then((res) => {
+        if (parseInt(res.data.code) === 100000) {
+          this.$message({
+            message: '操作成功',
+            type: 'success'
+          });
+          this.dialogFormVisible = false;
+          this.$emit('operateSuccess');
+        }
+      }).catch((err) => {
+        this.$message({
+          message: '操作失败',
+          type: 'error'
+        });
+      });
+    },
     /**
      *
      * @param formName
      */
     submitForm(formName) {
-      this.$refs[formName].validate((valid) => {
+      this.$refs[formName].validate(async (valid) => {
         if (valid) {
-          let args = this.pluginData;
-          if (this.icon_file) {
-            args.icon = this.icon_file;
+          if (this.operationType === 'add') {
+            await this.addPluginData();
+          } else {
+            await this.updatePluginData();
           }
-          console.log(args);
-          addPlugin(args).then((res) => {
-            if (res.data.code === 10000) {
-              this.$message({
-                message: '操作成功',
-                type: 'success'
-              });
-              this.dialogFormVisible = false;
-              this.$emit('operateSuccess');
-            }
-          }).catch((err) => {
-            this.$message({
-              message: '操作失败',
-              type: 'error'
-            });
-          });
-          // 这里从前端数据中判断是新增还是编辑，然后发请求即可
         } else {
           console.log('error submit!!');
           return false;

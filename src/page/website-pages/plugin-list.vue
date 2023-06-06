@@ -35,10 +35,10 @@ export default {
   methods: {
     getPluginList() {
       pluginList().then(res => {
-        if (parseInt(res.data.code) === 10000) {
+        if (parseInt(res.data.code) === 100000) {
           let data = res.data.data;
           data.forEach(item => {
-            item.icon = 'https://kodepay-oss.oss-us-west-1.aliyuncs.com/' + item.icon;
+            item.icon = 'https://kodepay-cdn.oss-us-west-1.aliyuncs.com/' + item.icon;
           });
           this.pluginList = data;
         }

@@ -31,7 +31,7 @@
                   </el-table-column>
                   <el-table-column :label="$t('Status')">
                     <template slot-scope="scope">
-                      <span :style="'color:' + PAY_STATUS[scope.row.status].color">
+                      <span :style="{'color:': PAY_STATUS[scope.row.status].color}">
                         {{PAY_STATUS[scope.row.status].message}}
                       </span>
                     </template>

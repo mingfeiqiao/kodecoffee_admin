@@ -1,6 +1,6 @@
 <template>
   <el-container style="width: 100%;height: 100%">
-    <el-aside :width="this.isCollapse ? '64px' : '256px'" ref="sidebar">
+    <el-aside :width="isCollapse ? '64px' : '256px'" ref="sidebar">
       <el-menu :default-active="currentMenu" :collapse="isCollapse" router style="height: calc(100% - 10px); bottom: 0;"
                background-color="#001529"
                text-color="#FFF"
@@ -16,12 +16,10 @@
           <template v-if="menu.children">
             <el-submenu :index="menu.url">
               <template slot="title">
-                <div style="display: flex;align-items: center">
-                  <svg width="18" height="18" style="padding-right: 8px" fill="#fff">
-                    <use :xlink:href="'#' + menu.icon"></use>
-                  </svg>
-                  <span slot="title">{{$t(menu.title)}}</span>
-                </div>
+                <svg width="18" height="18" style="padding-right: 8px" fill="#fff">
+                  <use :xlink:href="'#' + menu.icon"></use>
+                </svg>
+                <span slot="title">{{$t(menu.title)}}</span>
               </template>
               <el-menu-item-group>
                 <template v-for="item of menu.children">
@@ -34,11 +32,12 @@
           </template>
           <template v-else>
             <el-menu-item :index="menu.url"  @click="handleMenuItemClick(menu.url)">
+              <svg width="18" height="18" style="padding-right: 8px" fill="#fff">
+                <use :xlink:href="'#' + menu.icon"></use>
+              </svg>
               <span slot="title">
-                  <svg width="18" height="18" style="padding-right: 8px" fill="#fff">
-                    <use :xlink:href="'#' + menu.icon"></use>
-                  </svg>
-                {{$t(menu.title)}}</span>
+                {{$t(menu.title)}}
+              </span>
             </el-menu-item>
           </template>
         </template>

@@ -6,13 +6,13 @@
       </div>
       <div style="display:flex;align-items: center;justify-content: center">
         <div style="display: flex">
-          <device-filter :data="paymentModes" @change="paymentModeChange" :device="args.type"></device-filter>
+          <device-filter :data="paymentModes" @change="paymentModeChange" :device="condition.type"></device-filter>
         </div>
         <div>
           <div class="input-container">
             <el-input
                 placeholder="请输入内容"
-                v-model="args.q">
+                v-model="condition.q">
               <i slot="suffix" class="el-input__icon el-icon-search" style="cursor: pointer" @click="search"></i>
             </el-input>
           </div>
@@ -24,7 +24,7 @@
         <el-table :data="tableData" style="width: 100%"
                   :header-cell-style="{'background-color': 'var(--header-cell-background-color)','color': 'var(--header-cell-color)','font-weight': 'var(--header-cell-font-weight)'}"
         >
-          <el-table-column prop="planId" label="Plan Id"  width="auto" >
+          <el-table-column prop="id" label="Plan Id"  width="auto" >
           </el-table-column>
           <el-table-column width="auto">
             <template slot="header" slot-scope="scope">
@@ -49,34 +49,57 @@
               <div>支付类型</div>
             </template>
             <template slot-scope="scope">
-              <div>
-                <div>
-                  {{scope.row.type}}
+              <div v-if="isAppPriceTypeExist(scope.row.app_price)">
+                <div v-if="scope.row.app_price[0].type === 'recurring'">
+                  <div>
+                    {{scope.row.app_price[0].type}}
+                  </div>
+                  <div>
+                    {{scope.row.app_price[0].interval_count + ' ' + scope.row.app_price[0].interval}}
+                  </div>
                 </div>
-                <div>
-                  {{scope.row.type}}
+                <div v-else-if="scope.row.app_price[0].type === 'one_time'">
+                  <span>一次性付款</span>
                 </div>
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="payPrice" width="auto" >
+          <el-table-column  width="auto" >
             <template slot="header" slot-scope="scope">
               <div>金额</div>
             </template>
             <template slot-scope="scope">
-              <div>
-                <div v-for="(price, index) in scope.row.price" :key="index">
-                  {{price.price + ' ' + price.currency}}
+              <div v-if="isPriceMultiTypeExist(scope.row.app_price)">
+                <div>
+                  {{scope.row.app_price[0].amount + ' ' + scope.row.app_price[0].currency}}
                 </div>
+
+                <el-popover
+                  placement="bottom"
+                  trigger="hover"
+                  width="60"
+                 >
+                  <div style="display: flex;align-items: center;flex-direction: column">
+                    <div v-for="(price, index) in scope.row.app_price[0].app_price_currency" :key="index">
+                      {{price.amount + ' ' + price.currency}}
+                    </div>
+                  </div>
+
+                  <div slot="reference">
+                    另外{{scope.row.app_price[0].app_price_currency.length}}个价格
+                  </div>
+                </el-popover>
+              </div>
+              <div v-else>
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="trialDays" width="auto" >
+          <el-table-column width="auto" >
             <template slot="header" slot-scope="scope">
               <div>试用</div>
             </template>
             <template slot-scope="scope">
-              <div>{{scope.row.trial_days + '天'}}</div>
+              <div v-if="scope.row.is_trial" >{{scope.row.trial_days + '天'}}</div>
             </template>
           </el-table-column>
           <el-table-column prop="operation" width="auto">
@@ -94,9 +117,9 @@
           background
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
-          :current-page.sync="args.page"
+          :current-page.sync="page"
           :page-sizes="[10,20]"
-          :page-size="args.page_size"
+          :page-size="page_size"
           layout="prev, pager, next"
           :total="total">
         </el-pagination>
@@ -118,12 +141,12 @@ import {planList} from "../../api/interface";
 export default {
   data() {
     return {
-      args: {
-        page: 1,
-        page_size: 10,
+      condition: {
         type: 1,
         q: "",
       },
+      page: 1,
+      page_size: 10,
       total: 0,
       tableData:[],
       paymentModes: [
@@ -140,6 +163,11 @@ export default {
           value: 3
         }
       ],
+      PAYMENT_REF: {
+        1 : 'search',
+        2 : 'recurring',
+        3 : 'one_time'
+      },
       chosenPlanData: {},
       dialogFormVisible: false,
       operationType: 'add'
@@ -148,24 +176,108 @@ export default {
   created() {
     console.log("created");
     this.getPlanList();
+    // this.testPlanList();
   },
   components: {
     deviceFilter,
     addPlanDialog
   },
   methods: {
+    testPlanList() {
+       this.tableData = [
+         {
+           "name": "kodepay-mfei",// 产品名称
+           "desc": "kodepay mfei",// 产品描述
+           "is_trial": true,// 是否试用
+           "id": 1, //产品ID
+           "application_id": 538,// 应用ID
+           "is_deleted": 0, // 是否删除
+           "updated_at": "2023-06-03T15:47:22",// 更新时间
+           "icon": null, // icon图标
+           "trial_days": 3,// 试用天数
+           "account_id": 29,// 帐号ID
+           "is_actived": 1,// 是否激活
+           "created_at": "2023-06-03T15:47:22",// 创建时间
+           "app_price": [ // 产品价格结构体
+             {
+               "currency": "usd",// 币种
+               "amount": 1.99,// 金额
+               "interval": "day",// 周期
+               "id": 1,// 价格ID
+               "application_id": 538,// 应用ID
+               "is_deleted": 0,// 是否删除
+               "updated_at": "2023-06-03T15:47:22",// 更新时间
+               "type": "recurring",// 周期
+               "product_id": 1,// 产品ID
+               "interval_count": 1,// 周期数量
+               "account_id": 29,// 帐号ID
+               "is_actived": 1,// 是否激活
+               "created_at": "2023-06-03T15:47:22",// 创建时间
+               "app_price_currency": [// 产品价格多币种结构体
+                 {
+                   "amount": 1.99, // 金额
+                   "price_id": 1,// 产品价格ID
+                   "account_id": 29,// 帐号ID
+                   "application_id": 538,// 应用ID
+                   "is_deleted": 0,// 是否删除
+                   "updated_at": "2023-06-03T15:47:22",// 更新时间
+                   "currency": "usd",// 币种
+                   "product_id": 1,// 产品ID
+                   "id": 1,// 价格多币种ID
+                   "is_actived": 1,// 是否激活
+                   "created_at": "2023-06-03T15:47:22"// 创建时间
+                 }
+               ]
+             }
+           ]
+         }
+       ];
+    },
     /**
      * 获取计划列表
      */
     getPlanList () {
-      let args = this.args;
+      let args = {
+        page: this.page,
+        page_size: this.page_size
+      };
+      let condition = {};
+      if (parseInt(this.condition.type) !== 1) {
+        condition.type = this.PAYMENT_REF[this.condition.type]
+      }
+      if (this.condition.q) {
+        condition.q = this.condition.q;
+      }
+      if (Object.keys(condition).length !== 0) {
+        args.condition = condition;
+      }
       let vm = this;
       planList(args).then(res => {
         if (parseInt(res.data.code )=== 100000) {
           vm.tableData = res.data.data;
-          vm.total = res.data.total;
+          // 将所有的icon前面都加上https://kodepay-cdn.oss-us-west-1.aliyuncs.com/
+          vm.tableData.forEach(item => {
+            if (item.icon) {
+              item.icon = 'https://kodepay-cdn.oss-us-west-1.aliyuncs.com/' + item.icon;
+            }
+          });
+          vm.total = res.data.totalCount;
         }
       })
+    },
+    /**
+     * 是否存在多币种
+     */
+    isPriceMultiTypeExist (price) {
+      return !!(price && price[0] && price[0].app_price_currency && price[0].app_price_currency.length > 0);
+    },
+    /**
+     *
+     * @param appPrice
+     * @returns {boolean}
+     */
+    isAppPriceTypeExist (appPrice) {
+      return !!(appPrice && appPrice[0] && appPrice[0].type);
     },
     /**
      * 操作成功
@@ -186,7 +298,7 @@ export default {
      * @param val
      */
     handleSizeChange(val) {
-      this.args.page_size = val;
+      this.page_size = val;
       this.getPlanList();
     },
     /**
@@ -194,7 +306,7 @@ export default {
      * @param value
      */
     paymentModeChange(value) {
-      this.args.type = value;
+      this.condition.type = value;
       this.getPlanList();
     },
     /**

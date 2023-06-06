@@ -12,7 +12,7 @@
 export default {
   data() {
     return {
-      imageUrl:'', // 本地预览图片的地址
+      imageUrl: null, // 本地预览图片的地址
       file: null, // 上传的文件对象
     };
   },
@@ -22,8 +22,6 @@ export default {
     }
   },
   mounted() {
-    this.imageUrl = this.icon_url;
-    console.log('un',this.imageUrl);
   },
   props: {
     iconUpSourceChange: {

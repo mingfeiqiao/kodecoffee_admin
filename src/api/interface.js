@@ -65,31 +65,31 @@ export const postUserInfo = data => {
   return instance.post('/account/login', formData);
 };
 export const loginOut = () => instance.post('/account/login-out');
-// plugin 相关
-export const addPlugin = data => {
+
+
+export const uploadFile = data => {
   const formData = new FormData();
   // 使用for循环，将对象中的每个属性都添加到formData中
   for (let key in data) {
     formData.append(key, data[key]);
   }
-  return instance.post('/plugin/add-plugin', formData);
+  return instance.post('/upload/upload-icon', formData);
 };
-// export const addPlan = data => {
-//   const formData = new FormData();
-//   // 使用for循环，将对象中的每个属性都添加到formData中
-//   for (let key in data) {
-//     formData.append(key, data[key]);
-//   }
-//   return instance.post('/product/save', formData);
-// };
+// plugin 相关
+export const addPlugin = data =>  instance.post('/plugin/add-plugin', data);
 
-export const addPlan = data => instance.post('/product/save', data);
+export const updatePlugin = data => instance.post('/plugin/update-plugin', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 
-export const updatePlugin = data => instance.post('/plugin/update-plugin', data);
 export const pluginList = () => instance.post('/plugin/plugin-list');
 // plan 相关
-export const planList = params => instance.get('/plan/list', {params});
-export const updatePlan = data => instance.post('/plan/update-plan', data);
+
+export const addPlan = data => instance.post('/product/save', data);
+export const planList = data => {
+  data = JSON.stringify(data);
+  return instance.post('/product/list', data, {headers: {'Content-Type' : 'application/json'}});
+}
+
+export const updatePlan = (id, data) => instance.post(`/product/save/${id}`, JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 // 订单相关
 export const orderList = () => instance.get('/order/order-list');
 export const orderDetail = id => instance.get(`/order/order-detail`);
