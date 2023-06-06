@@ -41,15 +41,15 @@
       "url": "settings",
       "children": [
         {
-          "title": "Balance Settings",
+          "title": "账户设置",
           "url": "/balance-settings"
         },
         {
-          "title": "Event Callback Settings",
+          "title": "事件回调设置",
           "url": "/event-callback-settings"
         },
         {
-          "title": "Payment Channel Settings",
+          "title": "支付渠道设置",
           "url": "/payment-channel-settings"
         }
       ]

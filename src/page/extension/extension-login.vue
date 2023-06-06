@@ -13,7 +13,6 @@
               <div @click="submitEmail" class="send-button">发送-></div>
             </div>
             <div>
-              {{ 'xx' + !isEmailValid}}
               <div v-if="!isEmailValid" style="color:red">
                 邮箱格式不正确，请重新输入
               </div>

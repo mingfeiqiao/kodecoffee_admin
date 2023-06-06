@@ -208,5 +208,19 @@
         "amount": 648
       }
     ]
+  },
+  {
+    "currency": "usd",
+    "amount": 9999,
+    "app_price_currency": [
+      {
+        "currency": "usd",
+        "amount": 9999
+      },
+      {
+        "currency": "cny",
+        "amount": 99999
+      }
+    ]
   }
 ]

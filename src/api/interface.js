@@ -109,7 +109,7 @@ export const getUserInfo = () => instance.get('/user/info');
 export const extensionCancelSubscription = (headers, data) => {
   headers['Content-Type'] = 'application/json';
   data = JSON.stringify(data);
-  return instance.post('/api/extension/cancel-subscription', data, {headers ,method: 'POST'});
+  return instance.post('/api/extension/cancel-order', data, {headers ,method: 'POST'});
 }
 export const extensionUserInfo = (headers, data) => {
   headers['Content-Type'] = 'application/json';
