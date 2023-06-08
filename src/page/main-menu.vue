@@ -43,7 +43,7 @@
         </template>
         <el-menu-item index="bottom" style="position: absolute; bottom: 0;" >
           <svg width="18" height="18" style="padding-right: 8px" fill="#fff">
-            <use xlink:href="'#dashboard-icon"></use>
+            <use xlink:href="#dashboard-icon"></use>
           </svg>
           <span slot="title">{{'xxxx'}}</span>
         </el-menu-item>
@@ -69,7 +69,7 @@
         </div>
       </div>
       <el-main v-if="isLoginIn" style="padding: 24px; background-color: #f0f0f0;">
-        <div style="height: 100%; overflow: auto;">
+        <div style="height: 100%; overflow: auto;" v-if="is_option_load">
           <div style="width: 100%; height: 100%; background-color: #ffffff;">
             <router-view></router-view>
           </div>
@@ -82,12 +82,15 @@
 import menuList from '../configs/menu.json'
 import headTop from "./components/head-top.vue";
 import breadCrumb from "./components/bread-crumb.vue";
+import {getOptions} from "../api/interface";
+import Vue from "vue";
 export default {
   data () {
     return {
       MENU: menuList.menu,
       isCollapse: false,
-      currentMenu: ''
+      currentMenu: '',
+      is_option_load: false,
     }
   },
   computed: {
@@ -123,6 +126,7 @@ export default {
   created() {
     this.isLoginIn =  !!localStorage.getItem(this.$mode + 'userInfo');
     console.log('是否：',this.isLoginIn)
+    this.initOptions();
   },
   methods: {
     collapseChange(collapse) {
@@ -140,6 +144,17 @@ export default {
     handleMenuItemClick(url) {
       this.currentMenu = url;
       console.log(url);
+    },
+    initOptions() {
+      let vm = this;
+      getOptions().then(res => {
+        return res.json();
+      }).then(res => {
+        Vue.prototype.OPTIONS = res;
+        vm.is_option_load = true;
+      }).catch(err => {
+        console.log(err);
+      })
     }
   },
   components: {

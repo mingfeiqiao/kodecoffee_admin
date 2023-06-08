@@ -1,0 +1,36 @@
+{
+  "SUBSCRIPTION_STATUS_OPTIONS": {
+    "active": {
+      "message": "生效中",
+      "color": "#08A81F"
+    },
+    "canceling": {
+      "message": "取消中",
+      "color": "#101010"
+    },
+    "canceled": {
+      "message": "已取消",
+      "color": "#101010"
+    },
+    "pastdue": {
+      "message": "已过期",
+      "color": "#E14040"
+    },
+    "invalid": {
+      "message": "已失效",
+      "color": "#101010"
+    }
+  },
+  "SUBSCRIPTION_STATUS_REF_OPTIONS":{
+    "created": "active",
+    "updated": "active",
+    "canceling": "canceling",
+    "canceled": "canceled",
+    "pastdue": "pastdue",
+    "invalid": "invalid"
+  },
+  "SUBSCRIPTION_TYPE_OPTIONS": {
+    "recurring": "recurring",
+    "one_time": "one_time"
+  }
+}

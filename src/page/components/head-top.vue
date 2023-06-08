@@ -28,7 +28,6 @@
 </template>
 <script>
 import userInfo from "./user-info.vue";
-
 export default {
   data () {
     return {

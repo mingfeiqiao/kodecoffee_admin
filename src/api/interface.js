@@ -29,10 +29,12 @@ instance.interceptors.response.use(
       // 如果用户token已经过期，那么我需要重定向到登录页面
       if (response.data.code === 401) { // 这里是token过期
         // 清空本地存储的token和cookie
+        // 清空cookie
+        document.cookie = '';
         localStorage.removeItem(Vue.prototype.$mode + 'applicationKey');
         localStorage.removeItem(Vue.prototype.$mode + 'userInfo')
         localStorage.removeItem(Vue.prototype.$mode + 'token');
-        // window.location.href = 'https://kodepay.io/user/login';
+        window.location.href = 'https://kodepay.io/user/login';
       }
       return response;
     },

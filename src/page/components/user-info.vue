@@ -16,6 +16,7 @@
 </template>
 <script>
 import {loginOut, postUserInfo, zbUserInfo} from "../../api/interface";
+
 export default {
   data () {
     return {
@@ -31,36 +32,38 @@ export default {
     } else {
       this.loginOrRegisterUser();
     }
-
   },
   methods: {
+    testData() {
+      return {
+        "code": 100000,
+        "message": "success",
+        "product_id": 70,
+        "product_mark": 70,
+        "userinfo": {
+          "user_id": 2843847,
+          "email": "ligoogel1918@gmail.com",
+          "username": "李谷歌",
+          "created_at": "2023-05-29 20:27:01",
+          "phone_number": ""
+        },
+        "payinfo": {
+          "is_subscribed": "0",
+          "plan_start": "",
+          "plan_end": "",
+          "plan_price": "",
+          "plan_name": "No Plan",
+          "plan_date": "No upcoming payments",
+          "is_recurly": "0",
+          "channel": "0",
+          "status": "0"
+        }
+      };
+    },
     async loginOrRegisterUser() {
       let res = await zbUserInfo();
       res = res.data;
-      // let res = {
-      //   "code": 100000,
-      //   "message": "success",
-      //   "product_id": 70,
-      //   "product_mark": 70,
-      //   "userinfo": {
-      //     "user_id": 2843847,
-      //     "email": "ligoogel1918@gmail.com",
-      //     "username": "李谷歌",
-      //     "created_at": "2023-05-29 20:27:01",
-      //     "phone_number": ""
-      //   },
-      //   "payinfo": {
-      //     "is_subscribed": "0",
-      //     "plan_start": "",
-      //     "plan_end": "",
-      //     "plan_price": "",
-      //     "plan_name": "No Plan",
-      //     "plan_date": "No upcoming payments",
-      //     "is_recurly": "0",
-      //     "channel": "0",
-      //     "status": "0"
-      //   }
-      // };
+      // let res = this.testData();
       if (parseInt(res.code) === 100000) {
         console.log(res);
         if (!res.userinfo) {
@@ -85,8 +88,8 @@ export default {
           console.log(err);
         });
       } else {
-        // this.$message.error('获取用户信息失败，请重新登录');
-        // window.location.href = 'https://kodepay.io/user/login'
+        this.$message.error('获取用户信息失败，请重新登录');
+        window.location.href = 'https://kodepay.io/user/login'
       }
     },
     webLoginOut() {
@@ -98,7 +101,7 @@ export default {
         localStorage.removeItem(this.MODECONFIG.SANDBOX.mode + 'applicationKey');
         localStorage.removeItem(this.MODECONFIG.SANDBOX.mode + 'userInfo');
         localStorage.removeItem(this.MODECONFIG.SANDBOX.mode + 'token');
-        this.$router.push('/login');
+        window.location.href = `${this.URL}/user/login`;
         // 最好把cookie 也清理了
       }).catch(err => {
         console.log(err)

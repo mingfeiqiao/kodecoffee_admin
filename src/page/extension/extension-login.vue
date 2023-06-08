@@ -24,7 +24,7 @@
           <div v-else>
             <div>
               <div>
-                已经向{{input}}邮箱发送一封验证邮件，请登录该邮箱并点击验证链接以激活登录，请登录邮箱并点击验证链接，即可登录
+                已经向{{input}}邮箱发送一封验证邮件，请登录该邮箱并点击验证链接以激活登录
               </div>
               <div style="color: #1090FF;cursor: pointer" @click="toSubscription()">
                 已经验证？前往订阅页面
