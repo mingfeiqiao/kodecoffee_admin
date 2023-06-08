@@ -57,6 +57,10 @@ instance.interceptors.request.use(
       return Promise.reject(error);
     }
 );
+
+export const getOptions = () => {
+  return fetch('https://kodepay-cdn.oss-us-west-1.aliyuncs.com/config/options.json');
+};
 export const zbUserInfo = () => {
   return instance.get('https://kodepay.io/user/v2/userinfo');
 };
@@ -65,7 +69,6 @@ export const postUserInfo = data => {
   return instance.post('/account/login', formData);
 };
 export const loginOut = () => instance.post('/account/login-out');
-
 
 export const uploadFile = data => {
   const formData = new FormData();

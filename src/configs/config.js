@@ -10,7 +10,7 @@ export default Object.freeze({
       mode: 'vendors',
       basePath:'/vendors',
       baseURL: `${URL}/vendors`,
-      apiURL: `${API_URL}/production/api`,
+      apiURL: `${API_URL}/production`,
     },
     SANDBOX: {
       mode: 'sandbox-vendors',

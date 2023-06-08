@@ -111,13 +111,12 @@
 <script>
 import imgUpload from "../components/img-upload.vue";
 import {addPlan, updatePlan, uploadFile} from "../../api/interface";
-import appPriceOptions from "../../options/app_price_options.json";
 
 export default {
   data() {
     return {
       is_multiple_currency_support: false,
-      app_price_options:appPriceOptions,
+      app_price_options:[],
       icon_file:null,
       currency_options: [],
       multiple_selection: [],// 选中的数据
@@ -153,6 +152,9 @@ export default {
   },
   components: {
     imgUpload
+  },
+  created() {
+    this.app_price_options = this.OPTIONS.app_price_options;
   },
   props: {
     operateSuccess: {

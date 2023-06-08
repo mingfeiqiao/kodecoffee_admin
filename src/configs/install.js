@@ -1,5 +1,4 @@
 const install = function (Vue) {
-  Vue.prototype.$mode = 'sandbox'; // 默认为沙盒模式
   let checkWebp = function () {
     try {
       return (
