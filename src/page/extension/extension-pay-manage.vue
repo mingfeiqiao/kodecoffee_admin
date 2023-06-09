@@ -1,5 +1,5 @@
 <template>
-  <div style="display: flex;align-items: center;justify-content: center;width: 100%;height: 100%">
+  <div style="display: flex;align-items: center;justify-content: center;width: 100%;">
     <main>
       <div class="container">
         <div style="padding-bottom: 24px">
@@ -24,7 +24,7 @@
               <div style="border: 1px solid rgba(232, 232, 232, 1);"></div>
               <div style="padding: 16px 0;" class="title-16">订阅信息</div>
               <div class="tab-container">
-                <el-table :data="subscription_list" style="width: 100%"
+                <el-table :data="subscription_list" style="width: 100%;" height="300"
                           :header-cell-style="{'background-color': 'var(--header-cell-background-color)','color': 'var(--header-cell-color)','font-weight': 'var(--header-cell-font-weight)'}"
                 >
                   <el-table-column prop="plan_name" :label="$t('Subscriptions')" min-width="80" max-width="120">
@@ -74,7 +74,7 @@
             <div style="border: 1px solid rgba(233, 233, 233, 1);border-radius: 4px;padding: 16px 24px;">
               <div style="padding: 16px 0;" class="title-16">订单记录</div>
               <div class="tab-container">
-                <el-table :data="order_list" style="width: 100%"
+                <el-table :data="order_list" style="width: 100%"  height="400"
                           :header-cell-style="{'background-color': 'var(--header-cell-background-color)','color': 'var(--header-cell-color)','font-weight': 'var(--header-cell-font-weight)'}"
                 >
                   <el-table-column prop="plan_name" label="产品" max-width="180" align="center" >
@@ -125,7 +125,7 @@ export default {
       SUBSCRIPTION_STATUS: {},
       SUBSCRIPTION_STATUS_REF:{},
       subscription_list:[],
-      activeName: '2',
+      activeName: '1',
       ORDER_STATUS: {},
       ORDER_STATUS_REF:{},
       ORDER_OPERATION_MAP:{
@@ -477,9 +477,5 @@ export default {
   min-height: 600px;
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.3);
   border-radius: 4px;
-}
-.tab-container {
-  max-width: 800px;
-  min-width: 500px;
 }
 </style>

@@ -8,7 +8,7 @@
         login out
       </div>
       <div slot="reference" style="display: flex;align-items: center;cursor: pointer">
-        <el-image style="width: 32px; height: 32px;border-radius: 50%;" :src="userInfo.icon" fit="fill"></el-image>
+        <el-image style="width: 32px; height: 32px;border-radius: 50%;" :src="userInfo.icon ? userInfo.icon : ''" fit="fill"></el-image>
         <div style="padding-left: 12px;width: 100px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;vertical-align: middle;">{{userInfo.email}}</div>
       </div>
     </el-popover>
