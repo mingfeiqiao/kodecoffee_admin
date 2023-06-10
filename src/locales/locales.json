@@ -12,7 +12,12 @@
 
     "Status": "Status",
     "subscription_expired_time": "Expired Time",
-    "Operation": "Operation"
+    "Operation": "Operation",
+
+
+    "planId": "Plan ID",
+    "planId ToolTip Content": "当前生效的订阅到期的日期，如果没有取消，则到期后会自动续订"
+
   },
   "zh-cn": {
     "Payment List": "付款列表",
@@ -27,6 +32,8 @@
 
     "Status": "状态",
     "subscription_expired_time": "到期时间",
-    "Operation": "操作"
+    "Operation": "操作",
+    "planId": "Plan ID",
+    "planId ToolTip Content": "当前生效的订阅到期的日期，如果没有取消，则到期后会自动续订"
   }
 }

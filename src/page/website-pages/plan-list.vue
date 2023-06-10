@@ -24,9 +24,18 @@
         <el-table :data="tableData" style="width: 100%"
                   :header-cell-style="{'background-color': 'var(--header-cell-background-color)','color': 'var(--header-cell-color)','font-weight': 'var(--header-cell-font-weight)'}"
         >
-          <el-table-column prop="id" label="Plan Id"  width="auto" >
+          <el-table-column prop="prod_code" label="Plan Id"  width="200">
+            <template slot="header" slot-scope="scope">
+              <div style="display: flex;align-items: center;">
+                <span>{{$t('planId')}}</span>
+                <span>
+                  <el-tooltip class="item" :content="$t('planId ToolTip Content')" effect="light" placement="top"><i class="el-icon-info" style="color: #c4c4c4"></i>
+                  </el-tooltip>
+                </span>
+              </div>
+            </template>
           </el-table-column>
-          <el-table-column width="auto">
+          <el-table-column max-width="200" width="120" min-width="120">
             <template slot="header" slot-scope="scope">
               <div>名称</div>
             </template>
@@ -44,7 +53,7 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="payMode" width="auto">
+          <el-table-column width="auto">
             <template slot="header" slot-scope="scope">
               <div>支付类型</div>
             </template>
@@ -64,7 +73,7 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column  width="auto" >
+          <el-table-column width="auto" >
             <template slot="header" slot-scope="scope">
               <div>金额</div>
             </template>
@@ -102,7 +111,7 @@
               <div v-if="scope.row.is_trial" >{{scope.row.trial_days + '天'}}</div>
             </template>
           </el-table-column>
-          <el-table-column prop="operation" width="auto">
+          <el-table-column prop="operation" width="80">
             <template slot="header" slot-scope="scope">
               <div style="text-align: center">操作</div>
             </template>

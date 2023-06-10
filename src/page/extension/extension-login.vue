@@ -1,13 +1,13 @@
 <template>
-  <div style="display: flex;align-items: center;justify-content: center;width: 100%;">
+  <div style="display: flex;align-items: center;justify-content: center;width: 100%;height: 100%">
     <main>
       <div class="container">
         <div style="padding-bottom: 24px">
-          <div class="title-28">登录</div>
+          <div class="title-28">账单管理</div>
         </div>
         <div style="border: 1px solid rgba(233, 233, 233, 1);border-radius: 4px;padding: 16px 24px;min-height: 300px;">
           <div v-if="!isSendEmail">
-            <div style="padding-bottom: 16px">请输入支付时填写的邮箱</div>
+            <div style="padding-bottom: 16px">请输入邮箱</div>
             <div style="display: flex;padding-bottom: 16px">
               <el-input v-model="input" placeholder="example@mail.com"></el-input>
               <div @click="submitEmail" class="send-button">发送-></div>

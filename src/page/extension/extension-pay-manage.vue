@@ -1,5 +1,5 @@
 <template>
-  <div style="display: flex;align-items: center;justify-content: center;width: 100%;">
+  <div style="display: flex;align-items: center;justify-content: center;width: 100%;height: 100%">
     <main>
       <div class="container">
         <div style="padding-bottom: 24px">
@@ -11,10 +11,6 @@
               <div>
                 <div style="padding-bottom: 16px" class="title-20">账号信息</div>
                 <div>
-                  <div style="display: flex;padding-bottom: 16px" class="title-14">
-                    <span>用户ID:</span>
-                    <span>{{user_info.user_id}}</span>
-                  </div>
                   <div style="display: flex;padding-bottom: 16px" class="title-14">
                     <span>邮箱:</span>
                     <span>{{user_info.email}}</span>
@@ -44,8 +40,8 @@
                         </span>
                         <span>
                           <el-tooltip class="item" content="当前生效的订阅到期的日期，如果没有取消，则到期后会自动续订" effect="light" placement="top">
-                          <i class="el-icon-info" style="color: #c4c4c4"></i>
-                        </el-tooltip>
+                            <i class="el-icon-info" style="color: #c4c4c4"></i>
+                          </el-tooltip>
                         </span>
                       </div>
                     </template>
