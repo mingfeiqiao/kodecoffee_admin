@@ -1,23 +1,23 @@
 {
   "SUBSCRIPTION_STATUS_OPTIONS": {
     "active": {
-      "message": "生效中",
+      "message": "Active",
       "color": "#08A81F"
     },
     "canceling": {
-      "message": "取消中",
+      "message": "Canceling",
       "color": "#101010"
     },
     "canceled": {
-      "message": "已取消",
+      "message": "Canceled",
       "color": "#101010"
     },
     "pastdue": {
-      "message": "已过期",
+      "message": "Past Due",
       "color": "#E14040"
     },
     "invalid": {
-      "message": "已失效",
+      "message": "Expired",
       "color": "#101010"
     }
   },

@@ -10,10 +10,11 @@
               </svg>
             </div>
             <div class="title-24">
-              {{'支付成功'}}
+              {{$t('pay success')}}
             </div>
             <div style="padding: 24px 0;" class="title-14">
-              支付成功，账单发送至填写的邮箱，请注意查收, 点击<span style="color: #1090FF;cursor: pointer" @click="openPayManagePage">个人中心</span>可查看并修改邮箱
+              {{$t('pay success tip')}}
+              <span style="color: #1090FF;cursor: pointer" @click="openPayManagePage">{{$t('click to billing')}}</span>
             </div>
           </div>
           <div v-else>
@@ -23,10 +24,7 @@
               </svg>
             </div>
             <div class="title-24">
-              {{'支付失败'}}
-            </div>
-            <div style="padding: 24px 0;color: #f78989" class="title-14">
-              {{errorMessage}}
+              {{$t('pay failed')}}
             </div>
           </div>
         </div>
@@ -43,7 +41,6 @@ export default {
     };
   },
   created() {
-    console.log(this.params);
     window.postMessage({
       type: 'pay',
       data: this.params

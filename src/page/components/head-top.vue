@@ -21,13 +21,19 @@
         </el-switch>
       </div>
     </div>
-    <div>
-      <user-info></user-info>
+    <div style="display: flex;align-items: center">
+      <div>
+        <language-change></language-change>
+      </div>
+     <div style="margin-left: 20px;">
+       <user-info></user-info>
+     </div>
     </div>
   </div>
 </template>
 <script>
 import userInfo from "./user-info.vue";
+import languageChange from "./language-change.vue";
 export default {
   data () {
     return {
@@ -35,7 +41,10 @@ export default {
       isCollapse: false
     }
   },
-  components: {userInfo},
+  components: {
+    userInfo,
+    languageChange
+  },
   props: {
     collapse: {
       type: Boolean,

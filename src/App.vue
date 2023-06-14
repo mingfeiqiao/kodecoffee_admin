@@ -6,12 +6,8 @@
 </template>
 <script>
 import NewIcon from "./page/components/new-icon.vue";
+
 export default {
-  data () {
-    return {
-      is_option_load: false
-    }
-  },
   components: {NewIcon},
 }
 </script>

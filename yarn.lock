@@ -4186,6 +4186,11 @@ globjoin@^0.1.4:
   resolved "https://registry.npmjs.org/globjoin/-/globjoin-0.1.4.tgz#2f4494ac8919e3767c5cbb691e9f463324285d43"
   integrity sha512-xYfnw62CKG8nLkZBfWbhWwDw02CHty86jfPcc2cr3ZfeuK9ysoVPPEUxf21bAD/rWAgk52SuBrLJlefNy8mvFg==
 
+goeasy@^2.6.6:
+  version "2.6.6"
+  resolved "https://registry.npmjs.org/goeasy/-/goeasy-2.6.6.tgz#d850bac81a28985b84f04fae46eda776800a7116"
+  integrity sha512-aMvcc43ANMnaRn9C+JJKSmqVtLriBQx+y3VJUKvCBDEsfuEnwFMGa9chzvw/zYJcTSopzv89074QlLa4czsXSg==
+
 gonzales-pe@^4.3.0:
   version "4.3.0"
   resolved "https://registry.npmjs.org/gonzales-pe/-/gonzales-pe-4.3.0.tgz#fe9dec5f3c557eead09ff868c65826be54d067b3"

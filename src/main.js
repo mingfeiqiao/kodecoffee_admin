@@ -7,6 +7,7 @@ import messages from './locales/locales.json';
 import router from './router';
 import store from './vuex/store';
 import config from './configs/config';
+import GoEasy from 'goeasy';
 Vue.prototype.URL = config.URL;
 Vue.prototype.API_URL = config.API_URL;
 Vue.prototype.MODECONFIG = config.MODECONFIG;

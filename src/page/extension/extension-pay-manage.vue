@@ -3,32 +3,32 @@
     <main>
       <div class="container">
         <div style="padding-bottom: 24px">
-          <div class="title-28">账单管理</div>
+          <div class="title-28">{{$t('billing management')}}</div>
         </div>
         <el-tabs v-model="activeName" @tab-click="handleClick">
-          <el-tab-pane label="订阅信息" name="1">
+          <el-tab-pane :label="$t('subscriptions info')" name="1">
             <div style="border: 1px solid rgba(233, 233, 233, 1);border-radius: 4px;padding: 16px 24px;">
               <div>
-                <div style="padding-bottom: 16px" class="title-20">账号信息</div>
+                <div style="padding-bottom: 16px" class="title-20">{{$t('account info')}}</div>
                 <div>
                   <div style="display: flex;padding-bottom: 16px" class="title-14">
-                    <span>邮箱:</span>
+                    <span>{{$t('email:')}}</span>
                     <span>{{user_info.email}}</span>
                   </div>
                 </div>
               </div>
               <div style="border: 1px solid rgba(232, 232, 232, 1);"></div>
-              <div style="padding: 16px 0;" class="title-16">订阅信息</div>
+              <div style="padding: 16px 0;" class="title-16">{{$t('subscriptions info')}}</div>
               <div class="tab-container">
                 <el-table :data="subscription_list" style="width: 100%;" height="300"
                           :header-cell-style="{'background-color': 'var(--header-cell-background-color)','color': 'var(--header-cell-color)','font-weight': 'var(--header-cell-font-weight)'}"
                 >
-                  <el-table-column prop="plan_name" :label="$t('Subscriptions')" min-width="80" max-width="120">
+                  <el-table-column prop="plan_name" :label="$t('subscriptions')" min-width="80" max-width="120">
                   </el-table-column>
-                  <el-table-column :label="$t('Status')" align="center">
+                  <el-table-column :label="$t('status')" align="center">
                     <template slot-scope="scope">
                       <span :style="{'color': scope.row.color}">
-                        {{ scope.row.subscription_status_message }}
+                        {{ $t(scope.row.subscription_status_message) }}
                       </span>
                     </template>
                   </el-table-column>
@@ -36,10 +36,10 @@
                     <template slot="header" slot-scope="scope">
                       <div style="display: flex;align-items: center;justify-content: center;">
                         <span>
-                        {{$t('subscription_expired_time')}}
+                        {{$t('subscription expired time')}}
                         </span>
                         <span>
-                          <el-tooltip class="item" content="当前生效的订阅到期的日期，如果没有取消，则到期后会自动续订" effect="light" placement="top">
+                          <el-tooltip class="item" :content="$t('subscription expired tip')" effect="light" placement="top">
                             <i class="el-icon-info" style="color: #c4c4c4"></i>
                           </el-tooltip>
                         </span>
@@ -58,7 +58,7 @@
                       <span :style="{'color': scope.row.operation ? scope.row.operation.color : '#101010', 'cursor': 'pointer'}"
                             @click="scope.row.operation ? scope.row.operation.function(scope.row) : ''"
                       >
-                         {{ scope.row.operation ? scope.row.operation.message : '' }}
+                         {{ scope.row.operation ? $t(scope.row.operation.message) : '' }}
                       </span>
                     </template>
                   </el-table-column>
@@ -66,29 +66,29 @@
               </div>
             </div>
           </el-tab-pane>
-          <el-tab-pane label="订单记录" name="2">
+          <el-tab-pane :label="$t('orders record')" name="2">
             <div style="border: 1px solid rgba(233, 233, 233, 1);border-radius: 4px;padding: 16px 24px;">
-              <div style="padding: 16px 0;" class="title-16">订单记录</div>
+              <div style="padding: 16px 0;" class="title-16">{{$t('orders record')}}</div>
               <div class="tab-container">
                 <el-table :data="order_list" style="width: 100%"  height="400"
                           :header-cell-style="{'background-color': 'var(--header-cell-background-color)','color': 'var(--header-cell-color)','font-weight': 'var(--header-cell-font-weight)'}"
                 >
-                  <el-table-column prop="plan_name" label="产品" max-width="180" align="center" >
+                  <el-table-column prop="plan_name" :label="$t('product')" max-width="160" align="center" >
                   </el-table-column>
-                  <el-table-column prop="order_status" label="状态"  width="140"  align="center">
+                  <el-table-column prop="order_status" :label="$t('status')"  width="100"  align="center">
                     <template slot-scope="scope">
                       <span :style="{'color': scope.row.order_status_color}">
-                        {{ scope.row.order_status_message}}
+                        {{ $t(scope.row.order_status_message)}}
                       </span>
                     </template>
                   </el-table-column>
-                  <el-table-column label="交易时间" prop="created_time" align="center">
+                  <el-table-column :label="$t('create time')" prop="created_time" align="center">
                   </el-table-column>
-                  <el-table-column label="收据" align="center" width="80">
+                  <el-table-column :label="$t('receipt')" align="center" width="100">
                     <template slot-scope="scope">
                       <span v-if="scope.row.order_operation" :style="{'color': scope.row.order_operation.color, 'cursor':'pointer'}"
                             @click="scope.row.order_operation.function(scope.row.invoice_pdf_url)">
-                        {{scope.row.order_operation.message}}
+                        {{$t(scope.row.order_operation.message)}}
                       </span>
                     </template>
                   </el-table-column>
@@ -98,6 +98,9 @@
           </el-tab-pane>
         </el-tabs>
       </div>
+      <div>
+        <language-change></language-change>
+      </div>
     </main>
   </div>
 </template>
@@ -105,7 +108,9 @@
 import {extensionUserInfo, extensionCancelSubscription} from "../../api/interface";
 import SUBSCRIPTION_OPTIONS from '../../options/subscription_options.json'
 import ORDER_OPTIONS from '../../options/order_options.json'
+import languageChange from "../components/language-change.vue";
 export default {
+  components: {languageChange},
   data() {
     return {
       user_info: {},
@@ -113,7 +118,7 @@ export default {
       SUBSCRIPTION_TYPE_OPTIONS: {},
       SUBSCRIPTION_OPERATION_MAP: {
         active: {
-          message: '取消',
+          message: 'cancel',
           color: '#1980ff',
           function: this.cancelSubscription
         }
@@ -126,17 +131,17 @@ export default {
       ORDER_STATUS_REF:{},
       ORDER_OPERATION_MAP:{
         succeed: {
-          message: '查看',
+          message: 'download',
           color: '#1980ff',
           function: this.openBillUrl
         },
         refunded: {
-          message: '查看',
+          message: 'download',
           color: '#1980ff',
           function: this.openBillUrl
         },
         disputed: {
-          message: '查看',
+          message: 'download',
           color: '#1980ff',
           function: this.openBillUrl
         }
@@ -341,9 +346,19 @@ export default {
           vm.user_info = resData.userinfo;
           vm.subscription_list = vm.formatSubscriptionListFromRes(resData.payinfo);
           vm.order_list = vm.formatOrderListFromRes(resData.invoice_list);
+        } else {
+          vm.$router.push({
+            path: "/extension/login",
+            query: vm.$route.query
+          });
         }
       });
     },
+    /**
+     *
+     * @param order_list
+     * @returns {*|*[]}
+     */
     formatOrderListFromRes(order_list) {
       if (!order_list) {
         return [];

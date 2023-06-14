@@ -1,23 +1,23 @@
 {
   "ORDER_STATUS_OPTIONS":{
     "un_completed": {
-      "message": "支付未完成",
+      "message": "unCompleted",
       "color": "#E14040"
     },
     "succeed": {
-      "message": "支付成功",
+      "message": "Succeed",
       "color": "#08A81F"
     },
     "failed": {
-      "message": "支付失败",
+      "message": "Failed",
       "color": "#E14040"
     },
     "refunded": {
-      "message": "已退款",
+      "message": "Refunded",
       "color": "#101010"
     },
     "disputed": {
-      "message": "有争议",
+      "message": "Disputed",
       "color": "#E14040"
     }
   },

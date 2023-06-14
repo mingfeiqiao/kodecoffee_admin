@@ -3,37 +3,122 @@
     "Dashboard": "Dashboard",
     "Payment List": "Payment List",
     "All Orders": "All Orders",
-    "Subscriptions": "Subscriptions",
+    "subscriptions": "Subscriptions",
     "User List": "User List",
     "Plugin List": "Plugin List",
     "Product List": "Product List",
     "Settings": "Settings",
     "Home": "Home",
 
-    "Status": "Status",
-    "subscription_expired_time": "Expired Time",
-    "Operation": "Operation",
+
 
 
     "planId": "Plan ID",
-    "planId ToolTip Content": "当前生效的订阅到期的日期，如果没有取消，则到期后会自动续订"
 
+
+
+    "billing management": "Billing Management",
+    "付款列表": "付款列表",
+    "please input email": "Email",
+    "send login": "Send ->",
+    "email format error": "email format errorE-mail format is not correct, please re-enter",
+    "send email to login": "We will send a verification email to this address, please log in to this email address and click Verify to activate.",
+    "email sent": "A verification email has been sent to {input},\nPlease log in to your email and click Verify to activate. \nValid for 5 minutes",
+    "email verified": "Successfully verified, click to the billing management page",
+    "mail not received": "Didn't receive the email? Please check your email trash or promotional mail folder",
+    "resend": "Resend",
+    "change email": "Change Email",
+
+
+    "pay failed": "Failed",
+    "pay success tip": "The receipt  has been sent to the email address filled in.\nYou can use this email address to verify your identity later,",
+    "click to billing": "Click to the Billing Management page",
+
+
+    "subscriptions info": "Subscriptions",
+    "account info": "Account",
+    "email:": "Email:",
+    "subscription expired time": "Expire date",
+    "Operation": "Operation",
+    "subscription expired tip": "The date on which the currently active subscription expires and will automatically renew upon expiration if not cancelled",
+    "orders record": "Orders",
+    "product": "product",
+    "status": "Status",
+    "create time": "Create time",
+    "receipt": "Receipt",
+
+    "Active": "Active",
+    "Expired": "Expired",
+    "Canceled": "Canceled",
+    "Canceling": "Canceling",
+    "Past Due": "Past Due",
+
+    "cancel": "cancel",
+    "download": "download",
+
+    "unCompleted": "unCompleted",
+    "Succeed": "Succeed",
+    "Failed": "Failed",
+    "Refunded": "Refunded",
+    "Disputed": "Disputed"
   },
   "zh-cn": {
     "Payment List": "付款列表",
     "Dashboard": "仪表盘",
     "All Orders": "全部订单",
-    "Subscriptions": "订阅",
     "User List": "用户列表",
     "Plugin List": "插件列表",
     "Product List": "产品列表",
     "Settings": "设置",
     "Home": "首页",
-
-    "Status": "状态",
     "subscription_expired_time": "到期时间",
     "Operation": "操作",
     "planId": "Plan ID",
-    "planId ToolTip Content": "当前生效的订阅到期的日期，如果没有取消，则到期后会自动续订"
+
+
+
+    "付款列表": "付款列表",
+    "please input email": "请输入邮箱",
+    "send login": "发送->",
+    "email format error": "邮箱格式不正确，请重新输入",
+    "send email to login": "我们会向该邮箱发送一封验证邮件，请登录该邮箱并点击验证链接以激活登录",
+    "email sent": "已经向{input}邮箱发送一封验证邮件，请登录该邮箱并点击验证链接以激活登录",
+    "email verified": "已成功验证？前往账单管理页面",
+    "mail not received": "未收到邮件？请检查邮件垃圾箱或推广邮件文件夹。",
+    "resend": "重新发送",
+    "change email": "更换邮箱",
+
+    "pay success": "支付成功",
+    "pay failed": "支付失败",
+    "pay success tip": "账单发送至填写的邮箱，请注意查收。\n后续可通过该邮箱来验证身份， ",
+    "click to billing": "点击前往账单管理页面",
+
+    "billing management": "账单管理",
+    "subscriptions info": "订阅信息",
+    "account info": "账号信息",
+    "subscriptions": "订阅",
+    "email:": "邮箱:",
+    "subscription expired tip": "当前生效的订阅到期的日期，如果没有取消，则到期后会自动续订",
+    "orders record": "订单记录",
+    "product": "商品",
+    "status": "状态",
+    "subscription expired time": "到期时间",
+    "create time": "创建时间",
+    "receipt": "收据",
+
+    "Active": "生效中",
+    "Expired": "已过期",
+    "Canceled": "已取消",
+    "Canceling": "取消中",
+    "Past Due": "已过期",
+
+    "cancel": "取消",
+    "download": "下载",
+
+    "unCompleted": "未完成",
+    "Succeed": "成功",
+    "Failed": "失败",
+    "Refunded": "已退款",
+    "Disputed": "有争议"
   }
 }
