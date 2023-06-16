@@ -70,7 +70,7 @@
       </div>
       <el-main v-if="isLoginIn" style="padding: 24px; background-color: #f0f0f0;">
         <div style="height: 100%; overflow: auto;" v-if="is_option_load">
-          <div style="width: 100%; height: 100%; background-color: #ffffff;">
+          <div style="background-color: #ffffff;">
             <router-view></router-view>
           </div>
         </div>

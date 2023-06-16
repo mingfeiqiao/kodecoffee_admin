@@ -1,63 +1,88 @@
 <template>
   <div>
-    <el-tabs v-model="activeOrderType" @tab-click="handleClick">
-      <el-tab-pane v-for="(option, index) in orderTypeOption" :key="index" :label="option.label" :name="option.value">
+    <el-tabs v-model="active_order_type" @tab-click="handleClick" style="padding: 16px 24px">
+      <el-tab-pane v-for="(option, index) in order_option" :key="index" :label="$t(option.label)" :name="option.value">
         <div>
           <div>
-            <div style="display: flex">
-              <div style="display: flex;align-items: center">
-                <div>用户邮箱:</div><div><el-input size="mini" placeholder="请输入" v-model="filter.email"></el-input></div>
+            <div style="display: flex;margin:9px 0 24px 0">
+              <div class="order-btn">
+                <div style="padding-right: 12px">
+                  {{$t('Email') + ":"}}
+                </div>
+                <div>
+                  <el-input size="mini" :placeholder="$t('input placeholder')" v-model="condition.q"></el-input>
+                </div>
               </div>
-              <div style="display: flex;align-items: center">
-                <div>状态:</div><div>
-                <el-select size="mini" v-model="filter.status" placeholder="请选择">
+              <div class="order-btn" v-if="active_order_type === 'all order'">
+                <div style="padding-right: 12px">{{$t('status') + ":"}}</div><div>
+                <el-select size="mini" v-model="condition.pay_status" :placeholder="$t('select placeholder')">
                   <el-option
-                      v-for="item in options"
+                      v-for="item in order_status_options"
                       :key="item.value"
-                      :label="item.label"
+                      :label="$t(item.label)"
                       :value="item.value">
                   </el-option>
                 </el-select>
               </div>
               </div>
-              <div style="display: flex;align-items: center">
-                <div>类型:</div><div>
-                <el-select size="mini" v-model="filter.type" placeholder="请选择">
+              <div class="order-btn">
+                <div style="padding-right: 12px">{{$t('Type') + ':'}}</div><div>
+                <el-select size="mini" v-model="condition.plan_type" :placeholder="$t('select placeholder')">
                   <el-option
-                      v-for="item in options"
+                      v-for="item in order_type_options"
                       :key="item.value"
-                      :label="item.label"
+                      :label="$t(item.label)"
                       :value="item.value">
                   </el-option>
                 </el-select></div>
               </div>
-            </div>
-            <div>
-              <div style="display: flex;align-items: center">
-                <el-button type="primary" size="small">查询</el-button>
-                <el-button size="small">重置</el-button>
+              <div class="order-btn">
+                <el-button type="primary" size="mini" @click="search">{{$t('Search')}}</el-button>
+                <el-button size="mini" @click="reset">{{$t('Reset')}}</el-button>
               </div>
             </div>
           </div>
-          <div>
-            <el-table :data="tableData" style="width: 100%"
+          <div style="display: flex;align-items: center;flex-direction: column">
+            <el-table v-loading="table_loading" :data="table_data" style="width: 100%"
+                      :empty-text="$t('no data')"
+                      @row-click="handleRowClick"
                       :header-cell-style="{'background-color': 'var(--header-cell-background-color)','color': 'var(--header-cell-color)','font-weight': 'var(--header-cell-font-weight)'}"
             >
-              <el-table-column prop="planName" label="产品"  width="auto">
+              <el-table-column prop="prod_name" :label="$t('Plan')"  width="auto">
               </el-table-column>
-              <el-table-column prop="price" label="金额" width="auto" >
+              <el-table-column prop="order_amount" :label="$t('Amount')" width="auto" >
               </el-table-column>
-              <el-table-column prop="payMode" width="auto" label="类型">
+              <el-table-column prop="plan_type" width="auto" :label="$t('Type')">
+                <template slot-scope="scope" >
+                  <span v-if="scope.row.plan_type_obj">
+                    {{$t(scope.row.plan_type_obj)}}
+                  </span>
+                </template>
               </el-table-column>
-              <el-table-column width="auto" prop="subscriptType" label="订阅类型">
+              <el-table-column width="auto"  :label="$t('status')" >
+                <template slot-scope="scope" >
+                  <span v-if="scope.row.order_status_obj" :style="{'color': scope.row.order_status_obj.color}">
+                    {{ $t(scope.row.order_status_obj.message)}}
+                  </span>
+                </template>
               </el-table-column>
-              <el-table-column width="auto" prop="subscriptionStatus" label="状态">
+              <el-table-column :label="$t('create time')" prop="created_time" width="auto" >
               </el-table-column>
-              <el-table-column prop="subscriptionTime" width="auto" label="时间">
-              </el-table-column>
-              <el-table-column prop="email" width="auto" label="用户">
+              <el-table-column prop="email" width="auto" :label="$t('Email')">
               </el-table-column>
             </el-table>
+            <div style="padding-top:12px;display: flex;align-items: center;justify-content: center;">
+              <el-pagination
+                background
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+                :current-page.sync="page"
+                :page-sizes="[10,20]"
+                :page-size="page_size"
+                layout="prev, pager, next"
+                :total="total">
+              </el-pagination>
+            </div>
           </div>
         </div>
       </el-tab-pane>
@@ -66,62 +91,179 @@
 </template>
 
 <script>
+import SUBSCRIPTION_OPTIONS from "../../options/subscription_options.json";
+import ORDER_OPTIONS from "../../options/order_options.json";
+import {timestampToDateString} from "../../utils/dateUtils";
+import {orderList} from "../../api/interface";
+
 export default {
   data() {
     return {
-      activeOrderType: 'all order',
-      orderTypeOption:[
+      SUBSCRIPTION_TYPE_OPTIONS : SUBSCRIPTION_OPTIONS.SUBSCRIPTION_TYPE_OPTIONS,
+      ORDER_STATUS : ORDER_OPTIONS.ORDER_STATUS_OPTIONS,
+      ORDER_STATUS_REF : ORDER_OPTIONS.ORDER_STATUS_REF_OPTIONS,
+      active_order_type: 'all order',
+      page: 1,
+      page_size: 10,
+      total: 0,
+      condition: {},
+      order:{
+        created_time:"desc"
+      },
+      order_option:[
         {
-          label: '全部订单',
+          label: 'All Orders',
           value: 'all order'
         },
         {
-          label: '争议订单',
-          value: 'dispute order'
+          label: 'Disputes',
+          value: 'disputed'
         }
       ],
-      options: [{
-        value: '选项1',
-        label: '黄金糕'
-      }, {
-        value: '选项2',
-        label: '双皮奶'
-      }, {
-        value: '选项3',
-        label: '蚵仔煎'
-      }, {
-        value: '选项4',
-        label: '龙须面'
-      }, {
-        value: '选项5',
-        label: '北京烤鸭'
-      }],
-      filter: {
-        email: '',
-        status: '',
-        type: ''
-      },
-      tableData:[
+      order_type_options:[
         {
-          planName: 'plan1',
-          planId: '1',
-          price: 'US $ 100',
-          payMode: 1,
-          subscriptType: 1,
-          subscriptionStatus: 1,
-          subscriptionTime: '2020-01-01 00:00:00',
-          email:'ligoog@gmail.com',
+          label: "one_time",
+          value: "one_time"
+        },
+        {
+          label: "recurring",
+          value: "recurring"
         }
-      ]
+      ],
+      order_status_options:[
+        {
+          label: 'unCompleted',
+          value: 'un_completed'
+        },
+        {
+          label: 'Succeed',
+          value: 'succeed'
+        },
+        {
+          label: 'Failed',
+          value: 'failed'
+        },
+        {
+          label: 'Refunded',
+          value: 'refunded'
+        },
+        {
+          label: 'Disputed',
+          value: 'disputed'
+        }
+      ],
+      table_data:[],
+      table_loading:false,
     };
   },
+  created() {
+    this.table_data = this.getTableData();
+    console.log(this.table_data);
+    // this.getTestData();
+  },
   methods: {
-    handleClick(tab, event) {
-      console.log(tab, event);
-    }
+    /**
+     * tab切换
+     */
+    handleClick() {
+      console.log(this.active_order_type)
+      this.condition = {};
+      if (this.active_order_type === 'disputed') {
+        this.condition = {order_status: 'disputed'};
+      }
+      this.getTableData();
+    },
+    /**
+     * 改变每页显示条数
+     */
+    reset() {
+      this.condition = {};
+      this.getTableData();
+    },
+    /**
+     * 搜索
+     */
+    search() {
+      this.getTableData();
+    },
+    getTestData () {
+      this.table_data = this.formatTableData(orderListData.data);
+    },
+    handleRowClick(row) {
+      // // 跳转到详情页面
+      this.$router.push({path: `/pay-all-order/detail/${row.id}`});
+    },
+    /**
+     * 获取表格数据
+     * @returns {*}
+     */
+    getTableData () {
+      let args = {
+        'page': this.page,
+        'page_size': this.page_size,
+        'condition': this.condition,
+        'order':this.order
+      };
+      let vm = this;
+      vm.table_loading = true;
+      this.table_data = [];
+      orderList(args).then(res => {
+        vm.table_loading = false;
+        if (!res.data) {
+          return;
+        }
+        if (parseInt(res.data.code) === 100000) {
+          vm.table_data = vm.formatTableData(res.data.data);
+          vm.total = res.data.totalCount;
+        }
+      }).catch(err => {
+        vm.table_loading = false;
+        console.log(err);
+      });
+    },
+    /**
+     * 格式化表格数据
+     * @param data
+     * @returns {*}
+     */
+    formatTableData (data) {
+      data.forEach(item => {
+        if (item.created_time) {
+          item.created_time = timestampToDateString(item.created_time, 'yyyy-MM-dd HH:II:SS');
+        }
+        if (item.currency && item.pay_amount) {
+          item.order_amount = item.currency + ' ' + item.pay_amount;
+        }
+        if (item.plan_type) {
+          item.plan_type_obj = this.SUBSCRIPTION_TYPE_OPTIONS[item.plan_type];
+        }
+        if (this.ORDER_STATUS_REF[item.pay_status]) {
+          item.order_status_obj = this.ORDER_STATUS[this.ORDER_STATUS_REF[item.pay_status]];
+        }
+        return item;
+      });
+      return data;
+    },
+    /**
+     * 分页
+     */
+    handleSizeChange() {
+      this.getTableData();
+    },
+    /**
+     * 分页
+     */
+    handleCurrentChange() {
+      console.log(this.page);
+      this.getTableData();
+    },
   },
 };
 </script>
 <style scoped lang="less">
-
+.order-btn {
+  display: flex;
+  align-items: center;
+  margin-right: 24px;
+}
 </style>

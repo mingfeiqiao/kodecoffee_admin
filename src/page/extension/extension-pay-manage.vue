@@ -21,6 +21,7 @@
               <div style="padding: 16px 0;" class="title-16">{{$t('subscriptions info')}}</div>
               <div class="tab-container">
                 <el-table :data="subscription_list" style="width: 100%;" height="300"
+                          :empty-text="$t('no data')"
                           :header-cell-style="{'background-color': 'var(--header-cell-background-color)','color': 'var(--header-cell-color)','font-weight': 'var(--header-cell-font-weight)'}"
                 >
                   <el-table-column prop="plan_name" :label="$t('subscriptions')" min-width="80" max-width="120">
@@ -71,9 +72,10 @@
               <div style="padding: 16px 0;" class="title-16">{{$t('orders record')}}</div>
               <div class="tab-container">
                 <el-table :data="order_list" style="width: 100%"  height="400"
+                          :empty-text="$t('no data')"
                           :header-cell-style="{'background-color': 'var(--header-cell-background-color)','color': 'var(--header-cell-color)','font-weight': 'var(--header-cell-font-weight)'}"
                 >
-                  <el-table-column prop="plan_name" :label="$t('product')" max-width="160" align="center" >
+                  <el-table-column prop="plan_name" :label="$t('sell plan')" max-width="160" align="center" >
                   </el-table-column>
                   <el-table-column prop="order_status" :label="$t('status')"  width="100"  align="center">
                     <template slot-scope="scope">

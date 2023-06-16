@@ -1,13 +1,13 @@
 
 // 转换成三位一个逗号格式
-Vue.prototype.getFData1000 = (source, length = 3) => {
+export const getFData1000 = function (source, length = 3) {
   source = String(source).split('.');
   source[0] = source[0].replace(new RegExp('(\\d)(?=(\\d{' + length + '})+$)', 'ig'), '$1,');
   return source.join('.');
 };
 
 //数字转换成K，M格式
-Vue.prototype.nFormatter = (num, digits) => {
+export const nFormatter = (num, digits) => {
   let isFu = num < 0;
   num = Math.abs(num);
 
@@ -32,7 +32,7 @@ Vue.prototype.nFormatter = (num, digits) => {
   return ret;
 };
 // 将文件大小B转换为KB,MB,GB这种格式
-Vue.prototype.fileSizeFormat = (file_size) => {
+export const fileSizeFormat = (file_size) => {
   let size = '';
   if(file_size < 0.1 * 1024) {                            //小于0.1KB，则转化成B
     size = file_size.toFixed(2) + 'B';

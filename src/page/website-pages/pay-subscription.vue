@@ -1,21 +1,40 @@
 <template>
-  <div>
-    <el-tabs v-model="activeOrderType" @tab-click="handleClick">
-      <el-tab-pane v-for="(option, index) in subscriptionOption" :key="index" :label="option.label" :name="option.value">
+  <div style="padding: 16px 24px">
+    <el-tabs v-model="active_subscription_type" @tab-click="handleClick">
+      <el-tab-pane v-for="(option, index) in subscription_option" :key="index" :label="$t(option.label)" :name="option.value">
         <div>
-          <el-table :data="tableData" style="width: 100%" @row-click="openSubscriptionDetail"
+          <el-table :data="table_data" style="width: 100%" @row-click="openSubscriptionDetail"
+                    :empty-text="$t('no data')"
+                    v-loading="table_loading"
                     :header-cell-style="{'background-color': 'var(--header-cell-background-color)','color': 'var(--header-cell-color)','font-weight': 'var(--header-cell-font-weight)'}"          >
-            <el-table-column prop="email" label="用户"  width="auto">
+            <el-table-column prop="email" :label="$t('Email')"  width="auto">
             </el-table-column>
-            <el-table-column prop="planName" label="产品" width="auto" >
+            <el-table-column prop="prod_name" :label="$t('sell plan')" width="auto" >
             </el-table-column>
-            <el-table-column prop="payStatus" width="auto" label="状态">
+            <el-table-column width="auto" :label="$t('status')">
+              <template slot-scope="scope">
+                <span v-if="scope.row.subscription_status_obj" :style="{'color': scope.row.subscription_status_obj.color}">
+                  {{ $t(scope.row.subscription_status_obj.message) }}
+                </span>
+              </template>
             </el-table-column>
-            <el-table-column width="auto" prop="nextPayTime" label="下次支付">
+            <el-table-column width="auto" prop="plan_end_time" :label="$t('next invoice')">
             </el-table-column>
-            <el-table-column prop="createTime" width="auto" label="创建时间">
+            <el-table-column prop="created_time" width="auto" :label="$t('create time')">
             </el-table-column>
           </el-table>
+          <div style="padding-top:12px;display: flex;align-items: center;justify-content: center;">
+            <el-pagination
+              background
+              @size-change="handleSizeChange"
+              @current-change="handleCurrentChange"
+              :current-page.sync="page"
+              :page-sizes="[10,20]"
+              :page-size="page_size"
+              layout="prev, pager, next"
+              :total="total">
+            </el-pagination>
+          </div>
         </div>
       </el-tab-pane>
     </el-tabs>
@@ -23,44 +42,121 @@
 </template>
 
 <script>
+import {timestampToDateString} from "../../utils/dateUtils";
+import SUBSCRIPTION_OPTIONS from "../../options/subscription_options.json";
+import {subscriptionList} from "../../api/interface";
 export default {
   data() {
     return {
-      activeOrderType: 'current subscription',
-      subscriptionOption: [
+      SUBSCRIPTION_STATUS: SUBSCRIPTION_OPTIONS.SUBSCRIPTION_STATUS_OPTIONS,
+      SUBSCRIPTION_STATUS_REF: SUBSCRIPTION_OPTIONS.SUBSCRIPTION_STATUS_REF_OPTIONS,
+      active_subscription_type: 'effective',
+      condition: {
+      },
+      page:1,
+      page_size:10,
+      total:0,
+      order:{
+        created_time:"desc"
+      },
+      subscription_option: [
         {
-          label: '当前订阅',
-          value: 'current subscription'
+          label: 'effective subscription',
+          value: 'effective'
         },
         {
-          label: '全部订阅',
-          value: 'all subscription'
+          label: 'all subscription',
+          value: 'all'
         },
         {
-          label: '已取消',
-          value: 'cancel subscription'
+          label: 'ineffective subscription',
+          value: 'ineffective'
         }
       ],
-      tableData:[
-        {
-          subscriptionId: '9472323',
-          email: 'yss@zingfront.com',
-          planName: 'planName',
-          payStatus: 'payStatus',
-          nextPayTime: '2022-10-10',
-          createTime: '2022-10-10 20:11:23',
-        }
-      ]
+      table_loading: false,
+      table_data:[]
     };
   },
+  created() {
+    // // 默认选中active subscription, 此时应该请求active subscription的数据
+    this.initCondition();
+    this.getSubscriptionData();
+  },
   methods: {
-    handleClick(tab, event) {
-      console.log(tab, event);
+    initCondition () {
+      this.condition = {};
+      if (this.active_subscription_type === 'effective') { // 所有生效的订阅
+        this.condition.order_status = this.active_subscription_type;
+        this.condition.plan_type = 'recurring';
+      } else if (this.active_subscription_type === 'all') { // 所有订阅
+        this.condition = {};
+        this.condition.plan_type = 'recurring';
+      } else if (this.active_subscription_type === 'ineffective') { // 所有未生效的订阅
+        this.condition = {};
+        this.condition.plan_type = 'recurring';
+        this.condition.order_status = this.active_subscription_type;
+      }
     },
+    /**
+     *
+     */
+    handleClick() {
+      this.initCondition();
+      this.getSubscriptionData();
+    },
+    /**
+     *
+     * @param row
+     */
     openSubscriptionDetail(row) {
-      const url = `/pay-subscription/detail/${row.subscriptionId}`;
-      this.$router.replace(url);
-    }
+      this.$router.push({path: `/pay-subscription/detail/${row.id}`});
+    },
+    // test() {
+    //   this.table_loading = true;
+    //   this.table_data = [];
+    //   this.table_data = this.formatTableData(SubscriptionList.data);
+    //   this.table_loading = false;
+    // },
+    getSubscriptionData () {
+      this.table_loading = true;
+      this.table_data = [];
+      let vm = this;
+      let args = {condition:this.condition, order:this.order, page:this.page, page_size:this.page_size};
+      subscriptionList(args).then(res => {
+        vm.table_loading = false;
+        if (!res.data) {
+          return;
+        }
+        if (parseInt(res.data.code) === 100000) {
+          vm.table_data = vm.formatTableData(res.data.data);
+          vm.total = res.data.totalCount;
+        }
+      }).catch(err => {
+        console.log(err);
+        vm.table_loading = false;
+      });
+    },
+    formatTableData(data) {
+      data.forEach(item => {
+        item.created_time = timestampToDateString(item.created_time, 'yyyy-MM-dd HH:II:SS');
+        item.plan_end_time = timestampToDateString(item.plan_end_time);
+        item.subscription_status_obj = this.SUBSCRIPTION_STATUS[this.SUBSCRIPTION_STATUS_REF[item.order_status]];
+        return item;
+      });
+      return data;
+    },
+    /**
+     * 分页
+     */
+    handleSizeChange() {
+      this.getSubscriptionData();
+    },
+    /**
+     * 分页
+     */
+    handleCurrentChange() {
+      this.getSubscriptionData();
+    },
   },
 };
 </script>

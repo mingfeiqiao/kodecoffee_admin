@@ -96,11 +96,14 @@ export const planList = data => {
 
 export const updatePlan = (id, data) => instance.post(`/product/save/${id}`, JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 // 订单相关
-export const orderList = () => instance.get('/order/order-list');
-export const orderDetail = id => instance.get(`/order/order-detail`);
+export const orderList = (data) => instance.post('/app/bill/list', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
+
+export const subscriptionList = (data) => instance.post('/app/subscription/list', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
+
+export const orderDetailApi = (id,data) => instance.post(`/app/bill/detail/${id}`, JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 // 订阅相关
-export const subscriptionList = () => instance.get('/subscription/subscription-list');
-export const subscriptionDetail = id => instance.get(`/subscription/subscription-detail`);
+export const subscriptionDetailApi = (id,data) => instance.post(`/app/subscription/detail/${id}`, JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
+
 // 插件端相关
 export const extensionLoginIn = () => instance.get('/extension/login');
 export const extensionUpdateEmail = data => instance.post('/extension/update-email', data);

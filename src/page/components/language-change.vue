@@ -6,7 +6,7 @@
     >
       <div>
         <ul>
-          <li v-for="lang in langOptions" :key="lang.short" @click="changeLanguage(lang.short)" style="cursor: pointer">
+          <li v-for="lang in langOptions" :key="lang.short" @click="changeLanguage(lang.short)" style="cursor: pointer;padding: 8px">
             <span>{{ lang.full_name }}</span>
           </li>
         </ul>

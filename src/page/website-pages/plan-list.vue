@@ -22,6 +22,7 @@
     <div>
       <div style="display: flex;align-items: center;flex-direction: column">
         <el-table :data="tableData" style="width: 100%"
+                  :empty-text="$t('no data')"
                   :header-cell-style="{'background-color': 'var(--header-cell-background-color)','color': 'var(--header-cell-color)','font-weight': 'var(--header-cell-font-weight)'}"
         >
           <el-table-column prop="prod_code" label="Plan Id"  width="200">

@@ -1,38 +1,54 @@
 <template>
-  <div>
+  <div class="container">
     <div>
       <div>
-        <div>订阅:</div>
-        <div style="display:flex;align-items: center">
-          <span>{{ subscription.planName }}</span>
-          <span>{{ subscription.price }}</span>
-          <span>{{ subscription.payStatus }}</span>
+        <div>{{$t('pay')}}:</div>
+        <div style="display:flex;align-items: center;padding: 8px 0 24px 0">
+          <span class="title-20">{{ subscription.price_format }}</span>
+          <span v-if="subscription.subscription_status_obj" :style="{
+            'border-radius': '4px',
+            'margin-left':'20px',
+            'padding':'0 10px',
+            'color': subscription.subscription_status_obj.color,
+            'background-color': subscription.subscription_status_obj['background-color'],
+            'border': '1px solid ' + subscription.subscription_status_obj.color
+          }">{{ $t(subscription.subscription_status_obj.message) }}</span>
+          <span v-if="subscription.subscription_status_obj && subscription.subscription_status_obj.message === 'Canceled'">
+            <span style="display: flex;align-items: center;color: rgba(146, 146, 146, 100)">
+              <span style="margin-left: 20px">{{$t('canceled time')}}:</span>
+              <span style="margin-left: 5px">{{subscription.canceled_time}}</span>
+            </span>
+              <el-descriptions-item :label="$t('canceled time')">{{subscription.canceled_time}}</el-descriptions-item>
+          </span>
         </div>
       </div>
-      <el-descriptions>
-        <el-descriptions-item label="用户邮箱">{{ subscription.email }}</el-descriptions-item>
-        <el-descriptions-item label="支付卡号">{{'xxx'}}</el-descriptions-item>
-        <el-descriptions-item label="创建时间">{{subscription.createTime}}</el-descriptions-item>
-        <el-descriptions-item label="产品">{{subscription.planName}}</el-descriptions-item>
-        <el-descriptions-item label="插件">{{subscription.extensionName}}</el-descriptions-item>
-        <el-descriptions-item label="地区">{{subscription.payCountry}}</el-descriptions-item>
-        <el-descriptions-item label="订阅ID">{{subscription.subscriptionId}}</el-descriptions-item>
-        <el-descriptions-item label="下次支付">{{'xxx'}}</el-descriptions-item>
+      <el-descriptions  class="order-descriptions">
+        <el-descriptions-item :label="$t('user email')">{{subscription.user_email}}</el-descriptions-item>
+        <el-descriptions-item :label="$t('create time')">{{ subscription.created_time }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('sell plan')">{{ subscription.prod_name }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('extension')">{{ subscription.client_name }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('subscription id')" >{{ subscription.subscription_id }}</el-descriptions-item>
       </el-descriptions>
-
     </div>
     <div>
-      <div>订单记录</div>
+      <div class="title-16" style="padding: 24px 0">{{ $t('orders record') }}</div>
       <div>
-        <el-table :data="tableData" style="width: 100%"
+        <el-table :data="order_list" style="width: 100%"
+                  v-loading="table_loading"
+                  :empty-text="$t('no data')"
                   :header-cell-style="{'background-color': 'var(--header-cell-background-color)','color': 'var(--header-cell-color)','font-weight': 'var(--header-cell-font-weight)'}"        >
-          <el-table-column prop="orderId" label="编号ID"  width="auto">
+          <el-table-column prop="order_id" :label="$t('order id')"  width="auto">
           </el-table-column>
-          <el-table-column prop="price" label="金额" width="auto">
+          <el-table-column prop="price_format" :label="$t('Amount')" width="auto">
           </el-table-column>
-          <el-table-column prop="status" label="状态" width="auto">
+          <el-table-column  :label="$t('status')" width="auto">
+            <template slot-scope="scope">
+              <span :style="{'color': scope.row.order_status_obj.color}">
+                {{ $t(scope.row.order_status_obj.message) }}
+              </span>
+            </template>
           </el-table-column>
-          <el-table-column prop="createTime" label="创建时间" width="auto" >
+          <el-table-column prop="created_time" :label="$t('create time')" width="auto" >
           </el-table-column>
         </el-table>
       </div>
@@ -40,57 +56,135 @@
   </div>
 </template>
 <script>
+import {timestampToDateString} from "../../utils/dateUtils";
+import SUBSCRIPTION_STATUS_OPTIONS from "../../options/subscription_options.json";
+import {subscriptionDetailApi} from "../../api/interface";
+import ORDER_OPTIONS from "../../options/order_options.json";
 export default {
   data() {
     return {
-      tableData: [
-        {
-          orderId: 'ID-1231232143242',
-          price: 'US$59.00',
-          status: 1,
-          createTime: '2020-12-12 12:12:12'
-        },
-        {
-          orderId: 'ID-1231232143242',
-          price: 'US$59.00',
-          status: 1,
-          createTime: '2020-12-12 12:12:12'
-        },
-        {
-          orderId: 'ID-1231232143242',
-          price: 'US$59.00',
-          status: 1,
-          createTime: '2020-12-12 12:12:12'
-        },
-        {
-          orderId: 'ID-1231232143242',
-          price: 'US$59.00',
-          status: 1,
-          createTime: '2020-12-12 12:12:12'
-        }
-      ],
       subscription: {
-        email: 'yuanshoak@zingfront.com',
-        planName: 'Plan-A',
-        extensionName: 'Extension Name',
-        payMethod: 'Credit Card',
-        subscriptionId:'ID-1231232143242',// 订阅ID
-        price: 'US$59.00',
-        payCountry: 'USA',
-        payStatus: 1,
-        createTime: '2020-12-12 12:12:12'
+        prod_name:"",
+        price_format:"",
+        subscription_status_obj: null,
+        user_email:"",
+        card_number:"",
+        created_time:"",
+        canceled_time:"",
+        client_name:"",
+        plan_end_time:"",
+        user_area:"",
+        subscription_id:"",
+      },
+      table_loading: false,
+      order_list :[],
+      SUBSCRIPTION_STATUS_BUTTON: {
+        canceling: {
+          "message": "Canceling",
+          "color":"rgba(16, 16, 16, 100)",
+          "background-color":"rgba(198, 198, 198, 100)"
+        },
+        active: {
+          "message": "Active",
+          "color":"rgba(112, 206, 70, 100)",
+          "background-color":"rgba(246, 255, 237, 100)"
+        },
+        pastdue: {
+          "message": "Failed",
+          "color":"rgba(247, 72, 82, 1)",
+          "background-color":"rgba(198, 198, 198, 100)"
+        },
+        canceled: {
+          "message": "Canceled",
+          "color":"rgba(16, 16, 16, 100)",
+          "background-color":"rgba(198, 198, 198, 100)"
+        },
+        invalid: {
+          "message": "Expired",
+          "color":"rgba(247, 72, 82, 1)",
+          "background-color":"rgba(198, 198, 198, 100)"
+        },
       }
     };
   },
-  methods: {
-  },
-  computed: {
-    subscriptionId() {
-      return this.$route.params.id;
+  created() {
+    if (this.$route.params && this.$route.params.id) {
+      let vm = this;
+      vm.table_loading = true;
+      subscriptionDetailApi(this.$route.params.id).then((res) => {
+        vm.table_loading = false;
+        if (res.data && parseInt(res.data.code) === 100000) {
+          vm.subscription = this.formatSubscription(res.data.data);
+          vm.order_list = this.formatOrderList(res.data.data.transaction_invoice);
+        }
+      }).catch((err) => {
+        vm.table_loading = false;
+        console.log(err);
+      });
     }
-  }
+  },
+  methods: {
+    formatOrderList (transaction_invoice) {
+      if (transaction_invoice && Array.isArray(transaction_invoice) && transaction_invoice.length > 0) {
+        return transaction_invoice.map((item) => {
+          return {
+            order_id: item.transaction_invoice_key || "",
+            price_format: this.formatPrice(item.pay_amount, item.currency) || "",
+            order_status_obj: this.formatOrderStatus(item.pay_status),
+            created_time: this.formatTime(item.created_time),
+          }
+        })
+      }
+      return [];
+    },
+    formatSubscription (data) {
+      return {
+        prod_name: data.prod_name,
+        price_format: this.formatPrice(data.pay_amount, data.currency),
+        user_email: data.email,
+        subscription_status_obj: this.formatSubscriptionObj(data.order_status),
+        plan_end_time: this.formatTime(data.plan_end_time),
+        canceled_time: this.formatTime(data.updated_time),
+        created_time: this.formatTime(data.created_time),
+        subscription_id: data.id,
+      }
+    },
+    formatCard (last4) {
+      if (last4) {
+        return `**** **** **** ${last4}`;
+      }
+      return "";
+    },
+    formatTime (time) {
+      if (time) {
+        return timestampToDateString(time, 'yyyy-MM-dd HH:II:SS');
+      }
+      return "";
+    },
+    formatOrderStatus (pay_status) {
+      if (pay_status && ORDER_OPTIONS.ORDER_STATUS_REF_OPTIONS[pay_status]) {
+        return ORDER_OPTIONS.ORDER_STATUS_OPTIONS[ORDER_OPTIONS.ORDER_STATUS_REF_OPTIONS[pay_status]];
+      }
+      return "";
+    },
+    formatSubscriptionObj (order_status) {
+      let op = SUBSCRIPTION_STATUS_OPTIONS.SUBSCRIPTION_STATUS_REF_OPTIONS[order_status];
+      if (order_status !== 'null' && order_status && op) {
+        return this.SUBSCRIPTION_STATUS_BUTTON[op];
+      }
+      return {};
+    },
+    formatPrice(price, currency) {
+      return currency ? `${price} ${currency.toUpperCase()}` : `${price}`;
+    },
+  },
 };
 </script>
 <style scoped lang="less">
-
+.container{
+  padding: 24px;
+}
+.container /deep/ .el-descriptions-item__cell {
+  padding-bottom: 24px;
+}
 </style>
