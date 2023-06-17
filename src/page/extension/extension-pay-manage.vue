@@ -107,10 +107,11 @@
   </div>
 </template>
 <script>
-import {extensionUserInfo, extensionCancelSubscription} from "../../api/interface";
+import {extensionCancelSubscription, extensionUserInfo} from "../../api/interface";
 import SUBSCRIPTION_OPTIONS from '../../options/subscription_options.json'
 import ORDER_OPTIONS from '../../options/order_options.json'
 import languageChange from "../components/language-change.vue";
+
 export default {
   components: {languageChange},
   data() {
@@ -392,7 +393,7 @@ export default {
         return [];
       }
       // 筛选出来所有的plan_type = recurring的记录, 并把plan_end（时间戳）转换成当前时间
-      let sub = subscription_info_list.filter(item => item.plan_type === this.SUBSCRIPTION_TYPE_OPTIONS['recurring']).map(item => {
+      return subscription_info_list.filter(item => item.plan_type === this.SUBSCRIPTION_TYPE_OPTIONS['recurring'] && item.order_status !== 'null').map(item => {
         if (item.plan_end) {
           item.plan_end = this.timestampToDateString(item.plan_end);
         } else {
@@ -409,8 +410,6 @@ export default {
         }
         return item;
       });
-      console.log('sub:',sub);
-      return sub;
     },
     /**
      * 时间戳转换为日期

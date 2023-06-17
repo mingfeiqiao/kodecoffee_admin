@@ -139,14 +139,14 @@ export default {
     },
     formatSubscription (data) {
       return {
-        prod_name: data.prod_name,
-        price_format: this.formatPrice(data.pay_amount, data.currency),
-        user_email: data.email,
-        subscription_status_obj: this.formatSubscriptionObj(data.order_status),
-        plan_end_time: this.formatTime(data.plan_end_time),
-        canceled_time: this.formatTime(data.updated_time),
-        created_time: this.formatTime(data.created_time),
-        subscription_id: data.id,
+        prod_name: data.prod_name || "",
+        price_format: this.formatPrice(data.pay_amount, data.currency) || "",
+        user_email: data.email || "",
+        subscription_status_obj: this.formatSubscriptionObj(data.order_status) || "",
+        plan_end_time: this.formatTime(data.plan_end_time) || "",
+        canceled_time: this.formatTime(data.updated_time) || "",
+        created_time: this.formatTime(data.created_time) || "",
+        subscription_id: data.transaction_key || "",
       }
     },
     formatCard (last4) {
