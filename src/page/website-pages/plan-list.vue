@@ -85,7 +85,7 @@
                       {{price.price_format}}
                     </div>
                   </div>
-                  <div slot="reference" style="color: #929292">
+                  <div slot="reference" style="color: #929292" v-if="scope.row.other_price_obj.length > 0">
                     {{$t('other price tip', {number: scope.row.other_price_obj.length})}}
                   </div>
                 </el-popover>
