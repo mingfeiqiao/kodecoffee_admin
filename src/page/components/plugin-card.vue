@@ -34,7 +34,7 @@
       </div>
       <div style="display: flex;justify-content: center;align-items: center;padding: 6px 0;border-top: 1px solid rgb(217,217,217);" >
         <div style="width: 50%;"></div>
-        <div style="width: 50%;text-align: center;border-left: 1px solid rgba(217, 217, 217, 1);cursor: pointer" @click="editPluginCard">编辑</div>
+        <div style="width: 50%;text-align: center;border-left: 1px solid rgba(217, 217, 217, 1);cursor: pointer" @click="editPluginCard">{{$t('edit')}}</div>
       </div>
     </div>
   </el-card>

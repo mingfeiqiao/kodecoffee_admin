@@ -380,7 +380,6 @@ export default {
         }
         return item;
       });
-      console.log('order:', order_list)
       return order_list;
     },
     /**

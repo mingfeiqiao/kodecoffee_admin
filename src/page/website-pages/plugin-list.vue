@@ -3,7 +3,7 @@
     <div  class="card" >
       <el-card :body-style="{padding: '0px',width: '300px',height:'150px'}" shadow="hover">
         <div style="display: flex;justify-content: center;align-items: center;height: 100%" @click="operatePluginCard({}, 'add')">
-          +添加插件
+          {{$t('add plugin')}}
         </div>
       </el-card>
     </div>

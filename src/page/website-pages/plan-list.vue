@@ -1,17 +1,18 @@
 <template>
   <div class="container">
-    <div style="display: flex;width: 100%;flex-direction: row;align-items: center;justify-content: space-between;">
-      <div class="create-button" @click="operatePlan({}, 'add')">
-        +创建
-      </div>
+    <div style="display: flex;width: 100%;flex-direction: row;align-items: center;justify-content: space-between;padding-bottom: 24px">
+      <el-button type="primary" size="mini" @click="operatePlan({}, 'add')">
+        {{$t('create plan')}}
+      </el-button>
       <div style="display:flex;align-items: center;justify-content: center">
         <div style="display: flex">
-          <device-filter :data="paymentModes" @change="paymentModeChange" :device="condition.type"></device-filter>
+          <device-filter :data="payment_modes" @change="paymentModeChange" :device="condition.type"></device-filter>
         </div>
         <div>
-          <div class="input-container">
+          <div style="padding-left: 12px">
             <el-input
-                placeholder="请输入内容"
+                size="mini"
+                :placeholder="$t('input placeholder')"
                 v-model="condition.q">
               <i slot="suffix" class="el-input__icon el-icon-search" style="cursor: pointer" @click="search"></i>
             </el-input>
@@ -21,34 +22,29 @@
     </div>
     <div>
       <div style="display: flex;align-items: center;flex-direction: column">
-        <el-table :data="tableData" style="width: 100%"
+        <el-table :data="plan_list" style="width: 100%"
+                  v-loading="table_loading"
                   :empty-text="$t('no data')"
                   :header-cell-style="{'background-color': 'var(--header-cell-background-color)','color': 'var(--header-cell-color)','font-weight': 'var(--header-cell-font-weight)'}"
         >
-          <el-table-column prop="prod_code" label="Plan Id"  width="200">
-            <template slot="header" slot-scope="scope">
-              <div style="display: flex;align-items: center;">
-                <span>{{$t('planId')}}</span>
-                <span>
-                  <el-tooltip class="item" :content="$t('planId ToolTip Content')" effect="light" placement="top"><i class="el-icon-info" style="color: #c4c4c4"></i>
-                  </el-tooltip>
-                </span>
-              </div>
-            </template>
+          <el-table-column prop="plan_code" :label="$t('id')" width="200">
           </el-table-column>
-          <el-table-column max-width="200" width="120" min-width="120">
+          <el-table-column  width="300" >
             <template slot="header" slot-scope="scope">
-              <div>名称</div>
+              <div>{{$t('name')}}</div>
             </template>
             <template slot-scope="scope">
               <div class="column_content">
                 <div>
-                  <img :src="scope.row.icon"  width="44" height="44"  style="border:1px solid #eee;border-radius:10px;display:block;float:left;max-width: 130%;" alt="xxx">
+                  <img v-if="scope.row.plan_icon" :src="scope.row.plan_icon"  width="44" height="44"  style="border:1px solid #eee;border-radius:10px;display:block;float:left;max-width: 130%;" :alt="scope.row.plan_name">
+                  <svg  v-else width="46" height="46">
+                    <use xlink:href="#default-plan-icon"></use>
+                  </svg>
                 </div>
                 <div class="column_right">
                   <div style="padding-left:10px;text-align: left;">
-                    <div>{{scope.row.name}}</div>
-                    <div>{{scope.row.desc}}</div>
+                    <ellipsis-text :text="scope.row.plan_name" :max_width="230"></ellipsis-text>
+                    <ellipsis-text :text="scope.row.plan_desc" :max_width="230"></ellipsis-text>
                   </div>
                 </div>
               </div>
@@ -56,47 +52,41 @@
           </el-table-column>
           <el-table-column width="auto">
             <template slot="header" slot-scope="scope">
-              <div>支付类型</div>
+              <div>{{$t('Type')}}</div>
             </template>
             <template slot-scope="scope">
-              <div v-if="isAppPriceTypeExist(scope.row.app_price)">
-                <div v-if="scope.row.app_price[0].type === 'recurring'">
+              <div v-if="scope.row.plan_type_obj">
+                <div v-if="scope.row.plan_type_obj.type === 'recurring'">
                   <div>
-                    {{scope.row.app_price[0].type}}
+                    {{$t(scope.row.plan_type_obj.type)}}
                   </div>
-                  <div>
-                    {{scope.row.app_price[0].interval_count + ' ' + scope.row.app_price[0].interval}}
+                  <div style="color: #929292">
+                    {{ '/ ' + ((parseInt(scope.row.plan_type_obj.interval_count) === 1) ? '' :  scope.row.plan_type_obj.interval_count) + ' ' + $t(scope.row.plan_type_obj.interval)}}
                   </div>
                 </div>
-                <div v-else-if="scope.row.app_price[0].type === 'one_time'">
-                  <span>一次性付款</span>
+                <div v-else-if="scope.row.plan_type_obj.type === 'one_time'">
+                  <span>{{ $t(scope.row.plan_type_obj.type ) }}</span>
                 </div>
               </div>
             </template>
           </el-table-column>
           <el-table-column width="auto" >
             <template slot="header" slot-scope="scope">
-              <div>金额</div>
+              <div>{{ $t('Amount') }}</div>
             </template>
             <template slot-scope="scope">
-              <div v-if="isPriceMultiTypeExist(scope.row.app_price)">
+              <div v-if="scope.row.main_price_obj && scope.row.other_price_obj">
                 <div>
-                  {{scope.row.app_price[0].amount + ' ' + scope.row.app_price[0].currency}}
+                  {{scope.row.main_price_obj.price_format}}
                 </div>
-
-                <el-popover
-                  placement="bottom"
-                  trigger="hover"
-                  width="60"
-                 >
+                <el-popover placement="bottom" trigger="hover">
                   <div style="display: flex;align-items: center;flex-direction: column">
-                    <div v-for="(price, index) in scope.row.app_price[0].app_price_currency" :key="index">
-                      {{price.amount + ' ' + price.currency}}
+                    <div v-for="(price, index) in scope.row.other_price_obj" :key="index">
+                      {{price.price_format}}
                     </div>
                   </div>
-
-                  <div slot="reference">
-                    另外{{scope.row.app_price[0].app_price_currency.length}}个价格
+                  <div slot="reference" style="color: #929292">
+                    {{$t('other price tip', {number: scope.row.other_price_obj.length})}}
                   </div>
                 </el-popover>
               </div>
@@ -104,42 +94,46 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column width="auto" >
+          <el-table-column width="100" >
             <template slot="header" slot-scope="scope">
-              <div>试用</div>
+              <div>{{$t('trial')}}</div>
             </template>
             <template slot-scope="scope">
-              <div v-if="scope.row.is_trial" >{{scope.row.trial_days + '天'}}</div>
+              <div v-if="scope.row.plan_trial_obj && scope.row.plan_trial_obj.is_trial" >{{scope.row.plan_trial_obj.trial_days + ' ' + $t('days')}}</div>
             </template>
           </el-table-column>
-          <el-table-column prop="operation" width="80">
+          <el-table-column prop="operation">
             <template slot="header" slot-scope="scope">
-              <div style="text-align: center">操作</div>
+              <div style="text-align: center">{{$t('Operation')}}</div>
             </template>
             <template slot-scope="scope">
               <div class="column_content">
-                <span style="color: #1090FF; cursor: pointer" @click="operatePlan(scope.row, 'edit')">编辑</span>
+                <span style="color: #1090FF; cursor: pointer" @click="operatePlan(scope.row, 'edit')">{{$t('edit')}}</span>
               </div>
             </template>
           </el-table-column>
         </el-table>
-        <el-pagination
-          background
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          :current-page.sync="page"
-          :page-sizes="[10,20]"
-          :page-size="page_size"
-          layout="prev, pager, next"
-          :total="total">
-        </el-pagination>
+        <div style="padding-top: 12px">
+          <el-pagination
+            background
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page.sync="page"
+            :page-sizes="[10,20]"
+            :page-size="page_size"
+            layout="prev, pager, next"
+            :total="total">
+          </el-pagination>
+        </div>
+
       </div>
     </div>
     <add-plan-dialog
-      :visible="dialogFormVisible"
+      v-if="dialog_form_visible"
+      :visible="dialog_form_visible"
       @visibleChange="visibleChange"
       :operationType="operationType"
-      :chosenPlanData="chosenPlanData"
+      :chosen_plan_data="chosen_plan_data"
       @operateSuccess="operateSuccess"
     ></add-plan-dialog>
   </div>
@@ -148,6 +142,8 @@
 import deviceFilter from "../components/button-filter.vue";
 import addPlanDialog from "../components/add-plan-dialog.vue";
 import {planList} from "../../api/interface";
+import CURRENCY_OPTIONS from "../../options/currency_options.json";
+import EllipsisText from "../components/ellipsis-text.vue";
 export default {
   data() {
     return {
@@ -158,18 +154,19 @@ export default {
       page: 1,
       page_size: 10,
       total: 0,
-      tableData:[],
-      paymentModes: [
+      plan_list:[],
+      table_loading: false,
+      payment_modes: [
         {
-          name: "搜索",
+          name: "all",
           value: 1
         },
         {
-          name: "订阅",
+          name: "recurring",
           value: 2
         },
         {
-          name: "一次性",
+          name: "one_time",
           value: 3
         }
       ],
@@ -178,8 +175,8 @@ export default {
         2 : 'recurring',
         3 : 'one_time'
       },
-      chosenPlanData: {},
-      dialogFormVisible: false,
+      chosen_plan_data: {},
+      dialog_form_visible: false,
       operationType: 'add'
     };
   },
@@ -189,12 +186,13 @@ export default {
     // this.testPlanList();
   },
   components: {
+    EllipsisText,
     deviceFilter,
     addPlanDialog
   },
   methods: {
     testPlanList() {
-       this.tableData = [
+       this.plan_list = [
          {
            "name": "kodepay-mfei",// 产品名称
            "desc": "kodepay mfei",// 产品描述
@@ -262,18 +260,19 @@ export default {
         args.condition = condition;
       }
       let vm = this;
+      vm.plan_list = [];
+      vm.table_loading = true;
       planList(args).then(res => {
+        vm.table_loading = false;
         if (parseInt(res.data.code )=== 100000) {
-          vm.tableData = res.data.data;
-          // 将所有的icon前面都加上https://kodepay-cdn.oss-us-west-1.aliyuncs.com/
-          vm.tableData.forEach(item => {
-            if (item.icon) {
-              item.icon = 'https://kodepay-cdn.oss-us-west-1.aliyuncs.com/' + item.icon;
-            }
-          });
+          vm.plan_list = res.data.data;
+          vm.plan_list = vm.formatPlanList(vm.plan_list);
+          console.log(vm.plan_list);
           vm.total = res.data.totalCount;
         }
-      })
+      }).catch(err => {
+        vm.table_loading = false;
+      });
     },
     /**
      * 是否存在多币种
@@ -319,22 +318,90 @@ export default {
       this.condition.type = value;
       this.getPlanList();
     },
+    formatPlanList (data) {
+      return data.map(item => {
+         return {
+           plan_id: item.id || "",
+           plan_code : item.prod_code || "",
+           plan_icon: item.icon ? "https://kodepay-cdn.oss-us-west-1.aliyuncs.com/" + item.icon : "",
+           plan_name: item.name || "",
+           plan_desc: item.desc || "",
+           plan_type_obj : this.formatPlanType(item.app_price) || null,
+           plan_trial_obj: {
+              is_trial: !!item.is_trial,
+              trial_days: item.trial_days
+           },
+           main_price_obj: this.formatMainPriceObj(item.app_price) || null,
+           other_price_obj: this.formatOtherPriceObj(item.app_price) || null,
+         }
+       })
+    },
+    formatPlanType (app_price) {
+      if (Array.isArray(app_price) && app_price.length > 0) {
+        const main_price = app_price[0];
+        return {
+          type: main_price.type || "",
+          interval: main_price.interval || "",
+          interval_count: main_price.interval_count || "",
+        }
+      }
+    },
+    formatOtherPriceObj (app_price) {
+      if (Array.isArray(app_price) && app_price.length > 0) {
+        const main_price = app_price[0];
+        if (!main_price.currency) {
+          return;
+        }
+        const app_price_currency = main_price.app_price_currency;
+        if (app_price_currency && Array.isArray(app_price_currency) && app_price_currency.length > 0) {
+          // 先把主币种的价格过滤掉
+          const other_price = app_price_currency.filter(item => {
+            return item.currency !== main_price.currency;
+          });
+          return other_price.map(item => {
+            return {
+              currency: item.currency || "",
+              price: item.amount || "",
+              price_format: this.formatPrice(item.amount, item.currency) || "",
+            }
+          });
+        }
+      }
+    },
+    formatMainPriceObj (app_price) {
+      if (Array.isArray(app_price) && app_price.length > 0) {
+        const main_price = app_price[0];
+        return {
+          currency: main_price.currency || "",
+          price: main_price.amount || "",
+          price_format: this.formatPrice(main_price.amount, main_price.currency) || "",
+        };
+      }
+    },
+    formatPrice (price, currency) {
+      let symbol = '';
+      for (const currency_key in CURRENCY_OPTIONS) {
+        if (currency_key.toLowerCase() === currency) {
+          symbol = CURRENCY_OPTIONS[currency_key]['symbol'];
+          return `${symbol} ${price} ${CURRENCY_OPTIONS[currency_key]['full_name']}`;
+        }
+      }
+    },
     /**
      * 搜索
      */
     search() {
       this.getPlanList();
     },
-    operatePlan(planData, operation) {
-      this.chosenPlanData = planData;
+    operatePlan(plan_data, operation) {
+      this.chosen_plan_data = plan_data;
       this.operationType = operation;
       if (operation === 'edit') {
-        this.dialogFormVisible = true;
-      } else if (operation === 'delete') {
-        // 发请求删除 --
+        this.dialog_form_visible = true;
+        console.log(plan_data);
       } else if (operation === 'add') {
         // 新增插件
-        this.dialogFormVisible = true;
+        this.dialog_form_visible = true;
       }
     },
     /**
@@ -342,7 +409,7 @@ export default {
      * @param visible
      */
     visibleChange (visible) {
-      this.dialogFormVisible = visible;
+      this.dialog_form_visible = visible;
     }
   }
 };

@@ -5,8 +5,7 @@
   border-width: 1px;
   border-color: #e4e4e4;
   border-style: solid;
-  line-height: 32px;
-  height: 30px;
+  line-height: 26px;
 }
 .left {
   border-radius: 4px 0 0 4px;
@@ -23,8 +22,8 @@
 </style>
 <template>
   <div style="display:flex;align-items: center;height: 32px">
-    <div v-for="(item, index) in data" :key="item.value" @click="click(item.value)" :class="['content', parseInt(index) === 0 ? 'left' : parseInt(index) === data.length - 1 ? 'right' : '', item.value == localDevice ? 'is_active' : '']">
-      {{ item.name }}
+    <div v-for="(item, index) in data" :key="item.value" @click="click(item.value)" :class="['content', parseInt(index) === 0 ? 'left' : parseInt(index) === data.length - 1 ? 'right' : '', item.value == local_device ? 'is_active' : '']">
+      {{ $t(item.name)}}
     </div>
   </div>
 </template>
@@ -33,7 +32,7 @@
 export default {
   data() {
     return {
-      localDevice: null
+      local_device: null
     };
   },
   props: {
@@ -49,13 +48,17 @@ export default {
   },
   watch: {
     device(newDevice) {
-      this.localDevice = newDevice;
+      console.log(newDevice);
+      this.local_device = newDevice;
     }
+  },
+  created() {
+    this.local_device = this.device;
   },
   methods: {
     click(value) {
       this.$emit('change', value);
-      this.localDevice = value;
+      this.local_device = value;
     }
   }
 };

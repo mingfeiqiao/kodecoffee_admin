@@ -8,7 +8,10 @@
         login out
       </div>
       <div slot="reference" style="display: flex;align-items: center;cursor: pointer">
-        <el-image style="width: 32px; height: 32px;border-radius: 50%;" :src="userInfo.icon ? userInfo.icon : ''" fit="fill"></el-image>
+        <el-image v-if="userInfo.icon" style="width: 32px; height: 32px;border-radius: 50%;" :src="userInfo.icon" fit="fill"></el-image>
+        <svg width="32" height="32">
+          <use xlink:href="#default-user-icon"></use>
+        </svg>
         <div style="padding-left: 12px;width: 100px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;vertical-align: middle;">{{userInfo.email}}</div>
       </div>
     </el-popover>
@@ -41,7 +44,8 @@ export default {
         "product_id": 70,
         "product_mark": 70,
         "userinfo": {
-          "user_id": 2843847,
+          // "user_id": 2843847,
+          "user_id":2900983,
           "email": "ligoogel1918@gmail.com",
           "username": "李谷歌",
           "created_at": "2023-05-29 20:27:01",
@@ -67,7 +71,7 @@ export default {
       if (parseInt(res.code) === 100000) {
         console.log(res);
         if (!res.userinfo) {
-          this.$message.error('获取用户信息失败，请重新登录');
+          this.$message.error('error: please login again');
           window.location.href = 'https://kodepay.io/user/login'
           return;
         }
@@ -88,7 +92,7 @@ export default {
           console.log(err);
         });
       } else {
-        this.$message.error('获取用户信息失败，请重新登录');
+        this.$message.error('error: please login again');
         window.location.href = 'https://kodepay.io/user/login'
       }
     },

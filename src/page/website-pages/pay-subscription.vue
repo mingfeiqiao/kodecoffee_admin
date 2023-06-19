@@ -1,5 +1,5 @@
 <template>
-  <div style="padding: 16px 24px">
+  <div>
     <el-tabs v-model="active_subscription_type" @tab-click="handleClick">
       <el-tab-pane v-for="(option, index) in subscription_option" :key="index" :label="$t(option.label)" :name="option.value">
         <div>
@@ -7,7 +7,10 @@
                     :empty-text="$t('no data')"
                     v-loading="table_loading"
                     :header-cell-style="{'background-color': 'var(--header-cell-background-color)','color': 'var(--header-cell-color)','font-weight': 'var(--header-cell-font-weight)'}"          >
-            <el-table-column prop="email" :label="$t('Email')"  width="auto">
+            <el-table-column prop="user_email" :label="$t('customer')"  width="auto">
+              <template slot-scope="scope">
+                <span class="link" @click="openSubscriptionDetail(scope.row.subscription_id)">{{scope.row.user_email}}</span>
+              </template>
             </el-table-column>
             <el-table-column prop="prod_name" :label="$t('sell plan')" width="auto" >
             </el-table-column>
@@ -106,10 +109,10 @@ export default {
     },
     /**
      *
-     * @param row
+     * @param subscription_id
      */
-    openSubscriptionDetail(row) {
-      this.$router.push({path: `/pay-subscription/detail/${row.id}`});
+    openSubscriptionDetail(subscription_id) {
+      this.$router.push({path: `/pay-subscription/detail/${subscription_id}`});
     },
     // test() {
     //   this.table_loading = true;
@@ -138,6 +141,7 @@ export default {
     },
     formatTableData(data) {
       data.forEach(item => {
+        item.subscription_id = item.id;
         item.created_time = timestampToDateString(item.created_time, 'yyyy-MM-dd HH:II:SS');
         item.plan_end_time = timestampToDateString(item.plan_end_time);
         item.subscription_status_obj = this.SUBSCRIPTION_STATUS[this.SUBSCRIPTION_STATUS_REF[item.order_status]];

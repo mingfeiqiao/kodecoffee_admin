@@ -1,13 +1,13 @@
 <template>
   <div>
-    <el-tabs v-model="active_order_type" @tab-click="handleClick" style="padding: 16px 24px">
+    <el-tabs v-model="active_order_type" @tab-click="handleClick">
       <el-tab-pane v-for="(option, index) in order_option" :key="index" :label="$t(option.label)" :name="option.value">
         <div>
           <div>
             <div style="display: flex;margin:9px 0 24px 0">
               <div class="order-btn">
                 <div style="padding-right: 12px">
-                  {{$t('Email') + ":"}}
+                  {{$t('payment email') + ":"}}
                 </div>
                 <div>
                   <el-input size="mini" :placeholder="$t('input placeholder')" v-model="condition.q"></el-input>
@@ -45,12 +45,14 @@
           <div style="display: flex;align-items: center;flex-direction: column">
             <el-table v-loading="table_loading" :data="table_data" style="width: 100%"
                       :empty-text="$t('no data')"
-                      @row-click="handleRowClick"
                       :header-cell-style="{'background-color': 'var(--header-cell-background-color)','color': 'var(--header-cell-color)','font-weight': 'var(--header-cell-font-weight)'}"
             >
               <el-table-column prop="prod_name" :label="$t('Plan')"  width="auto">
+                <template slot-scope="scope">
+                  <span class="link" @click="openOrderDetail(scope.row.order_id)">{{scope.row.prod_name}}</span>
+                </template>
               </el-table-column>
-              <el-table-column prop="order_amount" :label="$t('Amount')" width="auto" >
+              <el-table-column prop="order_amount_format" :label="$t('Amount')" width="auto" >
               </el-table-column>
               <el-table-column prop="plan_type" width="auto" :label="$t('Type')">
                 <template slot-scope="scope" >
@@ -68,7 +70,7 @@
               </el-table-column>
               <el-table-column :label="$t('create time')" prop="created_time" width="auto" >
               </el-table-column>
-              <el-table-column prop="email" width="auto" :label="$t('Email')">
+              <el-table-column prop="pay_email" width="auto" :label="$t('payment email')">
               </el-table-column>
             </el-table>
             <div style="padding-top:12px;display: flex;align-items: center;justify-content: center;">
@@ -92,10 +94,10 @@
 
 <script>
 import SUBSCRIPTION_OPTIONS from "../../options/subscription_options.json";
+import CURRENCY_OPTIONS from "../../options/currency_options.json";
 import ORDER_OPTIONS from "../../options/order_options.json";
 import {timestampToDateString} from "../../utils/dateUtils";
 import {orderList} from "../../api/interface";
-
 export default {
   data() {
     return {
@@ -173,6 +175,9 @@ export default {
       }
       this.getTableData();
     },
+    openOrderDetail (order_id) {
+      this.$router.push({path: "/pay-all-order/detail/" + order_id});
+    },
     /**
      * 改变每页显示条数
      */
@@ -185,13 +190,6 @@ export default {
      */
     search() {
       this.getTableData();
-    },
-    getTestData () {
-      this.table_data = this.formatTableData(orderListData.data);
-    },
-    handleRowClick(row) {
-      // // 跳转到详情页面
-      this.$router.push({path: `/pay-all-order/detail/${row.id}`});
     },
     /**
      * 获取表格数据
@@ -228,11 +226,14 @@ export default {
      */
     formatTableData (data) {
       data.forEach(item => {
+        if (item.id) {
+          item.order_id = item.id;
+        }
         if (item.created_time) {
           item.created_time = timestampToDateString(item.created_time, 'yyyy-MM-dd HH:II:SS');
         }
         if (item.currency && item.pay_amount) {
-          item.order_amount = item.currency + ' ' + item.pay_amount;
+          item.order_amount_format = this.formatPrice(item.currency, item.pay_amount);
         }
         if (item.plan_type) {
           item.plan_type_obj = this.SUBSCRIPTION_TYPE_OPTIONS[item.plan_type];
@@ -249,6 +250,16 @@ export default {
      */
     handleSizeChange() {
       this.getTableData();
+    },
+    formatPrice (currency, price) {
+      let symbol = '';
+      for (const currency_key in CURRENCY_OPTIONS) {
+        if (currency_key.toLowerCase() === currency) {
+          symbol = CURRENCY_OPTIONS[currency_key]['symbol'];
+          return symbol + ' ' + price;
+        }
+      }
+      return currency + ' ' + price;
     },
     /**
      * 分页

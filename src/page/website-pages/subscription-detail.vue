@@ -4,7 +4,8 @@
       <div>
         <div>{{$t('pay')}}:</div>
         <div style="display:flex;align-items: center;padding: 8px 0 24px 0">
-          <span class="title-20">{{ subscription.price_format }}</span>
+          <span class="title-20">{{subscription.prod_name}}</span>
+          <span v-if="subscription.price_format" style="color: #929292;font-size: 20px;padding-left: 8px">{{ subscription.price_format }}</span>
           <span v-if="subscription.subscription_status_obj" :style="{
             'border-radius': '4px',
             'margin-left':'20px',
@@ -23,7 +24,7 @@
         </div>
       </div>
       <el-descriptions  class="order-descriptions">
-        <el-descriptions-item :label="$t('user email')">{{subscription.user_email}}</el-descriptions-item>
+        <el-descriptions-item :label="$t('customer')"><span class="link" @click="openUserDetail">{{subscription.user_email}}</span></el-descriptions-item>
         <el-descriptions-item :label="$t('create time')">{{ subscription.created_time }}</el-descriptions-item>
         <el-descriptions-item :label="$t('sell plan')">{{ subscription.prod_name }}</el-descriptions-item>
         <el-descriptions-item :label="$t('extension')">{{ subscription.client_name }}</el-descriptions-item>
@@ -37,7 +38,10 @@
                   v-loading="table_loading"
                   :empty-text="$t('no data')"
                   :header-cell-style="{'background-color': 'var(--header-cell-background-color)','color': 'var(--header-cell-color)','font-weight': 'var(--header-cell-font-weight)'}"        >
-          <el-table-column prop="order_id" :label="$t('order id')"  width="auto">
+          <el-table-column prop="invoice_id" :label="$t('order id')"  width="auto">
+            <template slot-scope="scope">
+              <span class="link" @click="openOrderDetail(scope.row.order_id)">{{scope.row.invoice_id}}</span>
+            </template>
           </el-table-column>
           <el-table-column prop="price_format" :label="$t('Amount')" width="auto">
           </el-table-column>
@@ -60,10 +64,12 @@ import {timestampToDateString} from "../../utils/dateUtils";
 import SUBSCRIPTION_STATUS_OPTIONS from "../../options/subscription_options.json";
 import {subscriptionDetailApi} from "../../api/interface";
 import ORDER_OPTIONS from "../../options/order_options.json";
+import CURRENCY_OPTIONS from "../../options/currency_options.json";
 export default {
   data() {
     return {
       subscription: {
+        user_id:"",
         prod_name:"",
         price_format:"",
         subscription_status_obj: null,
@@ -124,11 +130,18 @@ export default {
     }
   },
   methods: {
+    openUserDetail () {
+      this.$router.push({path: "/user-list/detail/" + this.subscription.user_id});
+    },
+    openOrderDetail (order_id) {
+      this.$router.push({path: "/pay-all-order/detail/" + order_id});
+    },
     formatOrderList (transaction_invoice) {
       if (transaction_invoice && Array.isArray(transaction_invoice) && transaction_invoice.length > 0) {
         return transaction_invoice.map((item) => {
           return {
-            order_id: item.transaction_invoice_key || "",
+            order_id: item.id || "",
+            invoice_id: item.transaction_invoice_key || "",
             price_format: this.formatPrice(item.pay_amount, item.currency) || "",
             order_status_obj: this.formatOrderStatus(item.pay_status),
             created_time: this.formatTime(item.created_time),
@@ -139,9 +152,10 @@ export default {
     },
     formatSubscription (data) {
       return {
+        user_id: data.user_id || "",
         prod_name: data.prod_name || "",
         price_format: this.formatPrice(data.pay_amount, data.currency) || "",
-        user_email: data.email || "",
+        user_email: data.user_email || "",
         subscription_status_obj: this.formatSubscriptionObj(data.order_status) || "",
         plan_end_time: this.formatTime(data.plan_end_time) || "",
         canceled_time: this.formatTime(data.updated_time) || "",
@@ -175,14 +189,18 @@ export default {
       return {};
     },
     formatPrice(price, currency) {
-      return currency ? `${price} ${currency.toUpperCase()}` : `${price}`;
+      for (const currency_key in CURRENCY_OPTIONS) {
+        if (currency_key.toLowerCase() === currency) {
+          return CURRENCY_OPTIONS[currency_key]['symbol'] + ' ' + price;
+        }
+      }
+      return currency + ' ' + price;
     },
   },
 };
 </script>
 <style scoped lang="less">
-.container{
-  padding: 24px;
+.container {
 }
 .container /deep/ .el-descriptions-item__cell {
   padding-bottom: 24px;

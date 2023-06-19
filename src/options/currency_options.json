@@ -1,0 +1,10 @@
+{
+  "cny": {
+    "symbol": "¥",
+    "full_name": "人民币"
+  },
+  "usd": {
+    "symbol": "US$",
+    "full_name": "USD"
+  }
+}

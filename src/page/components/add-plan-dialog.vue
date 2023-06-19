@@ -1,106 +1,121 @@
 <template>
   <div>
-    <el-dialog :title="operationType === 'add' ? '添加套餐' : '更新套餐'" :visible.sync="dialogFormVisible"  width="50%" :modal-append-to-body="false">
+    <el-dialog :title="operationType === 'add' ? $t('create new plan') : $t('update plan')" :visible.sync="dialog_form_visible" width="50%" :modal-append-to-body="false">
      <el-form ref="form" :model="plan"  label-width="80px" label-position="top" size="mini">
-       <div style="display:flex;align-items: center;justify-content: space-between;">
+       <div style="display:flex;align-items: center;justify-content: space-between; ">
          <div style="min-width: 250px;">
-           <el-form-item label="名称">
-             <el-input v-model="plan.name"></el-input>
+           <el-form-item :label="$t('name')">
+             <el-input v-model="plan.plan_name" :placeholder="$t('plan name placeholder')"></el-input>
            </el-form-item>
-           <el-form-item label="描述">
-             <el-input type="textarea" v-model="plan.desc"></el-input>
+           <el-form-item :label="$t('description')">
+             <el-input type="textarea" v-model="plan.plan_desc" :placeholder="$t('plan description placeholder')"></el-input>
            </el-form-item>
          </div>
          <div>
-           <el-form-item label="图标">
-             <img-upload :icon_url="plan.icon" @iconUpSourceChange="iconUpSourceChange"></img-upload>
+           <el-form-item :label="$t('icon')">
+             <img-upload :icon_url="plan.plan_icon" @iconUpSourceChange="iconUpSourceChange"></img-upload>
            </el-form-item>
          </div>
        </div>
        <div>
-         <el-form-item>
+         <el-form-item v-if="unable_modify">
            <div style="display: flex;align-items: center">
              <div style="padding-right: 20px">
-               计费方式
+               {{$t('billing method')}}
              </div>
-             <el-radio :disabled="unableModify" v-model="app_price.type" :label="option.value" v-for="option of type_option" :key="option.value">
-               {{option.label}}
+             <el-radio v-model="plan_type_obj.type" v-for="option of type_option" :key="option.value" :label="option.value">
+               {{ $t(option.label) }}
              </el-radio>
            </div>
          </el-form-item>
-         <el-form-item v-if="app_price.type === 'recurring'">
+         <el-form-item v-if="unable_modify && plan_type_obj.type === 'recurring'">
            <div style="display: flex;align-items: center;padding-left: 80px">
-             按月支付，每月循环
+             {{$t('recurring monthly tip')}}
            </div>
          </el-form-item>
          <el-form-item>
-           <el-switch :disabled="unableModify" v-model="plan.is_trial" inactive-text="免费试用">
+           <el-switch v-model="plan_trial_obj.is_trial" :inactive-text="$t('free trial')">
            </el-switch>
          </el-form-item>
-         <el-form-item v-if="plan.is_trial">
+         <el-form-item v-if="plan_trial_obj.is_trial">
            <div style="display: flex;padding-left: 60px">
-             <el-radio-group v-model="plan.trial_days">
-               <el-radio v-for="item in trial_days_option" :key="item.index" :label="item.value">{{item.label}}</el-radio>
+             <el-radio-group v-model="plan_trial_obj.trial_days">
+               <el-radio v-for="item in trial_days_option" :key="item.index" :label="item.value">{{item.value + ' ' + $t('days')}}</el-radio>
              </el-radio-group>
            </div>
          </el-form-item>
-         <div v-if="operationType === 'add'">
-           <el-form-item>
-             <div style="display: flex;flex-direction: column">
-               <div style="display: flex;flex-direction: row;">
-                 <div>美金 $</div>
-                 <el-select v-model="app_price.amount" placeholder="选择价格" @change="priceChange">
+       </div>
+       <div style="height: 1px; background-color: rgba(232, 232, 232, 1);"></div>
+       <div v-if="operationType === 'add'">
+         <div class="title-14" style="padding: 12px 0">{{$t('Amount')}}</div>
+         <el-form-item>
+           <div style="display: flex;flex-direction: column">
+             <div style="display: flex;flex-direction: row;align-items: center">
+               <div class="p-main">
+                 US$
+               </div>
+               <div style="max-width: 100px">
+                 <el-select v-model="main_price_obj.price"  @change="priceChange">
                    <el-option
                      v-for="item in app_price_options"
                      :key="item.index"
                      :label="item.amount"
                      :value="item.amount">
-                     <span style="text-align: center">{{ item.amount }}</span>
+                     <span style="text-align: center">
+                       {{ item.amount }}
+                     </span>
                    </el-option>
                  </el-select>
                </div>
-               <div>
-                 价格中包含税
-               </div>
              </div>
-           </el-form-item>
-           <el-form-item>
-             <el-button type="primary" @click="setCurrencyOption">设置多币种</el-button>
-             <span>我们根据各个不同主流国家地区的币种，制定了最合适的价格选择。</span><span>了解更多</span>
-             <div v-if="is_multiple_currency_support">
-               <el-table
-                 ref="multipleTable"
-                 :data="currency_options"
-                 tooltip-effect="dark"
-                 style="width: 100%"
-                 @selection-change="handleSelectionChange">
-                 <el-table-column
-                   type="selection"
-                   width="55">
-                 </el-table-column>
-                 <el-table-column
-                   label="币种"
-                   prop="currency"
-                 >
-                 </el-table-column>
-                 <el-table-column
-                   prop="amount"
-                   label="价格"
-                   width="120">
-                 </el-table-column>
-               </el-table>
+             <div style="color: #939393">
+               {{$t('all prices are tax inclusive')}}
              </div>
-           </el-form-item>
-         </div>
+           </div>
+         </el-form-item>
+         <el-form-item>
+           <el-button type="primary" @click="setCurrencyOption">{{$t('set more currencies')}}</el-button>
+           <div style="color: #929292;font-size: 12px">
+             <span>{{$t('set more currencies tip')}}</span>
+             <span>{{$t('learn more')}}</span>
+           </div>
+           <div v-if="is_multiple_currency_support">
+             <el-table
+               ref="multipleTable"
+               :data="currency_options"
+               tooltip-effect="dark"
+               style="width: 100%"
+               :empty-text="$t('no data')"
+               :header-cell-style="{'background-color': 'var(--header-cell-background-color)','color': 'var(--header-cell-color)','font-weight': 'var(--header-cell-font-weight)'}"
+               @selection-change="handleSelectionChange">
+               <el-table-column
+                 type="selection"
+                 :label="$t('enabled')"
+                 :selectable="isSelectable"
+               >
+               </el-table-column>
+               <el-table-column
+                 :label="$t('currency')"
+                 prop="currency_format"
+               >
+               </el-table-column>
+               <el-table-column
+                 prop="price_format"
+                 :label="$t('Amount')"
+               >
+               </el-table-column>
+             </el-table>
+           </div>
+         </el-form-item>
        </div>
        <div>
          <el-form-item>
-           <div v-if="operationType ==='add'">
-             价格、计费方式提交后无法修改
+           <div v-if="operationType ==='add'" style="color: #929292;">
+             {{  $t('plan update tip') }}
            </div>
            <div style="float: right">
-             <el-button @click="dialogFormVisible = false" >取消</el-button>
-             <el-button type="primary" @click="onSubmit">{{operationType === 'add' ? '创建' : '更新'}}</el-button>
+             <el-button @click="dialog_form_visible = false" >{{ $t('cancel') }}</el-button>
+             <el-button type="primary" @click="onSubmit">{{operationType === 'add' ? $t('create') : $t('update')}}</el-button>
            </div>
          </el-form-item>
        </div>
@@ -111,43 +126,61 @@
 <script>
 import imgUpload from "../components/img-upload.vue";
 import {addPlan, updatePlan, uploadFile} from "../../api/interface";
-
+import CURRENCY_OPTIONS from "../../options/currency_options.json";
 export default {
   data() {
     return {
-      is_multiple_currency_support: false,
-      app_price_options:[],
       icon_file:null,
       currency_options: [],
       multiple_selection: [],// 选中的数据
-      unableModify: false, // 是否不可修改
-      plan: {},
+      unable_modify: false, // 是否不可修改
+      app_price_options:[],
+      plan: {
+        plan_id: "",
+        plan_code : "",
+        plan_icon: null,
+        plan_name: "",
+        plan_desc: "",
+      },
+      LOCAL_NAMES: {
+        usd: "US Dollar",
+        cny:"Chinese Yuan",
+      },
+      is_multiple_currency_support: false,
+      plan_type_obj: {
+        type: 'recurring'
+      },
+      plan_trial_obj: {
+        is_trial: true,
+        trial_days: 3
+      },
+      main_price_obj: {
+        price: 1.99,
+        currency: 'usd'
+      },
+      other_price_obj: [],
       type_option: [
         {
-          label: '订阅 每月循环',
+          label: 'recurring monthly',
           value: 'recurring'
         },
         {
-          label: '一次性付费',
+          label: 'one time pay',
           value: 'one_time'
         }
       ],
       trial_days_option: [
         {
-          label: '3天',
           value: 3
         },
         {
-          label: '7天',
           value: 7
         },
         {
-          label: '14天',
           value: 14
         }
       ],
-      app_price: {},
-      dialogFormVisible: false,
+      dialog_form_visible: false,
     }
   },
   components: {
@@ -155,6 +188,15 @@ export default {
   },
   created() {
     this.app_price_options = this.OPTIONS.app_price_options;
+    if (this.chosen_plan_data && this.chosen_plan_data.plan_id) {
+      this.plan = JSON.parse(JSON.stringify(this.chosen_plan_data))
+      this.plan_type_obj = this.plan.plan_type_obj;
+      this.plan_trial_obj = this.plan.plan_trial_obj;
+      this.main_price_obj = this.plan.main_price_obj;
+      this.other_price_obj = this.plan.other_price_obj;
+    }
+    this.dialog_form_visible = this.visible;
+    this.priceChange(this.main_price_obj.price);
   },
   props: {
     operateSuccess: {
@@ -165,7 +207,7 @@ export default {
       type: String,
       default: 'add'
     },
-    chosenPlanData: {
+    chosen_plan_data: {
       type: Object,
       default: () => {}
     },
@@ -178,36 +220,62 @@ export default {
       default: () => {}
     }
   },
+  mounted() {
+    this.$watch('plan_trial_obj.is_trial', this.handleIsTrialChange);
+    this.unable_modify = this.operationType === 'add';
+  },
   watch : {
     visible(newValue) {
-      this.dialogFormVisible = newValue;
+      this.dialog_form_visible = newValue;
     },
-    dialogFormVisible(newValue) {
-      console.log(newValue);
+    dialog_form_visible(newValue) {
       this.$emit('visibleChange', newValue);
       return newValue;
     },
-    chosenPlanData(newValue) {
-      console.log('update:', newValue);
-      if (newValue && newValue.app_price && newValue.app_price.length > 0) {
-        newValue.is_trial = newValue.is_trial === 1;
-        this.plan = JSON.parse(JSON.stringify(newValue));
-      } else {
-        this.plan = {};
-      }
-      console.log('plan' ,this.plan);
-      if (newValue && newValue.app_price && newValue.app_price.length > 0) {
-        this.app_price = newValue.app_price[0];
-        this.is_multiple_currency_support = this.app_price.app_price_currency && this.app_price.app_price_currency.length > 0;
-        this.getPriceOptionAndCurrencyOption(this.app_price.amount);
-      }
-      return newValue;
+    currency_options(newValue) {
+      newValue.forEach((item) => {
+        item.price_format = this.formatPrice(item.currency, item.amount);
+        item.currency_format = this.formatCurrency(item.currency);
+      })
     },
     operationType(newValue) {
-      this.unableModify = newValue !== 'add';
+      this.unable_modify = newValue !== 'add';
     }
   },
   methods: {
+    handleIsTrialChange (newValue) {
+        if (newValue) {
+          this.plan_trial_obj.trial_days = 3;
+        }
+    },
+    /**
+     * 确保第一行的选中状态不被修改
+     * @param row
+     * @param index
+     * @returns {boolean}
+     */
+    isSelectable(row, index) {
+      return index !== 0;
+    },
+    formatPrice (currency, price) {
+      let symbol = '';
+      for (const currency_key in CURRENCY_OPTIONS) {
+        if (currency_key.toLowerCase() === currency) {
+          symbol = CURRENCY_OPTIONS[currency_key]['symbol'];
+          return symbol + ' ' + price;
+        }
+      }
+      return currency + ' ' + price;
+    },
+    /**
+     * 获取价格选项和货币选项
+     * @param currency
+     */
+    formatCurrency (currency) {
+      if (currency && this.LOCAL_NAMES[currency.toLowerCase()]) {
+        return `${this.LOCAL_NAMES[currency.toLowerCase()]} (${currency.toUpperCase()})`;
+      }
+    },
     /**
      * 选择price
      * @param value
@@ -215,6 +283,9 @@ export default {
     priceChange(value){
       this.getPriceOptionAndCurrencyOption(value)
     },
+    /**
+     * 选择货币
+     */
     setCurrencyOption() {
       this.is_multiple_currency_support = !this.is_multiple_currency_support;
       if (this.is_multiple_currency_support) {
@@ -225,10 +296,10 @@ export default {
      * 选择货币
      */
     setSelectedCurrencyOption() {
+      console.log('setSelectedCurrencyOption');
       this.$nextTick(() => {
         for (let i = 0; i < this.currency_options.length; i++) {
           if (this.currency_options[i].selected) {
-            console.log('xxx', this.currency_options[i]);
             this.$refs.multipleTable.toggleRowSelection(this.currency_options[i], true);
           }
         }
@@ -240,24 +311,23 @@ export default {
      */
     getPriceOptionAndCurrencyOption (value) {
       let current_app_price_option = this.app_price_options.filter(item => item.amount === value);
+      console.log('xxx', current_app_price_option);
       let multiple_selection = [];
       if (current_app_price_option && current_app_price_option.length > 0) {
-        this.app_price.currency = current_app_price_option[0].currency;
-        this.app_price.amount =  current_app_price_option[0].amount;
-        // 货币
+        this.main_price_obj.currency = current_app_price_option[0].currency;
+        this.main_price_obj.price =  current_app_price_option[0].amount;
         let currency_options = current_app_price_option[0].app_price_currency;
-        if (this.app_price && this.app_price.app_price_currency && this.app_price.app_price_currency.length > 0) { //判断app_price
+        if ( this.main_price_obj && this.other_price_obj.length > 0) { //判断app_price
           // 对比currency_options和app_price_currency的currency和amount, 如果存在则设置为选中状态
           currency_options.forEach(item => {
-            this.app_price.app_price_currency.forEach(item2 => {
-              if (item.currency === item2.currency && item.amount === item2.amount) {
+            this.other_price_obj.forEach(item2 => {
+              if (item.currency === item2.currency && item.amount === item2.price) {
                 multiple_selection.push(item);
                 item.selected = true;
               }
             });
           });
         } else {
-          // 默认选中与当前的current_app_price_option的currency和amount相同的数据
           currency_options.forEach(item => {
             if (item.currency === current_app_price_option[0].currency && item.amount === current_app_price_option[0].amount) {
               multiple_selection.push(item);
@@ -267,6 +337,7 @@ export default {
         }
         this.multiple_selection = multiple_selection;
         this.currency_options = currency_options;
+        console.log(this.multiple_selection, this.currency_options);
         if (this.is_multiple_currency_support) {
           this.setSelectedCurrencyOption();
         }
@@ -285,36 +356,42 @@ export default {
      */
     async addPlanData () {
       let args = {
-        name: this.plan.name,
-        desc: this.plan.desc,
-        is_trial: this.plan.is_trial ? 1 : 0,
-        trial_days: this.plan.trial_days,
+        name: this.plan.plan_name,
+        desc: this.plan.plan_desc,
+        is_trial: this.plan_trial_obj.is_trial ? 1 : 0,
+        trial_days: this.plan_trial_obj.trial_days,
       }
-      let app_price = [];
-      if (this.app_price && this.app_price.amount) { // 确定用户设置了价格
-        // 循环multiple_selection, 去掉其中的selected键
+      // 确定用户设置了价格
+
+      if (this.main_price_obj && this.main_price_obj.price) {
+        let currency_options = [];
+        // 将multiple_selection中的selected去掉，并且将multiple_selection中的currency和amount 与 main_price_obj中的currency和price进行对比，如果相同则去除
         this.multiple_selection.forEach(item => {
-          delete item.selected;
+          if (item.currency !== this.main_price_obj.currency || item.amount !== this.main_price_obj.price) {
+            currency_options.push({
+              currency: item.currency,
+              amount: item.amount
+            });
+          }
         });
-        if (this.app_price.type === 'recurring') {
-          app_price.push({
-            amount: this.app_price.amount,
-            currency: this.app_price.currency,
-            type: this.app_price.type,
+        if (this.plan_type_obj && this.plan_type_obj.type === 'recurring') {
+          args.app_price = [{
+            amount: this.main_price_obj.price,
+            currency: this.main_price_obj.currency,
+            type: 'recurring',
             interval: 'month',
             interval_count: 1,
-            currency_options: this.multiple_selection // 一个是currency_options一个是app_price_currency
-          });
+            currency_options: currency_options
+          }];
         } else {
-          app_price.push({
-            amount: this.app_price.amount,
-            currency: this.app_price.currency,
-            type: this.app_price.type,
-            currency_options: this.multiple_selection
-          });
+          args.app_price = [{
+            amount: this.main_price_obj.price,
+            currency: this.main_price_obj.currency,
+            type: 'one_time',
+            currency_options: currency_options
+          }];
         }
       }
-      args.app_price = app_price;
       if (this.icon_file) {
         let icon = await this.getIconUrl('plan', this.icon_file);
         if (icon) {
@@ -325,59 +402,72 @@ export default {
       addPlan(args).then(res => {
         if (parseInt(res.data.code) === 100000) {
           vm.$message({
-            message: '添加成功',
+            message: vm.$t('create success'),
             type: 'success'
           });
-          vm.dialogFormVisible = false;
+          vm.dialog_form_visible = false;
           vm.$emit('operateSuccess');
         } else {
           vm.$message({
-            message: '添加失败',
+            message: res.data.message,
             type: 'error'
           });
         }
       }).catch(err => {
         vm.$message({
-          message: '添加失败',
+          message: vm.$t('create error'),
           type: 'error'
         });
       });
     },
+    /**
+     * 更新套餐
+     * @returns {Promise<void>}
+     */
     async updatePlanData () {
-      // 比对chosenPlanData 和 plan 的 icon,name,is_trial,trial_days,desc查看是否有修改,找出修改的数据
+      // 比对chosen_plan_data和plan的icon, name, is_trial, trial_days, desc查看是否有修改,找出修改的数据
       let args = {};
-      console.log('xxx', this.plan);
-      console.log('chosenPlanData', this.chosenPlanData);
+      if (this.plan.plan_name !== this.chosen_plan_data.plan_name) {
+        args.name = this.plan.name;
+      }
+      if (this.plan.plan_desc !== this.chosen_plan_data.plan_desc) {
+        args.desc = this.plan.plan_desc;
+      }
       if (this.icon_file) {
         let icon = await this.getIconUrl('plan', this.icon_file);
         if (icon) {
           args.icon = icon;
         }
       }
-      if (this.plan.name !== this.chosenPlanData.name) {
-        args.name = this.plan.name;
-      }
-      if (this.plan.is_trial !== this.chosenPlanData.is_trial) {
-        args.is_trial = this.plan.is_trial ? 1 : 0;
-      }
-      if (this.plan.trial_days !== this.chosenPlanData.trial_days) {
-        args.trial_days = this.plan.trial_days;
-      }
-      if (this.plan.desc !== this.chosenPlanData.desc) {
-        args.desc = this.plan.desc;
+      // 试用是否有更改？
+      if (this.plan_trial_obj && this.chosen_plan_data.plan_trial_obj ) {
+        if (this.plan_trial_obj.is_trial !== this.chosen_plan_data.plan_trial_obj.is_trial) {
+          args.is_trial = this.plan_trial_obj.is_trial ? 1 : 0;
+        }
+        // 试用天数是否有更改？
+        if (this.plan_trial_obj.trial_days !== this.chosen_plan_data.plan_trial_obj.trial_days) {
+          args.trial_days = this.plan_trial_obj.trial_days;
+        }
       }
       let vm = this;
-      let id = this.chosenPlanData.id;
+      let id = this.plan.plan_id;
       updatePlan(id, args).then(res => {
-        this.$message({
-          message: '更新成功',
-          type: 'success'
-        });
-        vm.dialogFormVisible = false;
-        vm.$emit('operateSuccess');
+        if (res.data && parseInt(res.data.code)=== 100000) {
+          vm.$message({
+            message: vm.$t('update success'),
+            type: 'success'
+          });
+          vm.dialog_form_visible = false;
+          vm.$emit('operateSuccess');
+        } else {
+          vm.$message({
+            message: res.data.message,
+            type: 'error'
+          });
+        }
       }).catch(err => {
         vm.$message({
-          message: '更新失败',
+          message: vm.$t('update error'),
           type: 'error'
         });
       })
@@ -410,45 +500,21 @@ export default {
         await this.updatePlanData();
       }
     },
-    /**
-     *
-     * @returns {*}
-     */
-    getUSDPrice() {
-      let a = this.plan.price.filter(item => {
-        if (item.currency === 'USD') {
-         return item;
-        }
-      });
-      return a[0];
-    },
-    /**
-     *
-     */
-    addPrice() {
-      if (!this.plan.price) {
-        this.$set(this.plan, 'price', []);
-      }
-      this.plan.price.push({
-        currency: 'USD',
-        price: 1
-      })
-    },
-    /**
-     *
-     * @param index
-     */
-    removePrice(index) {
-      this.$delete(this.plan.price, index);
-    },
 
     handleSelectionChange(val) {
       this.multiple_selection = val;
-      console.log('handleSelectionChange', val);
     },
   }
 }
 </script>
 <style scoped lang="less">
-
+.p-main {
+  border-radius: 4px 0 0 4px;
+  color: rgba(16, 16, 16, 1);
+  padding: 0 8px;
+  line-height: 26px;
+  height: 26px;
+  text-align: left;
+  border: 1px solid rgba(198, 198, 198, 1);
+}
 </style>
