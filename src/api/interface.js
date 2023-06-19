@@ -16,7 +16,6 @@ const instance = axios.create({
 // 响应拦截器
 instance.interceptors.response.use(
     response => {
-      console.log(Vue.prototype.$mode);
       const token = response.headers['x-auth-token']; // 获取响应中的Token
       console.log('响应token',token,'response header:', response.headers);
       const applicationKey = response.headers['x-application-key']; // 获取响应中的Token
@@ -26,20 +25,19 @@ instance.interceptors.response.use(
       if (token) {
         localStorage.setItem(Vue.prototype.$mode + 'token', token);
       }
+      return response;
+    },
+    error => {
       // 如果用户token已经过期，那么我需要重定向到登录页面
-      if (response.data.code === 401) { // 这里是token过期
+      if (error.response && error.response.status === 401) { // 这里是token过期
         // 清空本地存储的token和cookie
-        // 清空cookie
+        console.log('token过期');
         document.cookie = '';
         localStorage.removeItem(Vue.prototype.$mode + 'applicationKey');
         localStorage.removeItem(Vue.prototype.$mode + 'userInfo')
         localStorage.removeItem(Vue.prototype.$mode + 'token');
         window.location.href = 'https://kodepay.io/user/login';
       }
-      return response;
-    },
-    error => {
-      // 对响应错误做点什么
       return Promise.reject(error);
     }
 );
