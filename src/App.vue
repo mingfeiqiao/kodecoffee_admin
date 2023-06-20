@@ -18,4 +18,7 @@ export default {
     background-color: #85ce61; /* 设置表头背景色 */
     /* 添加其他样式设置 */
   }
+  .el-table {
+    color: #101010;
+  }
 </style>

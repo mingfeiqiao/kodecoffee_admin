@@ -66,7 +66,7 @@
         </div>
       </div>
       <el-main v-if="isLoginIn " style="padding: 24px; background-color: #f0f0f0;" >
-        <div style="height: 100%; overflow: auto;" v-if="$route.name !== 'dashboard'" >
+        <div v-if="$route.name !== 'dashboard'" >
           <div style="background-color: #ffffff;padding: 24px;height: 100%" >
             <router-view v-if="is_option_load"></router-view>
           </div>

@@ -29,8 +29,10 @@
       >
         <el-table-column :label="$t('subscriptions')">
           <template slot-scope="scope">
-            <span>{{ scope.row.plan_name }}</span>
-            <span>{{ scope.row.currency.toUpperCase() + ' ' + scope.row.price_format + '/' + $t('month')}}</span>
+            <div style="display: flex;flex-direction: column">
+              <span>{{ scope.row.plan_name }}</span>
+              <span>{{ scope.row.currency.toUpperCase() + ' ' + scope.row.price_format + '/' + $t('month')}}</span>
+            </div>
           </template>
         </el-table-column>
         <el-table-column :label="$t('status')">
@@ -210,7 +212,6 @@ export default {
         }
         if (parseInt(res.data.code) === 100000) {
           vm.order_list = vm.formatOrderList(res.data.data);
-          console.log(vm.order_list);
           vm.order_args.total = res.data.totalCount;
         }
       }).catch(err => {
@@ -238,6 +239,7 @@ export default {
           return;
         }
         if (parseInt(res.data.code) === 100000) {
+          console.log(SUBSCRIPTION_STATUS_OPTIONS);
           vm.subscription_list = vm.formatSubscriptionList(res.data.data);
           vm.subscription_args.total = res.data.totalCount;
         }
@@ -263,8 +265,9 @@ export default {
         item.currency = item.currency || '';
         item.price_format = this.formatPrice(item.pay_amount, item.currency) || "";
         item.plan_key = item.transaction_key || '';
-        if (item.order_status && SUBSCRIPTION_STATUS_OPTIONS.SUBSCRIPTION_STATUS_REF[item.order_status]) { // 应该是个OBJECT
-          item.subscription_status_obj = SUBSCRIPTION_STATUS_OPTIONS.SUBSCRIPTION_STATUS_REF[item.order_status];
+        if (item.order_status && SUBSCRIPTION_STATUS_OPTIONS.SUBSCRIPTION_STATUS_REF_OPTIONS[item.order_status]) { // 应该是个OBJECT
+          let subscription_status = SUBSCRIPTION_STATUS_OPTIONS.SUBSCRIPTION_STATUS_REF_OPTIONS[item.order_status]
+          item.subscription_status_obj = SUBSCRIPTION_STATUS_OPTIONS.SUBSCRIPTION_STATUS_OPTIONS[subscription_status];
         } else {
           item.subscription_status_obj = {};
         }
