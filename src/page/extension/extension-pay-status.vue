@@ -12,7 +12,7 @@
             <div class="title-24">
               {{$t('pay success')}}
             </div>
-            <div style="padding: 24px 0;" class="title-14">
+            <div style="padding: 24px 80px;">
               {{$t('pay success tip')}}
               <span style="color: #1090FF;cursor: pointer" @click="openPayManagePage">{{$t('click to billing')}}</span>
             </div>
@@ -29,11 +29,17 @@
           </div>
         </div>
       </div>
+      <div>
+        <language-change></language-change>
+      </div>
     </main>
   </div>
 </template>
 <script>
+import languageChange from "../components/language-change.vue";
+
 export default {
+  components: {languageChange},
   data() {
     return {
       params: this.$route.query,

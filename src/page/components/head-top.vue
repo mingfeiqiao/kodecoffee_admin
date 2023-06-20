@@ -80,7 +80,6 @@ export default {
 </script>
 <style scoped lang="less">
 .head-container {
-  background-color: #EFF2F7;
   display: flex;
   height: 40px;
   justify-content: space-between;

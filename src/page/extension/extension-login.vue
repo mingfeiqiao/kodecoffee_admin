@@ -2,37 +2,43 @@
   <div style="display: flex;align-items: center;justify-content: center;width: 100%;height: 100%">
     <main>
       <div class="container">
-        <div style="padding-bottom: 24px">
-          <div class="title-28">{{$t('billing management')}}</div>
-        </div>
-        <div style="border: 1px solid rgba(233, 233, 233, 1);border-radius: 4px;padding: 16px 24px;min-height: 300px;width: 600px">
-          <div v-if="!is_send_email">
-            <div style="padding-bottom: 16px">{{$t('please input email')}}</div>
-            <div style="display: flex;padding-bottom: 16px;">
-              <el-input v-model="input" placeholder="example@mail.com" style="max-width: 400px"></el-input>
-              <div @click="submitEmail" class="send-button">{{$t('send login')}}</div>
-            </div>
-            <div>
-              <div v-if="!is_email_valid" style="color:red">
-                {{$t('email format error')}}
-              </div>
-              <div>
-                {{$t('send email to login')}}
-              </div>
-            </div>
+        <div style="padding: 24px 32px;height: 550px">
+          <div style="padding-bottom: 24px">
+            <div class="title-28">{{$t('billing management')}}</div>
           </div>
-          <div v-else>
-            <div>
-              <div>
-                {{$t('email sent', {input: input})}}
+          <div style="border: 1px solid rgba(233, 233, 233, 1);padding:24px;border-radius: 4px;height: calc(100% - 48px);">
+            <div v-if="!is_send_email">
+              <div style="padding-bottom: 16px">{{$t('please input email')}}</div>
+              <div style="display: flex;padding-bottom: 16px;">
+                <el-input v-model="input" placeholder="example@mail.com" style="max-width: 400px"></el-input>
+                <div @click="submitEmail" class="send-button">{{$t('send login')}}</div>
               </div>
-              <div style="color: #1090FF;cursor: pointer" @click="toSubscription()">
+              <div>
+                <div v-if="!is_email_valid" style="color:red">
+                  {{$t('email format error')}}
+                </div>
+                <div>
+                  {{$t('send email to login')}}
+                </div>
+              </div>
+            </div>
+            <div v-else style="display: flex;align-items: center;flex-direction: column;height: 100%;">
+              <div style="width: 380px;">
+                <div style="height: 100px;display: flex;justify-content: center;text-align: center;padding-top: 50px">
+                  {{$t('email sent', {input: input})}}
+                </div>
+              </div>
+              <div style="height: 100%;display: flex;flex-direction: column;justify-content: space-between;width: 100%">
+                <div style="color: #1090FF;cursor: pointer;width: 100%;text-align: center" @click="toSubscription()">
                   {{$t('email verified')}}
-              </div>
-              <div>
-                <span>{{ $t('mail not received') }}</span>
-                <span @click="submitEmail" style="color: #1090FF;cursor: pointer">{{$t('resend')}}</span>
-                <span style="color: #1090FF;cursor: pointer" @click="is_send_email = false">{{$t('change email')}}</span>
+                </div>
+                <div>
+                  <div style="color: #939393">{{ $t('mail not received') }}</div>
+                  <div style="padding-top: 8px">
+                    <span @click="submitEmail" style="color: #1090FF;cursor: pointer">{{$t('resend')}}</span>
+                    <span style="color: #1090FF;cursor: pointer;margin-left: 8px" @click="is_send_email = false">{{$t('change email')}}</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -89,7 +95,7 @@ export default {
      * @returns {boolean}
      */
     isEmail(mail) {
-      const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const regex = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
       return regex.test(mail);
     },
     /**
@@ -105,10 +111,8 @@ export default {
      * 提交邮箱
      */
     submitEmail() {
-      console.log(this.input);
       if (!this.isEmail(this.input)) {
         this.is_email_valid = false;
-        return;
       } else {
         this.is_email_valid = true;
         this.is_send_email = true;
@@ -126,7 +130,11 @@ export default {
               type: 'login',
               data: this.$route.query
             });
+          } else {
+            this.$message.error(res.data.message);
           }
+        }).catch(err => {
+          this.$message.error(err);
         });
       }
     }
@@ -135,11 +143,12 @@ export default {
 </script>
 <style scoped lang="less">
 .container {
-  max-width: 1080px;
-  padding: 24px 32px;
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.3);
   border-radius: 4px;
+  max-height: 680px;
+  max-width: 600px;
   min-width: 600px;
+  min-height: 680px;
 }
 .send-button {
   margin-left: 16px;

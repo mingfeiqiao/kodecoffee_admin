@@ -50,29 +50,29 @@
       </el-menu>
     </el-aside>
     <el-container ref="content">
-      <el-header style="padding: 0;margin: 0;height: auto">
+      <el-header style="padding: 0;margin: 0;height: auto;border-bottom: 1px solid rgba(232, 232, 232, 1);background-color: #ffffff">
         <head-top @collapseChange="collapseChange" :collapse="isCollapse"></head-top>
       </el-header>
-      <div style="padding-bottom: 20px">
+      <div style="padding: 16px 24px" v-if="$route.name !== 'dashboard'">
         <div class="breadcrumb">
           <el-breadcrumb separator="/">
             <el-breadcrumb-item>
               <router-link to="/">Home</router-link>
             </el-breadcrumb-item>
             <el-breadcrumb-item v-for="(breadcrumb, index) in breadcrumbs" :key="index">
-              <router-link :to="breadcrumb.route">{{ breadcrumb.label }}</router-link>
+              <router-link :to="breadcrumb.route">{{ $t(breadcrumb.label) }}</router-link>
             </el-breadcrumb-item>
           </el-breadcrumb>
         </div>
-        <div>
-          {{this.$route.name}}
-        </div>
       </div>
-      <el-main v-if="isLoginIn" style="padding: 24px; background-color: #f0f0f0;">
-        <div style="height: 100%; overflow: auto;" v-if="is_option_load">
-          <div style="background-color: #ffffff;padding: 24px;height: 100%">
-            <router-view></router-view>
+      <el-main v-if="isLoginIn " style="padding: 24px; background-color: #f0f0f0;" >
+        <div style="height: 100%; overflow: auto;" v-if="$route.name !== 'dashboard'" >
+          <div style="background-color: #ffffff;padding: 24px;height: 100%" >
+            <router-view v-if="is_option_load"></router-view>
           </div>
+        </div>
+        <div v-else>
+          <router-view></router-view>
         </div>
       </el-main>
     </el-container>
