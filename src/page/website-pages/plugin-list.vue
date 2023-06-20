@@ -7,8 +7,8 @@
         </div>
       </el-card>
     </div>
-    <div class="card" v-for="pluginData in pluginList"><plugin-card :data="pluginData" @operatePluginCard="operatePluginCard"></plugin-card></div>
-    <add-plugin-dialog :visible="dialogFormVisible" @visibleChange="visibleChange" :operationType="operationType" @operateSuccess="operateSuccess" :chosenPluginData="chosenPluginData">
+    <div class="card" v-for="pluginData in plugin_list"><plugin-card :data="pluginData" @operatePluginCard="operatePluginCard"></plugin-card></div>
+    <add-plugin-dialog v-if="dialog_form_visible" :visible="dialog_form_visible" @visibleChange="visibleChange" :operationType="operationType" @operateSuccess="operateSuccess" :chosen_plugin_data="chosen_plugin_data">
     </add-plugin-dialog>
   </div>
 </template>
@@ -19,18 +19,14 @@ import addPluginDialog from "../components/add-plugin-dialog.vue";
 export default {
   data () {
     return {
-      pluginList: [],
-      chosenPluginData: {},
-      dialogFormVisible: false,
+      plugin_list: [],
+      chosen_plugin_data: {},
+      dialog_form_visible: false,
       operationType: 'add'
     }
   },
   created() {
     this.getPluginList();
-  },
-  computed: {
-  },
-  watch: {
   },
   methods: {
     getPluginList() {
@@ -40,7 +36,7 @@ export default {
           data.forEach(item => {
             item.icon = 'https://kodepay-cdn.oss-us-west-1.aliyuncs.com/' + item.icon;
           });
-          this.pluginList = data;
+          this.plugin_list = data;
         }
       }).catch(err => {
         console.log(err);
@@ -54,15 +50,15 @@ export default {
     operatePluginCard (pluginData, operation) {
       // 删除插件 -> 直接发请求
       // 编辑插件 -> 打开编辑插件的弹窗
-      this.chosenPluginData = pluginData;
+      this.chosen_plugin_data = pluginData;
       this.operationType = operation;
       if (operation === 'edit') {
-        this.dialogFormVisible = true;
+        this.dialog_form_visible = true;
       } else if (operation === 'delete') {
         // 发请求删除 --
       } else if (operation === 'add') {
         // 新增插件
-        this.dialogFormVisible = true;
+        this.dialog_form_visible = true;
       }
     },
     /**
@@ -70,7 +66,7 @@ export default {
      * @param visible
      */
     visibleChange (visible) {
-      this.dialogFormVisible = visible;
+      this.dialog_form_visible = visible;
     },
     operateSuccess () {
       this.getPluginList();

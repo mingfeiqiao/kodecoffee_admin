@@ -71,7 +71,7 @@ export default {
       type: Boolean,
       default: false
     },
-    chosenPluginData: {
+    chosen_plugin_data: {
       type: Object,
       default: () => {
         return {
@@ -153,7 +153,7 @@ export default {
       // 对比this.pluginData 和 this.chosenPluginData，把不同的值赋值给args
       let args = {};
       for (let key in this.plugin_data) {
-        if (this.plugin_data[key] !== this.chosenPluginData[key]) {
+        if (this.plugin_data[key] !== this.chosen_plugin_data[key]) {
           args[key] = this.plugin_data[key];
         }
       }
@@ -163,7 +163,7 @@ export default {
           args.icon = icon;
         }
       }
-      args.client_key = this.chosenPluginData.client_key;
+      args.client_key = this.chosen_plugin_data.client_key;
       updatePlugin(args).then((res) => {
         if (parseInt(res.data.code) === 100000) {
           this.$message({
