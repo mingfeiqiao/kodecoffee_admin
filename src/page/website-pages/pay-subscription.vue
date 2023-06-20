@@ -114,12 +114,6 @@ export default {
     openSubscriptionDetail(subscription_id) {
       this.$router.push({path: `/pay-subscription/detail/${subscription_id}`});
     },
-    // test() {
-    //   this.table_loading = true;
-    //   this.table_data = [];
-    //   this.table_data = this.formatTableData(SubscriptionList.data);
-    //   this.table_loading = false;
-    // },
     getSubscriptionData () {
       this.table_loading = true;
       this.table_data = [];

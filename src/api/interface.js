@@ -102,6 +102,10 @@ export const orderDetailApi = (id,data) => instance.post(`/app/bill/detail/${id}
 // 订阅相关
 export const subscriptionDetailApi = (id,data) => instance.post(`/app/subscription/detail/${id}`, JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 
+// 客户相关
+export const customerListApi = (data) => instance.post('/app/customers/list', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
+
+export const customerDetailApi = (id,data) => instance.post(`/app/customers/detail/${id}`, JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 // 插件端相关
 export const extensionLoginIn = () => instance.get('/extension/login');
 export const extensionUpdateEmail = data => instance.post('/extension/update-email', data);

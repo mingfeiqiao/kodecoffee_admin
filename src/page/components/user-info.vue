@@ -44,8 +44,8 @@ export default {
         "product_id": 70,
         "product_mark": 70,
         "userinfo": {
-          // "user_id": 2843847,
-          "user_id":2900983,
+          "user_id": 12345678,
+          // "user_id":2843847,
           "email": "ligoogel1918@gmail.com",
           "username": "李谷歌",
           "created_at": "2023-05-29 20:27:01",

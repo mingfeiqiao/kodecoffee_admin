@@ -10,7 +10,7 @@
             <div v-if="!is_send_email">
               <div style="padding-bottom: 16px">{{$t('please input email')}}</div>
               <div style="display: flex;padding-bottom: 16px;">
-                <el-input v-model="input" placeholder="example@mail.com" style="max-width: 400px"></el-input>
+                <el-input v-model="input" placeholder="example@mail.com" style="max-width: 350px"></el-input>
                 <div @click="submitEmail" class="send-button">{{$t('send login')}}</div>
               </div>
               <div>
@@ -160,7 +160,7 @@ export default {
   border: 1px solid rgba(24, 144, 255, 1);
   display: flex;
   align-items: center;
-  padding: 0 15px;
+  padding: 0 12px;
   cursor: pointer;
 }
 </style>

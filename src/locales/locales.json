@@ -1,5 +1,5 @@
 {
-  "en": {
+  "en-US": {
     "Dashboard": "Dashboard",
     "Payment List": "Payment List",
     "All Orders": "All Orders",
@@ -56,6 +56,13 @@
     "update plugin": "Update Extension",
     "store address": "Store Address",
     "extension id": "Extension ID",
+    "total revenue": "Total Revenue",
+    "yesterday revenue": "Yesterday's Revenue",
+    "yesterday new additions": "Yesterday's New Additions",
+    "current subscriptions": "Current Subscriptions",
+    "total customers": "Total Customers",
+    "balance": "Balance",
+    "withdrawable balance": "Withdrawable Balance",
 
 
     "billing management": "Billing Management",
@@ -104,6 +111,9 @@
     "update": "Update",
     "plan update tip": "Price and billing method submission cannot be modified once they become effective.",
     "add plugin": "+ Add Extension",
+    "to": "To",
+    "start date": "Start Date",
+    "end date": "End Date",
 
 
     "pay failed": "Failed",
@@ -144,7 +154,7 @@
     "Refunded": "Refunded",
     "Disputed": "Disputed"
   },
-  "zh-cn": {
+  "zh-CN": {
     "Payment List": "付款列表",
     "Dashboard": "仪表盘",
     "All Orders": "全部订单",
@@ -241,7 +251,16 @@
     "create plugin": "创建插件",
     "update plugin": "更新插件",
     "extension id": "插件ID",
-
+    "total revenue": "总收入",
+    "yesterday revenue": "昨日收入",
+    "yesterday new additions": "昨日新增",
+    "current subscriptions": "当前订阅",
+    "total customers": "总客户",
+    "balance": "余额",
+    "withdrawable balance": "可提现",
+    "to": "至",
+    "start date": "开始日期",
+    "end date": "结束日期",
 
     "付款列表": "付款列表",
     "please input email": "请输入邮箱",

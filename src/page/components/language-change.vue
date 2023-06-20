@@ -27,10 +27,10 @@
 export default {
   data() {
     return {
-      selectedLanguage: 'en',
+      selectedLanguage: 'en-US',
       langOptions: [
-        { short: 'en', full_name: 'English' },
-        { short: 'zh-cn', full_name: '中文(简体)'},
+        { short: 'en-US', full_name: 'English' },
+        { short: 'zh-CN', full_name: '中文(简体)'},
       ],
     };
   },

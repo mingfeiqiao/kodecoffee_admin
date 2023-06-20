@@ -2,7 +2,9 @@
   <div>
     <div>
       <div style="max-width: 300px;">
-        <el-input v-model="condition.q" :placeholder="$t('please input email')"  size="mini"  suffix-icon="el-icon-search"></el-input>
+        <el-input v-model="condition.q" :placeholder="$t('please input email')"  size="mini" >
+          <i slot="suffix" class="el-input__icon el-icon-search" @click="search"></i>
+        </el-input>
       </div>
       <div style="padding-top: 24px">
         <el-table :data="table_data"
@@ -12,7 +14,11 @@
                   :header-cell-class-name="handleHeaderCellClass"
                   :header-cell-style="{'background-color': 'var(--header-cell-background-color)','color': 'var(--header-cell-color)','font-weight': 'var(--header-cell-font-weight)'}"
         >
-          <el-table-column prop="user_id" :label="$t('id')"></el-table-column>
+          <el-table-column prop="user_key" :label="$t('id')">
+            <template slot-scope="scope">
+              <span class="link" @click="openUserDetail(scope.row.user_id)">{{scope.row.user_key}}</span>
+            </template>
+          </el-table-column>
           <el-table-column prop="user_email" :label="$t('customer')"></el-table-column>
           <el-table-column prop="total_spend" :label="$t('total spend')" sortable ></el-table-column>
           <el-table-column prop="payments_times" :label="$t('payments times')" sortable></el-table-column>
@@ -37,71 +43,141 @@
   </div>
 </template>
 <script>
+import {timestampToDateString} from "../../utils/dateUtils";
+import CURRENCY_OPTIONS from "../../options/currency_options.json";
+import {customerListApi} from "../../api/interface";
+
 export default {
   data() {
     return {
       condition: {
-        q:""
       },
-      table_data:[
-      ],
+      ORDER_FIELD_REF: {
+        total_spend: "sum_settle_real_amount",
+        payments_times: "sum_settle_pay_count",
+        refunded_amount: "sum_settle_refund_amount",
+        created_time: "created_time"
+      },
+      ORDER_TYPE_REF: {
+        "descending": "desc",
+        "ascending": "asc"
+      },
+      table_data: [],
       page:1,
       total:0,
-      sort:[],
+      sort:[{prop:"created_time", order:"descending"}],
       table_loading:false,
       page_size:10,
     }
   },
-  mounted() {
+  created() {
     this.getData();
   },
   methods: {
+    openUserDetail (user_id) {
+      this.$router.push({path: "/user-list/detail/" + user_id});
+    },
+    search() {
+      this.getData();
+    },
     getData() {
-
+      let vm = this;
+      vm.total = 0;
+      let args = {
+        condition: vm.condition,
+        page: vm.page,
+        page_size: vm.page_size,
+        sort: this.formatSortParams(this.sort)
+      };
+      vm.table_loading = true;
+      vm.table_data = [];
+      customerListApi(args).then(res => {
+        vm.table_loading = false;
+        if (parseInt(res.data.code )=== 100000) {
+          this.table_data = vm.formatUserList(res.data.data);
+          this.total = res.data.totalCount;
+        }
+      }).catch(err => {
+        vm.table_loading = false;
+        console.log(err);
+      });
     },
+    /**
+     * 当前页
+     */
     handleCurrentChange() {
-
+      this.getData();
     },
+    /**
+     * 每页显示条数
+     */
     handleSizeChange() {
-
+      this.getData();
+    },
+    formatSortParams (sort) {
+      let sort_params = {};
+      sort.forEach(item => {
+        sort_params[this.ORDER_FIELD_REF[item.prop]] = this.ORDER_TYPE_REF[item.order];
+      })
+      return sort_params;
     },
     /**
      * 格式化用户列表
      * @param user_list_info
      */
     formatUserList (user_list_info) {
-
+      if (Array.isArray(user_list_info) && user_list_info.length > 0) {
+        return user_list_info.map(item => {
+          return this.formatUserData(item);
+        })
+      }
+      return [];
     },
-    formatPaymentTimes (data) {
-
+    /**
+     * 格式化用户数据
+     * @param item
+     * @returns {{total_spend: string, created_time: string, user_email: (string|string|RegExp|*), user_id: string, last_payment: string, user_key: (*|string), payments_times: string, refunded_amount: string}}
+     */
+    formatUserData (item) {
+      let user_consumption_statistics = item.user_consumption_statistics;
+      if (!user_consumption_statistics) {
+        user_consumption_statistics = {};
+      }
+      let currency = user_consumption_statistics.settle_currency || "usd";
+      return {
+        user_id: item.id || "",
+        user_key: item.user_key || "",
+        user_email: item.email || "",
+        total_spend: this.formatPrice(user_consumption_statistics.sum_settle_pay_amount, currency),
+        payments_times: this.formatPrice(user_consumption_statistics.sum_settle_pay_success_count, currency),
+        refunded_amount:  this.formatPrice(user_consumption_statistics.sum_settle_refund_amount, currency),
+        last_payment: this.formatTime(user_consumption_statistics.lasted_pay_time),
+        created_time: this.formatTime(user_consumption_statistics.created_time)
+      }
     },
     /**
      * 格式化创建时间 格式 2020-01-01 00:00:00
-     * @param created_time
+     * @param time
      */
-    formatCreatedTime (created_time) {
-
-    },
-    /**
-     * 格式化最后一次消费时间 格式 2020-01-01 00:00:00
-     * @param last_payment
-     */
-    formatLastPayment (last_payment) {
-
-    },
-    /**
-     * 格式化总消费金额 格式 US$ 99.00
-     * @param total_spend
-     */
-    formatTotalSpend (total_spend) {
-
+    formatTime (time) {
+      if (time) {
+        return timestampToDateString(time, 'yyyy-MM-dd HH:II:SS');
+      }
+      return "";
     },
     /**
      * 格式化退款金额 格式 US$ 99.00
-     * @param refunded_amount
      */
-    formatRefundedAmount (refunded_amount) {
-
+    formatPrice(price, currency) {
+      if (price && currency){
+        for (const currency_key in CURRENCY_OPTIONS) {
+          if (currency_key.toLowerCase() === currency.toLowerCase()) {
+            return CURRENCY_OPTIONS[currency_key]['symbol'] + ' ' + price;
+          }
+        }
+        return currency + ' ' + price;
+      }
+      return "";
     },
     //排序方法
     handleHeaderCellClass({column}){
@@ -111,6 +187,11 @@ export default {
         }
       });
     },
+    /**
+     * 排序
+     * @param prop
+     * @param order
+     */
     handleSortChange({prop, order }) {
       if (order) {
         let flag_is_have=false
@@ -135,6 +216,7 @@ export default {
         });
         this.sort.splice(order_index,1)
       }
+      this.getData();
     }
   }
 }
