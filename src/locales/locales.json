@@ -56,13 +56,13 @@
     "update plugin": "Update Extension",
     "store address": "Store Address",
     "extension id": "Extension ID",
-    "total revenue": "Total Revenue",
-    "yesterday revenue": "Yesterday's Revenue",
-    "yesterday new additions": "Yesterday's New Additions",
-    "current subscriptions": "Current Subscriptions",
-    "total customers": "Total Customers",
+    "total revenue": "Net volume",
+    "yesterday revenue": "Yesterday",
+    "yesterday new additions": "Yesterday",
+    "current subscriptions": "Effective Subscriptions",
+    "total customers": "Gross customers",
     "balance": "Balance",
-    "withdrawable balance": "Withdrawable Balance",
+    "withdrawable balance": "Payouts",
 
 
     "billing management": "Billing Management",
@@ -152,9 +152,24 @@
     "Succeed": "Succeed",
     "Failed": "Failed",
     "Refunded": "Refunded",
-    "Disputed": "Disputed"
+    "Disputed": "Disputed",
+
+
+    "gross volume": "Gross Volume",
+    "net volume": "Net Volume",
+    "orders": "Orders",
+    "successful payments": "Successful Payments",
+    "new customers": "New Customers",
+    "new subscriptions": "New Customers"
   },
   "zh-CN": {
+    "gross volume": "总额",
+    "net volume": "净收入",
+    "orders": "订单数量",
+    "successful payments": "成功支付数量",
+    "new customers": "新增用户数",
+    "new subscriptions": "新增订阅数",
+
     "Payment List": "付款列表",
     "Dashboard": "仪表盘",
     "All Orders": "全部订单",

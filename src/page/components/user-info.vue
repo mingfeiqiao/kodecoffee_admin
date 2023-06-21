@@ -29,7 +29,6 @@ export default {
   created() {
     // 确定当前环境，如果是测试环境，那么就需要确实测试环境是否有用户信息，如果没有，那么需要接口调用获取用户信息
     let lUserInfo = localStorage.getItem(this.$mode + 'userInfo')
-    console.log(lUserInfo)
     if (lUserInfo) { // 本地如果已经存储了用户信息，那么就不需要再次调用接口获取用户信息
       this.userInfo = JSON.parse(lUserInfo);
     } else {
@@ -47,7 +46,7 @@ export default {
           // "user_id": 12345678,
           // "user_id":2843847,
           // "user_id":2912918,
-          "user_id":"2911090",
+          "user_id":"2840846",
           "email": "ligoogel1918@gmail.com",
           "username": "李谷歌",
           "created_at": "2023-05-29 20:27:01",
@@ -85,7 +84,6 @@ export default {
           phone_number: user_info.phone_number ? user_info.phone_number : '',
           area: user_info.area ? user_info.area : '',
         };
-        console.log('this.userInfo', this.userInfo);
         let vm = this;
         postUserInfo(vm.userInfo).then(function(res) {
           localStorage.setItem(vm.$mode + 'userInfo', JSON.stringify(vm.userInfo));

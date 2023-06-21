@@ -17,7 +17,6 @@ const instance = axios.create({
 instance.interceptors.response.use(
     response => {
       const token = response.headers['x-auth-token']; // 获取响应中的Token
-      console.log('响应token',token,'response header:', response.headers);
       const applicationKey = response.headers['x-application-key']; // 获取响应中的Token
       if (applicationKey) {
         localStorage.setItem(Vue.prototype.$mode + 'applicationKey', applicationKey);
@@ -45,7 +44,6 @@ instance.interceptors.response.use(
 instance.interceptors.request.use(
     config => {
       let token = localStorage.getItem(Vue.prototype.$mode + 'token');
-      console.log(token);
       if (token) {
         config.headers.Authorization = token;
         config.headers['application-key']= localStorage.getItem(Vue.prototype.$mode + 'applicationKey');
@@ -106,6 +104,8 @@ export const subscriptionDetailApi = (id,data) => instance.post(`/app/subscripti
 export const customerListApi = (data) => instance.post('/app/customers/list', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 
 export const customerDetailApi = (id,data) => instance.post(`/app/customers/detail/${id}`, JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
+
+export const dashBoardApi = (data) => instance.post('/dashboard/dashboard', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 // 插件端相关
 export const extensionLoginIn = () => instance.get('/extension/login');
 export const extensionUpdateEmail = data => instance.post('/extension/update-email', data);
