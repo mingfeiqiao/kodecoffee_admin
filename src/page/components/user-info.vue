@@ -66,9 +66,9 @@ export default {
       };
     },
     async loginOrRegisterUser() {
-      // let res = await zbUserInfo();
-      // res = res.data;
-      let res = this.testData();
+      let res = await zbUserInfo();
+      res = res.data;
+      // let res = this.testData();
       if (parseInt(res.code) === 100000) {
         console.log(res);
         if (!res.userinfo) {
