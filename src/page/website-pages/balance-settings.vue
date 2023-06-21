@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="container">
     <div class="border-bottom" >
       <div class="title-20">余额</div>
       <div style="padding: 24px 0;display: flex;justify-content: space-between;align-items: flex-end;">
@@ -9,7 +9,7 @@
               <span style="color:#929292;">总余额</span>
               <span>
               <el-tooltip class="item" content="Left Top 提示文字" effect="light" placement="top">
-                <i class="el-icon-info" style="color:#929292;"></i>
+                <i class="el-icon-info" style="color:#939393;"></i>
               </el-tooltip>
             </span>
             </div>
@@ -17,7 +17,7 @@
           </div>
           <div style="padding-right: 30px">
             <div>
-              <span style="color:#929292;">可提现</span>
+              <span style="color:#939393;">可提现</span>
               <span>
               <el-tooltip class="item" content="Left Top 提示文字" effect="light" placement="top">
                 <i class="el-icon-info"  style="color:#929292;"></i>
@@ -36,7 +36,7 @@
     <div class="border-bottom" style="padding-bottom: 24px">
       <div style="padding: 24px 0">
         <span class="title-16">提现设置</span>
-        <span style="color: #1D39C4;padding-left: 24px;cursor: pointer" @click="openWithdrawalSettingsDialog">编辑信息</span>
+        <span class="link" style="padding-left: 24px;" @click="openWithdrawalSettingsDialog">编辑信息</span>
       </div>
       <div>
         <el-descriptions direction="vertical">
@@ -59,7 +59,7 @@
         <div style="display: flex;align-items: center;justify-content: space-between;">
           <div>
             <span>有疑问或者其他问题？</span>
-            <span style="color: #1D39C4;cursor: pointer">
+            <span class="link">
               联系我们
             </span>
           </div>
@@ -89,10 +89,48 @@
         </el-table>
       </div>
     </div>
+     <edit-withdrawal-settings-dialog :visible="show_withdrawal_settings_edit_dialog" @visibleChange="visibleChange" @operateSuccess="operateSuccess"></edit-withdrawal-settings-dialog>
+     <el-dialog  :visible.sync="show_withdrawal_dialog" :show-close="false">
+       <div style="padding: 16px 24px">
+         <div class="title-16" style="padding-bottom: 16px;border-bottom: 1px solid rgba(232, 232, 232, 1)">申请提现</div>
+         <span style="display:flex;justify-content: center;align-items: center;padding-top:24px">
+           <span style="color: #101010;width: 80%;background-color: rgba(230, 247, 255, 1);border-radius: 5px;height: 40px;line-height: 40px;padding: 0 12px;text-align: left">
+              <i class="el-icon-warning" style="color: #1990FF"></i>
+              <span>
+                资金将直接打入该账户，无法退回。请确认账户信息正确
+              </span>
+           </span>
+         </span>
+         <div class="custom-descriptions-container" style="display: flex;align-items: center;justify-content: center">
+           <el-descriptions border :column="1"  class="custom-descriptions">
+             <el-descriptions-item label="提现金额">
+             </el-descriptions-item>
+             <el-descriptions-item label="收款方式">
+             </el-descriptions-item>
+             <el-descriptions-item label="银行账户">
+             </el-descriptions-item>
+             <el-descriptions-item label="开户行">
+             </el-descriptions-item>
+             <el-descriptions-item label="账户人姓名">
+             </el-descriptions-item>
+             <el-descriptions-item label="提现币种">
+             </el-descriptions-item>
+           </el-descriptions>
+         </div>
+         <div style="display: flex;flex-direction: row-reverse;align-items: center;">
+           <el-button @click="show_withdrawal_dialog = false" size="small" style="margin-left: 12px">{{ $t('cancel') }}</el-button>
+           <el-button type="primary"  size="small">{{$t('create')}}</el-button>
+         </div>
+       </div>
+     </el-dialog>
   </div>
 </template>
 <script>
+import EditWithdrawalSettingsDialog from '../components/edit-withdrawal-settings-dialog.vue'
 export default {
+  components: {
+    EditWithdrawalSettingsDialog
+  },
   data () {
     return {
       balance: {
@@ -128,8 +166,14 @@ export default {
       this.show_withdrawal_dialog = !this.show_withdrawal_dialog;
     },
     openWithdrawalSettingsDialog () {
-      this.$router.push({path: '/withdrawal-settings'})
+      this.show_withdrawal_settings_edit_dialog = !this.show_withdrawal_settings_edit_dialog;
     },
+    visibleChange (visible) {
+      this.show_withdrawal_settings_edit_dialog = visible;
+    },
+    operateSuccess () {
+      this.show_withdrawal_settings_edit_dialog = false;
+    }
   },
 }
 </script>
@@ -141,5 +185,18 @@ export default {
 }
 .border-bottom {
   border-bottom: 1px solid #ebeef5;
+}
+.custom-descriptions-container /deep/ .el-descriptions-item__label {
+  width: 200px;
+  padding: 12px;
+}
+.custom-descriptions-container {
+  padding: 24px 0;
+}
+.container /deep/.el-dialog__header {
+  padding: 0;
+}
+.container /deep/ .el-dialog__body {
+  padding: 0;
 }
 </style>

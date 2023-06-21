@@ -265,7 +265,6 @@ export default {
      * 分页
      */
     handleCurrentChange() {
-      console.log(this.page);
       this.getTableData();
     },
   },

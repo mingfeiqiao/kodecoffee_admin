@@ -82,7 +82,6 @@ export default {
     },
     getData() {
       let vm = this;
-      vm.total = 0;
       let args = {
         condition: vm.condition,
         page: vm.page,
@@ -94,8 +93,8 @@ export default {
       customerListApi(args).then(res => {
         vm.table_loading = false;
         if (parseInt(res.data.code )=== 100000) {
-          this.table_data = vm.formatUserList(res.data.data);
-          this.total = res.data.totalCount;
+          vm.table_data = vm.formatUserList(res.data.data);
+          vm.total = res.data.totalCount;
         }
       }).catch(err => {
         vm.table_loading = false;

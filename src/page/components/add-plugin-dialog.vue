@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :title="operationType === 'add' ? $t('create plugin') :  $t('update plugin')" v-if="dialog_form_visible" :visible.sync="dialog_form_visible" width="50%" :modal-append-to-body="false">
+  <el-dialog :title="operationType === 'add' ? $t('create plugin') : $t('update plugin')" v-if="dialog_form_visible" :visible.sync="dialog_form_visible" width="50%"  :destroy-on-close="true">
     <div>
       <el-form :model="plugin_data" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
         <el-form-item :label="$t('extension id') + ':'" prop="client_key">
@@ -56,9 +56,11 @@ export default {
       this.$emit('visibleChange', newValue);
       return newValue;
     },
-    chosenPluginData(newValue) {
+    chosen_plugin_data(newValue) {
       if (newValue && Object.keys(newValue).length > 0) {
         this.plugin_data = JSON.parse(JSON.stringify(newValue));
+      } else {
+        this.plugin_data = {};
       }
     }
   },
@@ -90,12 +92,10 @@ export default {
     }
   },
   methods : {
-    /**
-     *
-     * @param formName
-     */
-    resetForm(formName) {
-      this.$refs[formName].resetFields();
+    resetForm() {
+      this.plugin_data = {
+        client_key: this.chosen_plugin_data.client_key || ""
+      };
     },
 
     /**
@@ -127,7 +127,6 @@ export default {
           args.icon = icon;
         }
       }
-      console.log('args',args);
       addPlugin(args).then((res) => {
         if (parseInt(res.data.code) === 100000) {
           this.$message({
@@ -193,7 +192,6 @@ export default {
             await this.updatePluginData();
           }
         } else {
-          console.log('error submit!!');
           return false;
         }
       });

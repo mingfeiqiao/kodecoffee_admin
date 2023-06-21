@@ -2,6 +2,7 @@ import Vue from 'vue'
 import App from './App'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
+// import './theme/index.css'
 import VueI18n from 'vue-i18n';
 import messages from './locales/locales.json';
 import router from './router';

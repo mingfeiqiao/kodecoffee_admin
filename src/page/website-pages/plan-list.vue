@@ -128,14 +128,15 @@
 
       </div>
     </div>
-    <add-plan-dialog
-      v-if="dialog_form_visible"
-      :visible="dialog_form_visible"
-      @visibleChange="visibleChange"
-      :operationType="operationType"
-      :chosen_plan_data="chosen_plan_data"
-      @operateSuccess="operateSuccess"
-    ></add-plan-dialog>
+    <div>
+      <add-plan-dialog
+        :visible="dialog_form_visible"
+        @visibleChange="visibleChange"
+        :operationType="operationType"
+        :chosen_plan_data="chosen_plan_data"
+        @operateSuccess="operateSuccess"
+      ></add-plan-dialog>
+    </div>
   </div>
 </template>
 <script>
@@ -181,7 +182,6 @@ export default {
     };
   },
   created() {
-    console.log("created");
     this.getPlanList();
     // this.testPlanList();
   },
@@ -267,26 +267,11 @@ export default {
         if (parseInt(res.data.code )=== 100000) {
           vm.plan_list = res.data.data;
           vm.plan_list = vm.formatPlanList(vm.plan_list);
-          console.log(vm.plan_list);
           vm.total = res.data.totalCount;
         }
       }).catch(err => {
         vm.table_loading = false;
       });
-    },
-    /**
-     * 是否存在多币种
-     */
-    isPriceMultiTypeExist (price) {
-      return !!(price && price[0] && price[0].app_price_currency && price[0].app_price_currency.length > 0);
-    },
-    /**
-     *
-     * @param appPrice
-     * @returns {boolean}
-     */
-    isAppPriceTypeExist (appPrice) {
-      return !!(appPrice && appPrice[0] && appPrice[0].type);
     },
     /**
      * 操作成功
@@ -398,7 +383,6 @@ export default {
       this.operationType = operation;
       if (operation === 'edit') {
         this.dialog_form_visible = true;
-        console.log(plan_data);
       } else if (operation === 'add') {
         // 新增插件
         this.dialog_form_visible = true;

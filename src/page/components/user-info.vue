@@ -44,9 +44,9 @@ export default {
         "product_mark": 70,
         "userinfo": {
           // "user_id": 12345678,
-          // "user_id":2843847,
+          "user_id":2870346,
           // "user_id":2912918,
-          "user_id":"2840846",
+          // "user_id":"2840846",
           "email": "ligoogel1918@gmail.com",
           "username": "李谷歌",
           "created_at": "2023-05-29 20:27:01",
@@ -66,9 +66,9 @@ export default {
       };
     },
     async loginOrRegisterUser() {
-      let res = await zbUserInfo();
-      res = res.data;
-      // let res = this.testData();
+      // let res = await zbUserInfo();
+      // res = res.data;
+      let res = this.testData();
       if (parseInt(res.code) === 100000) {
         console.log(res);
         if (!res.userinfo) {

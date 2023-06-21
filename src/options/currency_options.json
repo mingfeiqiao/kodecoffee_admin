@@ -1,10 +1,14 @@
 {
-  "cny": {
-    "symbol": "¥",
-    "full_name": "人民币"
-  },
   "usd": {
     "symbol": "US$",
-    "full_name": "USD"
+    "full_name": "USD",
+    "en-US": "US Dollar",
+    "zh-CN": "美元"
+  },
+  "cny": {
+    "symbol": "¥",
+    "full_name": "人民币",
+    "en-US": "Chinese Yuan",
+    "zh-CN": "人民币"
   }
 }

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-dialog :title="operationType === 'add' ? $t('create new plan') : $t('update plan')" :visible.sync="dialog_form_visible" width="50%" :modal-append-to-body="false">
+    <el-dialog :title="operationType === 'add' ? $t('create new plan') : $t('update plan')" v-if="dialog_form_visible" :visible.sync="dialog_form_visible" width="50%" :modal-append-to-body="false" destroy-on-close>
      <el-form ref="form" :model="plan"  label-width="80px" label-position="top" size="mini">
        <div style="display:flex;align-items: center;justify-content: space-between; ">
          <div style="min-width: 250px;">
@@ -296,7 +296,6 @@ export default {
      * 选择货币
      */
     setSelectedCurrencyOption() {
-      console.log('setSelectedCurrencyOption');
       this.$nextTick(() => {
         for (let i = 0; i < this.currency_options.length; i++) {
           if (this.currency_options[i].selected) {
@@ -311,7 +310,6 @@ export default {
      */
     getPriceOptionAndCurrencyOption (value) {
       let current_app_price_option = this.app_price_options.filter(item => item.amount === value);
-      console.log('xxx', current_app_price_option);
       let multiple_selection = [];
       if (current_app_price_option && current_app_price_option.length > 0) {
         this.main_price_obj.currency = current_app_price_option[0].currency;
@@ -337,7 +335,6 @@ export default {
         }
         this.multiple_selection = multiple_selection;
         this.currency_options = currency_options;
-        console.log(this.multiple_selection, this.currency_options);
         if (this.is_multiple_currency_support) {
           this.setSelectedCurrencyOption();
         }

@@ -8,8 +8,10 @@
       </el-card>
     </div>
     <div class="card" v-for="pluginData in plugin_list"><plugin-card :data="pluginData" @operatePluginCard="operatePluginCard"></plugin-card></div>
-    <add-plugin-dialog v-if="dialog_form_visible" :visible="dialog_form_visible" @visibleChange="visibleChange" :operationType="operationType" @operateSuccess="operateSuccess" :chosen_plugin_data="chosen_plugin_data">
-    </add-plugin-dialog>
+    <div>
+      <add-plugin-dialog :visible="dialog_form_visible" @visibleChange="visibleChange" :operationType="operationType" @operateSuccess="operateSuccess" :chosen_plugin_data="chosen_plugin_data">
+      </add-plugin-dialog>
+    </div>
   </div>
 </template>
 <script>
@@ -44,13 +46,11 @@ export default {
     },
     /**
      * 操作插件卡片
-     * @param pluginData
+     * @param plugin_data
      * @param operation
      */
-    operatePluginCard (pluginData, operation) {
-      // 删除插件 -> 直接发请求
-      // 编辑插件 -> 打开编辑插件的弹窗
-      this.chosen_plugin_data = pluginData;
+    operatePluginCard (plugin_data, operation) {
+      this.chosen_plugin_data = plugin_data;
       this.operationType = operation;
       if (operation === 'edit') {
         this.dialog_form_visible = true;

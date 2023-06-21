@@ -63,6 +63,8 @@
     "total customers": "Gross customers",
     "balance": "Balance",
     "withdrawable balance": "Payouts",
+    "bank": "Bank",
+    "paypal": "Paypal",
 
 
     "billing management": "Billing Management",
@@ -195,6 +197,8 @@
     "other price tip": "另外{number}个货币价格",
     "price": "价格",
     "currency": "币种",
+    "bank": "银行",
+    "paypal": "Paypal",
 
 
     "Email": "邮箱",
