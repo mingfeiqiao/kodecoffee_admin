@@ -94,7 +94,7 @@
        <div style="padding: 16px 24px">
          <div class="title-16" style="padding-bottom: 16px;border-bottom: 1px solid rgba(232, 232, 232, 1)">申请提现</div>
          <span style="display:flex;justify-content: center;align-items: center;padding-top:24px">
-           <span style="color: #101010;width: 80%;background-color: rgba(230, 247, 255, 1);border-radius: 5px;height: 40px;line-height: 40px;padding: 0 12px;text-align: left">
+           <span style="width: 80%;background-color: rgba(230, 247, 255, 1);border-radius: 5px;height: 40px;line-height: 40px;padding: 0 12px;text-align: left">
               <i class="el-icon-warning" style="color: #1990FF"></i>
               <span>
                 资金将直接打入该账户，无法退回。请确认账户信息正确

@@ -86,7 +86,7 @@ export default {
         condition: vm.condition,
         page: vm.page,
         page_size: vm.page_size,
-        sort: this.formatSortParams(this.sort)
+        order: this.formatSortParams(this.sort)
       };
       vm.table_loading = true;
       vm.table_data = [];
@@ -148,7 +148,7 @@ export default {
         user_key: item.user_key || "",
         user_email: item.email || "",
         total_spend: this.formatPrice(user_consumption_statistics.sum_settle_pay_amount, currency),
-        payments_times: this.formatPrice(user_consumption_statistics.sum_settle_pay_success_count, currency),
+        payments_times: user_consumption_statistics.sum_settle_pay_success_count || 0,
         refunded_amount:  this.formatPrice(user_consumption_statistics.sum_settle_refund_amount, currency),
         last_payment: this.formatTime(user_consumption_statistics.lasted_pay_time),
         created_time: this.formatTime(item.created_time)
@@ -176,7 +176,7 @@ export default {
         }
         return currency + ' ' + price;
       }
-      return "";
+      return "US$ 0";
     },
     //排序方法
     handleHeaderCellClass({column}){

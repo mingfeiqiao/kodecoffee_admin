@@ -19,10 +19,10 @@
           <el-input v-model="plugin_data.store_address"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="submitForm('ruleForm')">
+          <el-button type="primary" size="small" @click="submitForm('ruleForm')">
             {{ operationType === 'add' ? $t('create') : $t('update') }}
           </el-button>
-          <el-button @click="resetForm('ruleForm')">{{ $t('Reset') }}</el-button>
+          <el-button @click="resetForm('ruleForm')" size="small">{{ $t('Reset') }}</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -110,7 +110,7 @@ export default {
         return response.data.data.url;
       } else {
         this.$message({
-          message: '上传图片失败',
+          message: 'upload icon error',
           type: 'error'
         });
       }
@@ -130,7 +130,7 @@ export default {
       addPlugin(args).then((res) => {
         if (parseInt(res.data.code) === 100000) {
           this.$message({
-            message: '操作成功',
+            message: 'success',
             type: 'success'
           });
           this.dialog_form_visible = false;
@@ -138,7 +138,7 @@ export default {
         }
       }).catch((err) => {
         this.$message({
-          message: '操作失败',
+          message: 'fail',
           type: 'error'
         });
       });
@@ -166,7 +166,7 @@ export default {
       updatePlugin(args).then((res) => {
         if (parseInt(res.data.code) === 100000) {
           this.$message({
-            message: '操作成功',
+            message: 'success',
             type: 'success'
           });
           this.dialog_form_visible = false;
@@ -174,7 +174,7 @@ export default {
         }
       }).catch((err) => {
         this.$message({
-          message: '操作失败',
+          message: 'fail',
           type: 'error'
         });
       });

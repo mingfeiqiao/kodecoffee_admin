@@ -56,7 +56,7 @@
                   </el-table-column>
                   <el-table-column :label="$t('Operation')" width="80px" align="center">
                     <template slot-scope="scope">
-                      <span :style="{'color': scope.row.operation ? scope.row.operation.color : '#101010', 'cursor': 'pointer'}"
+                      <span :style="{'color': scope.row.operation ? scope.row.operation.color : '', 'cursor': 'pointer'}"
                             @click="scope.row.operation ? scope.row.operation.function(scope.row) : ''"
                       >
                          {{ scope.row.operation ? $t(scope.row.operation.message) : '' }}

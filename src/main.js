@@ -1,8 +1,10 @@
 import Vue from 'vue'
 import App from './App'
 import ElementUI from 'element-ui'
-import 'element-ui/lib/theme-chalk/index.css'
-// import './theme/index.css'
+import '../src/css/cus-theme.scss'
+// import 'element-ui/lib/theme-chalk/index.css'
+// import './css/index.css'; // 引入element-ui主题样式
+// import './css/cus-theme.less'; // 引入自定义主题样式
 import VueI18n from 'vue-i18n';
 import messages from './locales/locales.json';
 import router from './router';

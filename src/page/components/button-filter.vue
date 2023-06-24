@@ -16,7 +16,7 @@
   border-left:none;
 }
 .is_active {
-  color: #1090FF;
+  color: val(--color-primary);
   border: 1px solid rgba(24, 144, 255, 1);
 }
 </style>
