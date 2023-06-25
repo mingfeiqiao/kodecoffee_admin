@@ -96,13 +96,12 @@ module.exports = {
         ]
       },
       {
-        test: /\.scss$/,
+        test: /\.s[ac]ss$/i,
         use: [
-          'style-loader',
-          'css-loader',
-          'sass-loader'
+          "style-loader",
+          "css-loader",
+          "sass-loader"
         ],
-        include: [resolve('src/css')]
       }
     ]
   }

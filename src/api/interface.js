@@ -114,7 +114,16 @@ export const extensionPayRecord = () => instance.get('/extension/pay-record');
 export const extensionPayStatus = () => instance.get('/extension/pay-status');
 export const getUserInfo = () => instance.get('/user/info');
 
+export const addWithdrawInfoApi = data => instance.post('/withdraw/add_withdraw_info', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 
+export const accountWithdrawInfoApi = data => instance.post('/withdraw/account_withdraw_info', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
+export const updateWithdrawInfoApi = data => instance.post('/withdraw/update_withdraw_info', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
+export const accountWithdrawInfoListApi = data => instance.post('/withdraw/account_withdraw_info_apply_list', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
+export const withdrawRateApi = data => instance.post('/withdraw/search_withdraw_exchange_rate', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
+
+export const searchWithdrawAmountApi = data => instance.post('/withdraw/search_real_amount_withdraw', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
+
+export const applyWithdrawApi = data => instance.post('/withdraw/apply_withdraw', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 
 export const extensionCancelSubscription = (headers, data) => {
   headers['Content-Type'] = 'application/json';
