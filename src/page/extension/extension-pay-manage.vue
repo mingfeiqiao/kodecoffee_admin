@@ -343,7 +343,6 @@ export default {
     getUserInfo () {
       let vm = this;
       extensionUserInfo(vm.common_headers).then(res => {
-        console.log(res);
         let resData = res.data;
         if (parseInt(resData.code) === 100000) {
           vm.user_info = resData.userinfo;
@@ -439,7 +438,6 @@ export default {
     cancelSubscription (row) {
       let vm = this;
       extensionCancelSubscription(vm.common_headers,{transaction_id: row.transaction_id}).then(res => {
-        console.log(res);
         let resData = res.data;
         if (parseInt(resData.code) === 100000) {
           vm.$message({
@@ -467,8 +465,6 @@ export default {
      * @param event
      */
     handleClick(tab, event) {
-      console.log(this.activeName);
-      console.log(tab, event);
     },
     /**
      * 打开账单链接

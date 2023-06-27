@@ -1,24 +1,20 @@
 <template>
   <div class="container">
     <div style="display: flex;width: 100%;flex-direction: row;align-items: center;justify-content: space-between;padding-bottom: 24px">
-      <el-button type="primary" size="mini" @click="operatePlan({}, 'add')">
-        {{$t('create plan')}}
-      </el-button>
       <div style="display:flex;align-items: center;justify-content: center">
         <div style="display: flex">
           <device-filter :data="payment_modes" @change="paymentModeChange" :device="condition.type"></device-filter>
         </div>
         <div>
           <div style="padding-left: 12px">
-            <el-input
-                size="mini"
-                :placeholder="$t('input placeholder')"
-                v-model="condition.q">
-              <i slot="suffix" class="el-input__icon el-icon-search" style="cursor: pointer" @click="search"></i>
+            <el-input size="small" :placeholder="$t('input placeholder')" v-model="condition.q" clearable @keyup.enter.native="search">
             </el-input>
           </div>
         </div>
       </div>
+      <el-button type="primary" size="small" @click="operatePlan({}, 'add')">
+        {{$t('create plan')}}
+      </el-button>
     </div>
     <div>
       <div style="display: flex;align-items: center;flex-direction: column">
@@ -108,7 +104,7 @@
             </template>
             <template slot-scope="scope">
               <div class="column_content">
-                <span style="color: #1090FF; cursor: pointer" @click="operatePlan(scope.row, 'edit')">{{$t('edit')}}</span>
+                <span style="color: #2f54eb; cursor: pointer" @click="operatePlan(scope.row, 'edit')">{{$t('edit')}}</span>
               </div>
             </template>
           </el-table-column>
@@ -121,14 +117,13 @@
             :current-page.sync="page"
             :page-sizes="[10,20]"
             :page-size="page_size"
-            layout="prev, pager, next"
+            layout="total, sizes, prev, pager, next, jumper"
             :total="total">
           </el-pagination>
         </div>
-
       </div>
     </div>
-    <div>
+    <div v-if="dialog_form_visible">
       <add-plan-dialog
         :visible="dialog_form_visible"
         @visibleChange="visibleChange"
@@ -284,7 +279,7 @@ export default {
      * @param val
      */
     handleCurrentChange(val) {
-      this.args.page = val;
+      this.page = val;
       this.getPlanList();
     },
     /**
@@ -368,7 +363,7 @@ export default {
       for (const currency_key in CURRENCY_OPTIONS) {
         if (currency_key.toLowerCase() === currency) {
           symbol = CURRENCY_OPTIONS[currency_key]['symbol'];
-          return `${symbol} ${price} ${CURRENCY_OPTIONS[currency_key]['full_name']}`;
+          return `${symbol} ${price}`;
         }
       }
     },

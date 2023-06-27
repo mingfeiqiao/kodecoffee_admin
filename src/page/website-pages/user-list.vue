@@ -2,8 +2,7 @@
   <div>
     <div>
       <div style="max-width: 300px;">
-        <el-input v-model="condition.q" :placeholder="$t('please input email')"  size="mini" >
-          <i slot="suffix" class="el-input__icon el-icon-search" @click="search"></i>
+        <el-input v-model="condition.q" :placeholder="$t('please input email')"  size="small" clearable @keyup.enter.native="search" @clear="search">
         </el-input>
       </div>
       <div style="padding-top: 24px">
@@ -14,17 +13,17 @@
                   :header-cell-class-name="handleHeaderCellClass"
                   :header-cell-style="{'background-color': 'var(--header-cell-background-color)','color': 'var(--header-cell-color)','font-weight': 'var(--header-cell-font-weight)'}"
         >
-          <el-table-column prop="user_key" :label="$t('id')">
-            <template slot-scope="scope">
-              <span class="link" @click="openUserDetail(scope.row.user_id)">{{scope.row.user_key}}</span>
-            </template>
-          </el-table-column>
           <el-table-column prop="user_email" :label="$t('customer')"></el-table-column>
           <el-table-column prop="total_spend" :label="$t('total spend')" sortable ></el-table-column>
           <el-table-column prop="payments_times" :label="$t('payments times')" sortable></el-table-column>
           <el-table-column prop="refunded_amount" :label="$t('refunded amount')" sortable></el-table-column>
           <el-table-column prop="last_payment" :label="$t('last payments')"></el-table-column>
           <el-table-column prop="created_time" :label="$t('create time')"></el-table-column>
+          <el-table-column :label="$t('Operation')">
+            <template slot-scope="scope">
+              <span class="link" @click="openUserDetail(scope.row.user_id)">{{$t('detail')}}</span>
+            </template>
+          </el-table-column>
         </el-table>
         <div style="padding-top:12px;display: flex;align-items: center;justify-content: center;">
           <el-pagination
@@ -34,7 +33,7 @@
             :current-page.sync="page"
             :page-sizes="[10,20]"
             :page-size="page_size"
-            layout="prev, pager, next"
+            layout="total, sizes, prev, pager, next, jumper"
             :total="total">
           </el-pagination>
         </div>
@@ -104,13 +103,15 @@ export default {
     /**
      * 当前页
      */
-    handleCurrentChange() {
+    handleCurrentChange(val) {
+      this.page = val;
       this.getData();
     },
     /**
      * 每页显示条数
      */
-    handleSizeChange() {
+    handleSizeChange(size) {
+      this.page_size = size;
       this.getData();
     },
     formatSortParams (sort) {

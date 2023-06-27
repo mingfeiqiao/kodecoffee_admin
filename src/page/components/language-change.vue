@@ -14,7 +14,7 @@
       <div slot="reference">
         <div>
           <span class="selected-lang">
-            {{ selectedLanguage}}
+            {{ show_language}}
             <i class="el-icon-caret-bottom"></i>
           </span>
         </div>
@@ -27,19 +27,24 @@
 export default {
   data() {
     return {
-      selectedLanguage: 'en-US',
+      selected_language: 'en-US',
       langOptions: [
         { short: 'en-US', full_name: 'English' },
         { short: 'zh-CN', full_name: '中文(简体)'},
       ],
     };
   },
+  computed: {
+    show_language() {
+      return this.langOptions.find(lang => lang.short === this.selected_language).full_name;
+    },
+  },
   created() {
-    this.selectedLanguage = this.$i18n.locale;
+    this.selected_language = this.$i18n.locale;
   },
   methods: {
     changeLanguage(lang) {
-      this.selectedLanguage = lang;
+      this.selected_language = lang;
       this.$i18n.locale = lang;
     }
   }

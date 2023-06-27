@@ -29,7 +29,7 @@
         </div>
         <div style="display: flex;align-items: flex-end">
           <span style="color: #929292;padding-right: 12px;">{{$t('payout 30 days tip')}}</span>
-          <el-button type="primary" size="small" @click="openWithdrawalDialog">{{$t('payout')}}</el-button>
+          <el-button v-show="balance_settings.currency" type="primary" size="small" @click="openWithdrawalDialog">{{$t('payout')}}</el-button>
         </div>
       </div>
     </div>
@@ -428,6 +428,9 @@ export default {
       }
       this.show_withdrawal_dialog = !this.show_withdrawal_dialog;
     },
+    /**
+     * 打开提现设置弹窗
+     */
     openWithdrawalSettingsDialog () {
       this.show_withdrawal_settings_edit_dialog = !this.show_withdrawal_settings_edit_dialog;
     },

@@ -30,7 +30,6 @@ instance.interceptors.response.use(
       // 如果用户token已经过期，那么我需要重定向到登录页面
       if (error.response && error.response.status === 401) { // 这里是token过期
         // 清空本地存储的token和cookie
-        console.log('token过期');
         document.cookie = '';
         localStorage.removeItem(Vue.prototype.$mode + 'applicationKey');
         localStorage.removeItem(Vue.prototype.$mode + 'userInfo')

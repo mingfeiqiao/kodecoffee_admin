@@ -55,7 +55,7 @@
           :current-page.sync="subscription_args.page"
           :page-sizes="[10,20]"
           :page-size="subscription_args.page_size"
-          layout="prev, pager, next"
+          layout="total, sizes, prev, pager, next, jumper"
           :total="subscription_args.total">
         </el-pagination>
       </div>
@@ -94,7 +94,7 @@
           :current-page.sync="order_args.page"
           :page-sizes="[10,20]"
           :page-size="order_args.page_size"
-          layout="prev, pager, next"
+          layout="total, sizes, prev, pager, next, jumper"
           :total="order_args.total">
         </el-pagination>
       </div>
@@ -239,7 +239,6 @@ export default {
           return;
         }
         if (parseInt(res.data.code) === 100000) {
-          console.log(SUBSCRIPTION_STATUS_OPTIONS);
           vm.subscription_list = vm.formatSubscriptionList(res.data.data);
           vm.subscription_args.total = res.data.totalCount;
         }

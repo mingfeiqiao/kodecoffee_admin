@@ -26,6 +26,7 @@
       <el-descriptions  class="order-descriptions">
         <el-descriptions-item :label="$t('customer')"><span class="link" @click="openUserDetail">{{subscription.user_email}}</span></el-descriptions-item>
         <el-descriptions-item :label="$t('create time')">{{ subscription.created_time }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('subscription expired time')">{{ subscription.plan_end_time }}</el-descriptions-item>
         <el-descriptions-item :label="$t('sell plan')">{{ subscription.prod_name }}</el-descriptions-item>
         <el-descriptions-item :label="$t('extension')">{{ subscription.client_name }}</el-descriptions-item>
         <el-descriptions-item :label="$t('subscription id')" >{{ subscription.subscription_id }}</el-descriptions-item>

@@ -1,5 +1,18 @@
 <template>
   <div style="width:100%;height: 100%;">
+    <div>
+      <div style="display:flex;justify-content: center;align-items: center;padding-bottom:12px">
+        <div style="width: 100%;background-color: rgba(230, 247, 255, 1);border-radius: 5px;padding: 8px 8px;text-align: left;display: flex;align-items: center">
+          <i class="el-icon-warning" style="color: #1990FF"></i>
+          <div style="padding-left: 8px">
+            <span>{{ `设置引导已经完成 ${$store.state.guide_step}/4`  }}</span>
+          </div>
+          <div @click="toGuide" class="link" style="padding-left: 12px">
+            {{'点击继续'}}
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="dashboard-card-container">
       <dashboard-card v-for="(value, key) in overall_data" :key="key" :data="value"></dashboard-card>
     </div>
@@ -125,6 +138,9 @@ export default {
   created() {
   },
   methods: {
+    toGuide () {
+      this.$router.push({path: '/guide'})
+    },
     /**
      *
      */

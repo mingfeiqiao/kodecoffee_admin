@@ -20,6 +20,10 @@
           inactive-text="正式模式">
         </el-switch>
       </div>
+      <div v-if="$store.state.guide_step < 4" style="background-color: #B7EB8F;margin-left: 24px;padding:3px 12px; border-radius: 4px;">
+        <span>{{'Setup Guide'}}</span>
+        <span>{{  `${$store.state.guide_step}/4`}}</span>
+      </div>
     </div>
     <div style="display: flex;align-items: center">
       <div>
@@ -38,7 +42,8 @@ export default {
   data () {
     return {
       isTestMode: false,
-      isCollapse: false
+      isCollapse: false,
+      is_finish_guide: false,
     }
   },
   components: {
@@ -58,6 +63,8 @@ export default {
   created() {
     this.isCollapse = this.collapse;
     this.isTestMode = this.$mode === this.MODECONFIG.SANDBOX.mode;
+    this.guide_step = localStorage.getItem('guideStep') || 0;
+    this.$store.commit('setGuideStep', this.guide_step);
   },
   methods: {
     changeCollapse() {

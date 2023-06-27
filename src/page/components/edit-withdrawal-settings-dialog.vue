@@ -200,7 +200,6 @@ export default {
   },
   methods : {
     async submit() {
-      console.log(this.withdrawal_settings);
       if (this.operationType === 'add') {
         addWithdrawInfoApi(this.withdrawal_settings).then((response) => {
           if (response.data && parseInt(response.data.code) === 100000) {

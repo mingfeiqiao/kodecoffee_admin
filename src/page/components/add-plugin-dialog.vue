@@ -1,22 +1,22 @@
 <template>
   <el-dialog :title="operationType === 'add' ? $t('create plugin') : $t('update plugin')" v-if="dialog_form_visible" :visible.sync="dialog_form_visible" width="50%"  :destroy-on-close="true">
     <div>
-      <el-form :model="plugin_data" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-        <el-form-item :label="$t('extension id') + ':'" prop="client_key">
+      <el-form :model="plugin_data" :rules="rules" ref="ruleForm" label-width="100px">
+        <el-form-item :label="$t('extension id') + ':'" prop="client_key" v-if="operationType !== 'add'">
           <div>{{ plugin_data.client_key }}</div>
         </el-form-item>
         <el-form-item :label="$t('name') + ':'" prop="name">
-          <el-input v-model="plugin_data.name">
+          <el-input v-model="plugin_data.name" :placeholder="$t('please input extension name')">
           </el-input>
         </el-form-item>
         <el-form-item :label="$t('icon') + ':'" prop="icon">
           <img-upload :icon_url="plugin_data.icon" @iconUpSourceChange="iconUpSourceChange"></img-upload>
         </el-form-item>
         <el-form-item :label="$t('description') + ':'" prop="desc">
-          <el-input type="textarea" v-model="plugin_data.description"></el-input>
+          <el-input type="textarea" v-model="plugin_data.description" :placeholder="$t('please input description')"></el-input>
         </el-form-item>
         <el-form-item :label="$t('store address') + ':'" prop="store_address">
-          <el-input v-model="plugin_data.store_address"></el-input>
+          <el-input v-model="plugin_data.store_address" :placeholder="$t('please input store address')"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" size="small" @click="submitForm('ruleForm')">

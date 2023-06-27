@@ -3,13 +3,13 @@
     <el-tabs v-model="active_subscription_type" @tab-click="handleClick">
       <el-tab-pane v-for="(option, index) in subscription_option" :key="index" :label="$t(option.label)" :name="option.value">
         <div>
-          <el-table :data="table_data" style="width: 100%" @row-click="openSubscriptionDetail"
+          <el-table :data="table_data" style="width: 100%"
                     :empty-text="$t('no data')"
                     v-loading="table_loading"
                     :header-cell-style="{'background-color': 'var(--header-cell-background-color)','color': 'var(--header-cell-color)','font-weight': 'var(--header-cell-font-weight)'}"          >
             <el-table-column prop="user_email" :label="$t('customer')"  width="auto">
               <template slot-scope="scope">
-                <span class="link" @click="openSubscriptionDetail(scope.row.subscription_id)">{{scope.row.user_email}}</span>
+                <span class="link" @click="openUserDetail(scope.row.user_id)">{{ scope.row.user_email}}</span>
               </template>
             </el-table-column>
             <el-table-column prop="prod_name" :label="$t('sell plan')" width="auto" >
@@ -21,9 +21,14 @@
                 </span>
               </template>
             </el-table-column>
-            <el-table-column width="auto" prop="plan_end_time" :label="$t('next invoice')">
+            <el-table-column width="auto" prop="plan_end_time" :label="$t('subscription expired time')">
             </el-table-column>
             <el-table-column prop="created_time" width="auto" :label="$t('create time')">
+            </el-table-column>
+            <el-table-column width="100" :label="$t('Operation')">
+              <template slot-scope="scope">
+                <span class="link" @click="openSubscriptionDetail(scope.row.subscription_id)">{{ $t('detail') }}</span>
+              </template>
             </el-table-column>
           </el-table>
           <div style="padding-top:12px;display: flex;align-items: center;justify-content: center;">
@@ -34,7 +39,7 @@
               :current-page.sync="page"
               :page-sizes="[10,20]"
               :page-size="page_size"
-              layout="prev, pager, next"
+              layout="total, sizes, prev, pager, next, jumper"
               :total="total">
             </el-pagination>
           </div>
@@ -86,6 +91,9 @@ export default {
     this.getSubscriptionData();
   },
   methods: {
+    openUserDetail (user_id) {
+      this.$router.push({path: "/user-list/detail/" + user_id});
+    },
     initCondition () {
       this.condition = {};
       if (this.active_subscription_type === 'effective') { // 所有生效的订阅
@@ -146,13 +154,15 @@ export default {
     /**
      * 分页
      */
-    handleSizeChange() {
+    handleSizeChange(size) {
+      this.page_size = size;
       this.getSubscriptionData();
     },
     /**
      * 分页
      */
-    handleCurrentChange() {
+    handleCurrentChange(val) {
+      this.page = val;
       this.getSubscriptionData();
     },
   },

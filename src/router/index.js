@@ -20,8 +20,22 @@ import extensionPayManage from "../page/extension/extension-pay-manage.vue";
 import extensionPayStatus from "../page/extension/extension-pay-status.vue";
 import userLayout from "../page/website-pages/user-layout.vue";
 import userDetail from "../page/website-pages/user-detail.vue";
+
+import guide from "../page/website-pages/guide.vue";
 Vue.use(Router);
 const routes = [
+  {
+    path: '/vendors',
+    redirect: '/',
+  },
+  {
+    path: '/sandbox-vendors',
+    redirect: '/',
+  },
+  {
+    path: '/',
+    redirect: '/dashboard',
+  },
   {
     path: '/',
     component: mainMenu,
@@ -33,10 +47,16 @@ const routes = [
         meta: { breadcrumbLabel: 'Dashboard' }
       },
       {
+        path: 'guide',
+        component: guide,
+        name: 'guide',
+        meta: { breadcrumbLabel: 'Guide' }
+      },
+      {
         path: 'pay-all-order',
         component: payAllOrderLayout,
         name: 'pay-all-order',
-        meta: { breadcrumbLabel: 'Pay All Order' },
+        meta: { breadcrumbLabel: 'Orders' },
         children: [
           {
             path: '/',
@@ -54,7 +74,7 @@ const routes = [
         path: 'pay-subscription',
         component: paySubscriptionLayout,
         name: 'pay-subscription',
-        meta: { breadcrumbLabel: 'Pay Subscription' },
+        meta: { breadcrumbLabel: 'Payments' },
         children: [
           {
             path: '/',
@@ -117,14 +137,6 @@ const routes = [
         meta: { breadcrumbLabel: 'Payment Channel Settings' }
       }
     ]
-  },
-  {
-    path: '/vendors',
-    redirect: '/',
-  },
-  {
-    path: '/sandbox-vendors',
-    redirect: '/',
   },
   {
     path: '/extension/login',

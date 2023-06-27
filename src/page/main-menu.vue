@@ -57,7 +57,7 @@
         <div class="breadcrumb">
           <el-breadcrumb separator="/">
             <el-breadcrumb-item>
-              <router-link to="/">Home</router-link>
+              <router-link to="/">{{$t('Home')}}</router-link>
             </el-breadcrumb-item>
             <el-breadcrumb-item v-for="(breadcrumb, index) in breadcrumbs" :key="index">
               <router-link :to="breadcrumb.route">{{ $t(breadcrumb.label) }}</router-link>
@@ -65,9 +65,9 @@
           </el-breadcrumb>
         </div>
       </div>
-      <el-main v-if="isLoginIn " style="padding: 24px; background-color: #f0f0f0;" >
-        <div v-if="$route.name !== 'dashboard'" >
-          <div style="background-color: #ffffff;padding: 24px;height: 100%" >
+      <el-main v-if="isLoginIn " style="padding: 24px; background-color: #f0f0f0;height: 100%" >
+        <div v-if="$route.name !== 'dashboard'" style="min-height: calc(100% - 48px);">
+          <div style="background-color: #ffffff;padding: 24px;min-height: calc(100% - 48px);" >
             <router-view v-if="is_option_load"></router-view>
           </div>
         </div>
@@ -125,8 +125,8 @@ export default {
   },
   created() {
     this.isLoginIn =  !!localStorage.getItem(this.$mode + 'userInfo');
-    console.log('是否：',this.isLoginIn)
     this.initOptions();
+    this.currentMenu = this.$route.path; // 初始化当前路由路径
   },
   methods: {
     collapseChange(collapse) {
@@ -136,14 +136,11 @@ export default {
       this.isCollapse = !this.isCollapse;
     },
     handleOpen(key, keyPath) {
-      console.log(key, keyPath);
     },
     handleClose(key, keyPath) {
-      console.log(key, keyPath);
     },
     handleMenuItemClick(url) {
       this.currentMenu = url;
-      console.log(url);
     },
     initOptions() {
       let vm = this;

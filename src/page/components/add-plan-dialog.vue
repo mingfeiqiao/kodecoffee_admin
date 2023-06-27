@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-dialog :title="operationType === 'add' ? $t('create new plan') : $t('update plan')" v-if="dialog_form_visible" :visible.sync="dialog_form_visible" width="50%" :modal-append-to-body="false" destroy-on-close>
+    <el-dialog :title="operationType === 'add' ? $t('create new plan') : $t('update plan')"  :visible.sync="dialog_form_visible" width="50%" :modal-append-to-body="false" destroy-on-close>
      <el-form ref="form" :model="plan"  label-width="80px" label-position="top" size="mini">
        <div style="display:flex;align-items: center;justify-content: space-between; ">
          <div style="min-width: 250px;">
@@ -113,7 +113,7 @@
            <div v-if="operationType ==='add'" style="color: #929292;">
              {{  $t('plan update tip') }}
            </div>
-           <div style="float: right">
+           <div style="float: right;padding-top: 24px">
              <el-button @click="dialog_form_visible = false" >{{ $t('cancel') }}</el-button>
              <el-button type="primary" @click="onSubmit">{{operationType === 'add' ? $t('create') : $t('update')}}</el-button>
            </div>
@@ -239,7 +239,38 @@ export default {
       })
     },
     operationType(newValue) {
+      if(newValue === 'add') {
+        this.plan = {
+          plan_id: "",
+          plan_code : "",
+          plan_icon: null,
+          plan_name: "",
+          plan_desc: "",
+        };
+        this.plan_type_obj = {
+          type: 'recurring'
+        };
+        this.plan_trial_obj = {
+          is_trial: true,
+          trial_days: 3
+        };
+        this.main_price_obj = {
+          price: 1.99,
+          currency: 'usd'
+        };
+        this.other_price_obj = [];
+      }
       this.unable_modify = newValue !== 'add';
+    },
+    chosen_plan_data(newValue) {
+      if (this.chosen_plan_data && this.chosen_plan_data.plan_id) {
+        this.plan = JSON.parse(JSON.stringify(this.chosen_plan_data))
+        this.plan_type_obj = this.plan.plan_type_obj;
+        this.plan_trial_obj = this.plan.plan_trial_obj;
+        this.main_price_obj = this.plan.main_price_obj;
+        this.other_price_obj = this.plan.other_price_obj;
+      }
+      return newValue;
     }
   },
   methods: {
