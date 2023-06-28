@@ -132,10 +132,10 @@ export default {
   },
   methods: {
     openUserDetail () {
-      this.$router.push({path: "/user-list/detail/" + this.subscription.user_id});
+      this.$router.push({path: "/customers/detail/" + this.subscription.user_id});
     },
     openOrderDetail (order_id) {
-      this.$router.push({path: "/pay-all-order/detail/" + order_id});
+      this.$router.push({path: "/orders/detail/" + order_id});
     },
     formatOrderList (transaction_invoice) {
       if (transaction_invoice && Array.isArray(transaction_invoice) && transaction_invoice.length > 0) {

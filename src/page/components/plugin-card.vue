@@ -4,9 +4,13 @@
       <div style="display: flex;align-items: center;padding:8px;height: 100px;">
         <div style="width: 50px">
           <el-image
+            v-if="data.icon"
             style="width: 50px; height: 50px;border-radius: 50%"
             :src="data.icon"
             fit="fit"></el-image>
+          <svg width="50" height="50" v-else>
+            <use xlink:href="#default-extension-icon"></use>
+          </svg>
         </div>
         <div style="padding: 0 12px;">
           <div>

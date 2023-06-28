@@ -46,6 +46,7 @@ export default {
     changeLanguage(lang) {
       this.selected_language = lang;
       this.$i18n.locale = lang;
+      localStorage.setItem('selected_language', lang);
     }
   }
 };

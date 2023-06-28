@@ -1,14 +1,14 @@
 <template>
   <div>
     <el-dialog :title="operationType === 'add' ? $t('create new plan') : $t('update plan')"  :visible.sync="dialog_form_visible" width="50%" :modal-append-to-body="false" destroy-on-close>
-     <el-form ref="form" :model="plan"  label-width="80px" label-position="top" size="mini">
+     <el-form ref="ruleForm" :model="plan"  label-width="120px" label-position="top" size="mini" :rules="rules">
        <div style="display:flex;align-items: center;justify-content: space-between; ">
          <div style="min-width: 250px;">
-           <el-form-item :label="$t('name')">
-             <el-input v-model="plan.plan_name" :placeholder="$t('plan name placeholder')"></el-input>
+           <el-form-item :label="$t('name')" prop="plan_name">
+             <el-input v-model="plan.plan_name" :placeholder="$t('plan name placeholder')" style="width: 300px"></el-input>
            </el-form-item>
-           <el-form-item :label="$t('description')">
-             <el-input type="textarea" v-model="plan.plan_desc" :placeholder="$t('plan description placeholder')"></el-input>
+           <el-form-item :label="$t('description')" >
+             <el-input type="textarea" v-model="plan.plan_desc" :placeholder="$t('plan description placeholder')" style="width: 300px"></el-input>
            </el-form-item>
          </div>
          <div>
@@ -18,12 +18,12 @@
          </div>
        </div>
        <div>
-         <el-form-item v-if="unable_modify">
+         <el-form-item>
            <div style="display: flex;align-items: center">
              <div style="padding-right: 20px">
                {{$t('billing method')}}
              </div>
-             <el-radio v-model="plan_type_obj.type" v-for="option of type_option" :key="option.value" :label="option.value">
+             <el-radio v-model="plan_type_obj.type" v-for="option of type_option" :key="option.value" :label="option.value" :disabled="!unable_modify">
                {{ $t(option.label) }}
              </el-radio>
            </div>
@@ -115,7 +115,7 @@
            </div>
            <div style="float: right;padding-top: 24px">
              <el-button @click="dialog_form_visible = false" >{{ $t('cancel') }}</el-button>
-             <el-button type="primary" @click="onSubmit">{{operationType === 'add' ? $t('create') : $t('update')}}</el-button>
+             <el-button type="primary" @click="onSubmit('ruleForm')">{{operationType === 'add' ? $t('create') : $t('update')}}</el-button>
            </div>
          </el-form-item>
        </div>
@@ -456,7 +456,7 @@ export default {
       // 比对chosen_plan_data和plan的icon, name, is_trial, trial_days, desc查看是否有修改,找出修改的数据
       let args = {};
       if (this.plan.plan_name !== this.chosen_plan_data.plan_name) {
-        args.name = this.plan.name;
+        args.name = this.plan.plan_name;
       }
       if (this.plan.plan_desc !== this.chosen_plan_data.plan_desc) {
         args.desc = this.plan.plan_desc;
@@ -512,26 +512,40 @@ export default {
         return response.data.data.url;
       } else {
         this.$message({
-          message: '上传图片失败',
+          message: 'upload error',
           type: 'error'
         });
       }
     },
     /**
-     *
+     * 提交
      */
-    async onSubmit() {
+    onSubmit(formName) {
       // submit
-      if (this.operationType === 'add') {
-        await this.addPlanData();
-      } else {
-        await this.updatePlanData();
-      }
+      this.$refs[formName].validate(async (valid) => {
+        if (valid) {
+          if (this.operationType === 'add') {
+            await this.addPlanData();
+          } else {
+            await this.updatePlanData();
+          }
+        } else {
+          return false;
+        }
+      });
     },
-
     handleSelectionChange(val) {
       this.multiple_selection = val;
     },
+  },
+  computed: {
+    rules () {
+      return {
+        plan_name: [
+          { required: true, message: this.$t('1-100 characters required'), trigger: 'blur' }
+        ]
+      }
+    }
   }
 }
 </script>

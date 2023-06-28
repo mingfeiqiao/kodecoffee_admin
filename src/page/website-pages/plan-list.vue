@@ -23,8 +23,6 @@
                   :empty-text="$t('no data')"
                   :header-cell-style="{'background-color': 'var(--header-cell-background-color)','color': 'var(--header-cell-color)','font-weight': 'var(--header-cell-font-weight)'}"
         >
-          <el-table-column prop="plan_code" :label="$t('id')" width="200">
-          </el-table-column>
           <el-table-column  width="300" >
             <template slot="header" slot-scope="scope">
               <div>{{$t('name')}}</div>
@@ -39,17 +37,18 @@
                 </div>
                 <div class="column_right">
                   <div style="padding-left:10px;text-align: left;">
-                    <ellipsis-text :text="scope.row.plan_name" :max_width="230"></ellipsis-text>
-                    <ellipsis-text :text="scope.row.plan_desc" :max_width="230"></ellipsis-text>
+                    <div>
+                      <ellipsis-text :text="scope.row.plan_name" :max_width="230"></ellipsis-text>
+                    </div>
+                    <div style="color: #929292">
+                      <ellipsis-text :text="scope.row.plan_desc" :max_width="230"></ellipsis-text>
+                    </div>
                   </div>
                 </div>
               </div>
             </template>
           </el-table-column>
-          <el-table-column width="auto">
-            <template slot="header" slot-scope="scope">
-              <div>{{$t('Type')}}</div>
-            </template>
+          <el-table-column width="auto" :label="$t('Type')">
             <template slot-scope="scope">
               <div v-if="scope.row.plan_type_obj">
                 <div v-if="scope.row.plan_type_obj.type === 'recurring'">
@@ -71,7 +70,7 @@
               <div>{{ $t('Amount') }}</div>
             </template>
             <template slot-scope="scope">
-              <div v-if="scope.row.main_price_obj && scope.row.other_price_obj">
+              <div v-if="scope.row.main_price_obj">
                 <div>
                   {{scope.row.main_price_obj.price_format}}
                 </div>
@@ -90,21 +89,32 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column width="100" >
-            <template slot="header" slot-scope="scope">
-              <div>{{$t('trial')}}</div>
-            </template>
+          <el-table-column width="100" :label="$t('trial')" >
             <template slot-scope="scope">
               <div v-if="scope.row.plan_trial_obj && scope.row.plan_trial_obj.is_trial" >{{scope.row.plan_trial_obj.trial_days + ' ' + $t('days')}}</div>
+              <div v-else>
+                {{ $t('no trial') }}
+              </div>
             </template>
           </el-table-column>
-          <el-table-column prop="operation">
-            <template slot="header" slot-scope="scope">
-              <div style="text-align: center">{{$t('Operation')}}</div>
+          <el-table-column prop="plan_code" :label="$t('id')" width="230">
+            <template slot-scope="scope">
+              <div style="display:flex;align-items: center">
+                <span>{{scope.row.plan_code}}</span>
+                <span v-if="scope.row.plan_code" style="display: flex;align-items: center">
+                  <svg width="16" height="16" @click="copy(scope.row.plan_code)" style="cursor: pointer;padding-left: 8px" class="copy_text">
+                    <use xlink:href="#copy">
+                    </use>
+                  </svg>
+              </span>
+              </div>
+
             </template>
+          </el-table-column>
+          <el-table-column prop="operation" :label="$t('Operation')" width="100" align="center">
             <template slot-scope="scope">
               <div class="column_content">
-                <span style="color: #2f54eb; cursor: pointer" @click="operatePlan(scope.row, 'edit')">{{$t('edit')}}</span>
+                <span class="link" @click="operatePlan(scope.row, 'edit')">{{$t('edit')}}</span>
               </div>
             </template>
           </el-table-column>
@@ -140,6 +150,7 @@ import addPlanDialog from "../components/add-plan-dialog.vue";
 import {planList} from "../../api/interface";
 import CURRENCY_OPTIONS from "../../options/currency_options.json";
 import EllipsisText from "../components/ellipsis-text.vue";
+import Clipboard from "clipboard";
 export default {
   data() {
     return {
@@ -260,13 +271,36 @@ export default {
       planList(args).then(res => {
         vm.table_loading = false;
         if (parseInt(res.data.code )=== 100000) {
-          vm.plan_list = res.data.data;
-          vm.plan_list = vm.formatPlanList(vm.plan_list);
+          vm.plan_list = vm.formatPlanList(res.data.data);
+          console.log(vm.plan_list);
           vm.total = res.data.totalCount;
         }
       }).catch(err => {
         vm.table_loading = false;
       });
+    },
+
+    copy (client_key){
+      let clipboard = new Clipboard('.copy_text', {
+        text: () => {
+          return client_key
+        }
+      })
+      clipboard.on('success', e => {
+        this.$message({
+          message: this.$t('copy success'),
+          type: 'success'
+        })
+        clipboard.destroy() // 释放内存
+      })
+      clipboard.on('error', e => {
+        // 不支持复制
+        this.$message({
+          message:  this.$t('browser not support copy'),
+          type: 'warning'
+        })
+        clipboard.destroy() // 释放内存
+      })
     },
     /**
      * 操作成功

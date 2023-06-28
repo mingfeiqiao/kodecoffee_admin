@@ -1,7 +1,7 @@
 <template>
   <el-dialog :title="operationType === 'add' ? $t('create plugin') : $t('update plugin')" v-if="dialog_form_visible" :visible.sync="dialog_form_visible" width="50%"  :destroy-on-close="true">
     <div>
-      <el-form :model="plugin_data" :rules="rules" ref="ruleForm" label-width="100px">
+      <el-form :model="plugin_data" :rules="rules" ref="ruleForm" label-width="120px">
         <el-form-item :label="$t('extension id') + ':'" prop="client_key" v-if="operationType !== 'add'">
           <div>{{ plugin_data.client_key }}</div>
         </el-form-item>
@@ -12,7 +12,7 @@
         <el-form-item :label="$t('icon') + ':'" prop="icon">
           <img-upload :icon_url="plugin_data.icon" @iconUpSourceChange="iconUpSourceChange"></img-upload>
         </el-form-item>
-        <el-form-item :label="$t('description') + ':'" prop="desc">
+        <el-form-item :label="$t('description') + ':'" prop="description">
           <el-input type="textarea" v-model="plugin_data.description" :placeholder="$t('please input description')"></el-input>
         </el-form-item>
         <el-form-item :label="$t('store address') + ':'" prop="store_address">
@@ -36,17 +36,24 @@ export default {
   data () {
     return {
       icon_file: null,
-      rules: {
-        name: [
-          { required: true, message: '请输入插件名称', trigger: 'blur' }
-        ]
-      },
       dialog_form_visible: false,
       plugin_data : {},
     }
   },
   components : {
     imgUpload
+  },
+  computed: {
+    rules () {
+      return {
+        name: [
+          { required: true, message: this.$t('1-100 characters required'), trigger: 'blur' }
+        ],
+        store_address: [
+          {message: this.$t('please input valid URL'), trigger: 'blur', type:  'url'}
+        ],
+      }
+    }
   },
   watch : {
     visible(newValue) {

@@ -23,8 +23,11 @@ if (window.location.pathname.startsWith(Vue.prototype.MODECONFIG.SANDBOX.basePat
 }
 Vue.use(VueI18n);
 // 获取当前浏览器的语言, 只支持中文和英文，如果是其他语言，默认为英文
-const navLang = navigator.language;
-let localLang = navLang === 'zh-CN' || navLang === 'en-US' ? navLang : false;
+let localLang = localStorage.getItem('selected_language');
+if (!localLang) {
+  const navLang = navigator.language;
+  localLang = navLang === 'zh-CN' || navLang === 'en-US' ? navLang : false;
+}
 const i18n = new VueI18n({
   locale: localLang,
   fallbackLocale: localLang,

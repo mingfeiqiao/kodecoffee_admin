@@ -1,14 +1,14 @@
 <template>
   <div style="width:100%;height: 100%;">
     <div>
-      <div style="display:flex;justify-content: center;align-items: center;padding-bottom:12px">
+      <div style="display:flex;justify-content: center;align-items: center;padding-bottom:12px" v-if="$store.state.guide_step < 4">
         <div style="width: 100%;background-color: rgba(230, 247, 255, 1);border-radius: 5px;padding: 8px 8px;text-align: left;display: flex;align-items: center">
           <i class="el-icon-warning" style="color: #1990FF"></i>
           <div style="padding-left: 8px">
-            <span>{{ `设置引导已经完成 ${$store.state.guide_step}/4`  }}</span>
+            <span>{{ `${$t('The onboarding process is completed')} ${$store.state.guide_step}/4`  }}</span>
           </div>
           <div @click="toGuide" class="link" style="padding-left: 12px">
-            {{'点击继续'}}
+            {{ $t('Continue')}}
           </div>
         </div>
       </div>
@@ -18,15 +18,16 @@
     </div>
     <div style="margin-top: 24px;background-color: #ffffff;height: 100%;padding: 24px">
       <div>
-        <div>
+        <div class="picker">
           <el-date-picker
             size="small"
             v-model="date_range"
             type="daterange"
             format="yyyy-MM-dd"
+            popper-class="my-date-picker"
             value-format="yyyy-MM-dd"
             @change="dateRangeChange"
-            :picker-options="pickerOptions"
+            :picker-options="picker_options"
             :range-separator="$t('to')"
             :start-placeholder="$t('start date')"
             :end-placeholder="$t('end date')">
@@ -61,7 +62,7 @@ export default {
         new_subscription: 'kodepay-new-subscription-chart',
         new_customer: 'kodepay-new-customer-chart',
       },
-      pickerOptions : {
+      picker_options : {
         disabledDate (time) {
           return time.getTime() > Date.now();
         }
@@ -129,15 +130,60 @@ export default {
       },
     }
   },
+  watch: {
+    '$i18n.locale'() {
+      this.updateShortcuts();
+    }
+  },
   mounted() {
     this.setDefaultTime();
     this.initEchartsInstance();
     this.getData();
-    window.addEventListener('resize', this.changeSize)
+    this.updateShortcuts();
+    window.addEventListener('resize', this.changeSize);
   },
   created() {
+    this.guide_step = this.$store.state.guide_step;
+    if (this.guide_step < 4) {
+      this.toGuide();
+    }
   },
   methods: {
+    updateShortcuts () {
+      this.$set(this.picker_options, 'shortcuts', this.getShortcuts());
+    },
+    getShortcuts () {
+        return  [
+          {
+            text: this.$t('Last week'),
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+              picker.$emit('pick', [start, end]);
+            }
+          },
+          {
+            text: this.$t('Last month'),
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: this.$t('Last three months'),
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+             picker.$emit('pick', [start, end]);
+            }
+        }]
+      },
+    /**
+     * 跳转到guide页面
+     */
     toGuide () {
       this.$router.push({path: '/guide'})
     },
@@ -341,5 +387,10 @@ export default {
 }
 .echart-title {
   margin: 12px 12px 12px 12px;
+}
+</style>
+<style>
+.el-picker-panel__sidebar {
+  width: 120px;
 }
 </style>

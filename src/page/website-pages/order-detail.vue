@@ -161,7 +161,7 @@ export default {
   },
   methods: {
     openUserDetail (user_id) {
-      this.$router.push({path: "/user-list/detail/" + user_id});
+      this.$router.push({path: "/customers/detail/" + user_id});
     },
     formatOrderDetail (data) {
       return {

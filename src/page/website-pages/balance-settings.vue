@@ -9,7 +9,7 @@
               <span style="color:#929292;">{{$t('balance')}}</span>
               <span>
               <el-tooltip class="item" content="每笔订单扣除费用后剩下的累加" effect="light" placement="top">
-                <i class="el-icon-info" style="color:#939393;"></i>
+                <i class="el-icon-info" style="color:#929292;"></i>
               </el-tooltip>
             </span>
             </div>
@@ -17,7 +17,7 @@
           </div>
           <div style="padding-right: 30px">
             <div>
-              <span style="color:#939393;">{{$t('able to payout')}}</span>
+              <span style="color:#929292;">{{$t('able to payout')}}</span>
               <span>
               <el-tooltip class="item" content="订单14天以后（暂定完成支付14天后的订单）+ 扣除争议费用" effect="light" placement="top">
                 <i class="el-icon-info"  style="color:#929292;"></i>
@@ -453,6 +453,10 @@ export default {
 .custom-descriptions-container /deep/ .el-descriptions-item__label {
   min-width: 100px;
   padding: 12px;
+  color: #929292;
+}
+.container /deep/ .el-descriptions-item__label {
+  color: #929292;
 }
 .custom-descriptions-container {
   padding: 24px 0;
@@ -471,5 +475,8 @@ export default {
   justify-content: space-between;
   width: 300px;
   align-items: center;
+}
+pre {
+  font-family: inherit;
 }
 </style>

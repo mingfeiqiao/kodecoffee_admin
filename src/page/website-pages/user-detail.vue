@@ -31,7 +31,7 @@
           <template slot-scope="scope">
             <div style="display: flex;flex-direction: column">
               <span>{{ scope.row.plan_name }}</span>
-              <span>{{ scope.row.currency.toUpperCase() + ' ' + scope.row.price_format + '/' + $t('month')}}</span>
+              <span>{{ scope.row.price_format + '/' + $t('month')}}</span>
             </div>
           </template>
         </el-table-column>
@@ -146,7 +146,7 @@ export default {
      * @param order_id
      */
     openOrderDetail (order_id) {
-      this.$router.push({path: "/pay-all-order/detail/" + order_id});
+      this.$router.push({path: "/orders/detail/" + order_id});
     },
     /**
      * 订阅列表分页

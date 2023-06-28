@@ -21,7 +21,7 @@
         </el-switch>
       </div>
       <div v-if="$store.state.guide_step < 4" style="background-color: #B7EB8F;margin-left: 24px;padding:3px 12px; border-radius: 4px;">
-        <span>{{'Setup Guide'}}</span>
+        <span>{{$t('Setup Guide')}}</span>
         <span>{{  `${$store.state.guide_step}/4`}}</span>
       </div>
     </div>

@@ -19,7 +19,7 @@
           <el-table-column prop="refunded_amount" :label="$t('refunded amount')" sortable></el-table-column>
           <el-table-column prop="last_payment" :label="$t('last payments')"></el-table-column>
           <el-table-column prop="created_time" :label="$t('create time')"></el-table-column>
-          <el-table-column :label="$t('Operation')">
+          <el-table-column :label="$t('Operation')" width="100" align="center">
             <template slot-scope="scope">
               <span class="link" @click="openUserDetail(scope.row.user_id)">{{$t('detail')}}</span>
             </template>
@@ -74,7 +74,7 @@ export default {
   },
   methods: {
     openUserDetail (user_id) {
-      this.$router.push({path: "/user-list/detail/" + user_id});
+      this.$router.push({path: "/customers/detail/" + user_id});
     },
     search() {
       this.getData();

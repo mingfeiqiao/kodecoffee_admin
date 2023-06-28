@@ -65,7 +65,7 @@
               </el-table-column>
               <el-table-column prop="pay_email" width="auto" :label="$t('payment email')">
               </el-table-column>
-              <el-table-column width="90" :label="$t('Operation')">
+              <el-table-column width="100" :label="$t('Operation')" align="center">
                 <template slot-scope="scope">
                   <span class="link" @click="openOrderDetail(scope.row.order_id)">{{ $t('detail') }}</span>
                 </template>
@@ -171,7 +171,7 @@ export default {
       this.getTableData();
     },
     openOrderDetail (order_id) {
-      this.$router.push({path: "/pay-all-order/detail/" + order_id});
+      this.$router.push({path: "/orders/detail/" + order_id});
     },
     /**
      * 改变每页显示条数

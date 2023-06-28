@@ -53,9 +53,9 @@ const routes = [
         meta: { breadcrumbLabel: 'Guide' }
       },
       {
-        path: 'pay-all-order',
+        path: 'orders',
         component: payAllOrderLayout,
-        name: 'pay-all-order',
+        name: 'orders',
         meta: { breadcrumbLabel: 'Orders' },
         children: [
           {
@@ -65,16 +65,16 @@ const routes = [
           {
             path: 'detail/:id',
             component: OrderDetail,
-            name: 'pay-all-order-detail',
+            name: 'orders-detail',
             meta: { breadcrumbLabel: 'Order Detail' }
           },
         ]
       },
       {
-        path: 'pay-subscription',
+        path: 'subscriptions',
         component: paySubscriptionLayout,
-        name: 'pay-subscription',
-        meta: { breadcrumbLabel: 'Payments' },
+        name: 'subscriptions',
+        meta: { breadcrumbLabel: 'Subscriptions' },
         children: [
           {
             path: '/',
@@ -82,17 +82,17 @@ const routes = [
           },
           {
             path: 'detail/:id',
-            name: 'pay-subscription-detail',
+            name: 'subscriptions-detail',
             component: subscriptionDetail,
             meta: { breadcrumbLabel: 'Subscription Detail' }
           },
         ]
       },
       {
-        path: 'user-list',
+        path: 'customers',
         component: userLayout,
-        name: 'user-list',
-        meta: { breadcrumbLabel: 'User List' },
+        name: 'customers',
+        meta: { breadcrumbLabel: 'Customers' },
         children: [
           {
             path: '/',
@@ -100,23 +100,23 @@ const routes = [
           },
           {
             path: 'detail/:id',
-            name: 'user-detail',
+            name: 'customer-detail',
             component: userDetail,
-            meta: { breadcrumbLabel: 'User Detail' }
+            meta: { breadcrumbLabel: 'Customer Detail' }
           },
         ]
       },
       {
-        path: 'plugin-list',
+        path: 'extensions',
         component: pluginList,
-        name: 'plugin-list',
-        meta: { breadcrumbLabel: 'Plugin List' }
+        name: 'extensions',
+        meta: { breadcrumbLabel: 'Extensions' }
       },
       {
-        path: 'product-list',
+        path: 'plans',
         component: productList,
-        name: 'product-list',
-        meta: { breadcrumbLabel: 'Product List' }
+        name: 'plans',
+        meta: { breadcrumbLabel: 'Plans' }
       },
       {
         path: 'balance-settings',

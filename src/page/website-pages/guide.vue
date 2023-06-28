@@ -5,12 +5,12 @@
           {{ $t('4 steps to start') }}
         </span>
       <span style="color: #929292;padding-left: 12px">
-          {{ 'in 10 min'}}
+          {{ $t('in 10 min')}}
         </span>
     </div>
     <div style="padding-top: 24px">
       <el-steps :active="currentStep" finish-status="success">
-        <el-step v-for="(step, index) in guideSteps" :key="index" :title="step.title" :clickable="true" @click="goToStep(index)">
+        <el-step v-for="(step, index) in guideSteps" :key="index" :title="$t(step.title)" :clickable="true" @click="goToStep(index)">
         </el-step>
       </el-steps>
     </div>
@@ -18,23 +18,29 @@
     <div v-if="currentStep === 0">
       <div style="padding-top: 100px">
         <div>
-          请输入插件名称
+          {{$t('please input extension name')}}
         </div>
-        <div style="max-width: 300px;padding-top: 8px">
-          <el-input v-model="plugin_name" size="small" placeholder="请输入插件名称"></el-input>
+        <div style="max-width: 300px;padding-top: 12px">
+          <el-input v-model="plugin_name" size="small" :placeholder="$t('please input extension name')"></el-input>
         </div>
       </div>
 
     </div>
     <div v-if="currentStep === 1">
-      <div>添加套餐和价格</div>
-      <div>选择需要添加的计划</div>
       <div>
-        <el-button  v-for="(value, key) in plan_options" size="small" :key="key" :label="value[$i18n.locale]" @click="changePlanName(key)">{{value[$i18n.locale]}}</el-button>
+        <div style="padding-top: 80px">{{ $t('Create Plan and Price') }}</div>
+        <div style="padding-top: 80px">
+          <div>{{$t('Select the Subscription Plans to Add')}}</div>
+          <div style="padding-top: 12px">
+            <el-button  v-for="(value, key) in plan_options" size="small" :key="key" :label="value[$i18n.locale]" @click="changePlanName(key)">{{value[$i18n.locale]}}</el-button>
+          </div>
+        </div>
+
       </div>
+
     </div>
     <div v-if="currentStep === 2">
-      <el-card>
+      <el-card style="margin-top: 80px">
         <pre>
 // service_worker
 import {Kodepay} from "kodepay";
@@ -56,18 +62,18 @@ kodepay_client.open_payment_page(price_id);
       </el-card>
     </div>
     <div v-if="currentStep === 3">
-      <div>
-        <div>接入成功，现在可以开始你的插件开发了!</div>
-        <div>
-          <span>开发接入流程文档</span> <span>帮助文档中心</span>
+      <div style="display:flex;align-items: center;justify-content: center;flex-direction: column">
+        <div style="padding-top: 80px">{{'🎉' + $t('Integration successful')}}</div>
+        <div style="padding-top: 80px">
+          <span class="link">{{$t('Development integration process documentation')}}</span> <span class="link" style="padding-left: 24px">{{  $t('Help documentation center') }}</span>
         </div>
-        <el-button size="small" @click="finishGuide">
-          完成
+        <el-button size="small" @click="finishGuide" type="primary" style="margin-top: 80px">
+          {{ $t('Complete') }}
         </el-button>
       </div>
     </div>
     <div style="display: flex;align-items: center;justify-content: center;padding-top: 80px">
-      <el-button style="margin-top: 12px;" @click="nextStep" v-if="currentStep < 3" size="small" type="primary">下一步</el-button>
+      <el-button style="margin-top: 12px;" @click="nextStep" v-if="currentStep < 3" size="small" type="primary">{{$t('Next Step')}}</el-button>
     </div>
   </div>
 </template>
@@ -81,16 +87,16 @@ export default {
       plugin_name:'',
       guideSteps: [
         {
-          title: '添加插件',
+          title: 'Create Extension',
         },
         {
-          title: '添加套餐',
+          title: 'Create Plan',
         },
         {
-          title: '导入JS',
+          title: 'Import JS',
         },
         {
-          title: '完成',
+          title: 'Complete',
         },
       ],
       currentStep: 0,
@@ -183,6 +189,9 @@ export default {
   },
   created() {
     this.currentStep = parseInt(localStorage.getItem('guideStep')) || 0;
+    if (this.currentStep === 4) {
+      this.$router.push({path: '/dashboard'});
+    }
   },
   methods: {
     preStep() {
@@ -192,10 +201,11 @@ export default {
     },
     finishGuide() {
       this.nextStep();
+      this.$router.push({path: '/dashboard'});
     },
     setLocalStorageGuideStep (step) {
       localStorage.setItem('guideStep', step);
-      this.$store.commit('setGuideStep', step); // 修改这一行
+      this.$store.commit('setGuideStep', step);
     },
     changePlanName(key) {
       this.plan_name = key;
@@ -204,7 +214,7 @@ export default {
       if (this.currentStep === 0) {
         if (this.plugin_name === '') {
           this.$message({
-            message: 'extension name is required',
+            message: this.$t('extension name is required'),
             type: 'warning'
           });
         } else {

@@ -25,7 +25,7 @@
             </el-table-column>
             <el-table-column prop="created_time" width="auto" :label="$t('create time')">
             </el-table-column>
-            <el-table-column width="100" :label="$t('Operation')">
+            <el-table-column width="100" align="center" :label="$t('Operation')">
               <template slot-scope="scope">
                 <span class="link" @click="openSubscriptionDetail(scope.row.subscription_id)">{{ $t('detail') }}</span>
               </template>
@@ -92,7 +92,7 @@ export default {
   },
   methods: {
     openUserDetail (user_id) {
-      this.$router.push({path: "/user-list/detail/" + user_id});
+      this.$router.push({path: "/customers/detail/" + user_id});
     },
     initCondition () {
       this.condition = {};
@@ -120,7 +120,7 @@ export default {
      * @param subscription_id
      */
     openSubscriptionDetail(subscription_id) {
-      this.$router.push({path: `/pay-subscription/detail/${subscription_id}`});
+      this.$router.push({path: `/subscriptions/detail/${subscription_id}`});
     },
     getSubscriptionData () {
       this.table_loading = true;
