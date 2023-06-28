@@ -35,7 +35,10 @@
         </div>
         <div style="display: flex;flex-wrap: wrap;justify-content: space-between;align-items: center;">
           <div class="echarts-container" v-for="(value,key) in title_ref" :key="key">
-            <div class="echart-title">{{$t(value)}}</div>
+            <div class="echart-title">
+              <span style="font-size: 16px">{{ `${$t(value)}`}}</span>
+              <span>{{ `(${title_counts[key]})`}}</span>
+            </div>
             <div :id="echarts_ids[key]" class="chart"></div>
           </div>
         </div>
@@ -75,13 +78,21 @@ export default {
         new_subscription:"active_recurring_list",
         new_customer:"user_count_list",
       },
-      title_ref:{
+      title_ref:{ // 图标的title
         amount_total: "gross volume",
         revenue: "net volume",
         order:"orders",
         success_pay:"successful payments",
         new_subscription:"new subscriptions",
         new_customer:"new customers",
+      },
+      title_counts:{ // 图表的总额
+        amount_total: "",
+        revenue: "",
+        order:"",
+        success_pay:"",
+        new_subscription:"",
+        new_customer:"",
       },
       echarts_instances: {
         amount_total: null,
@@ -136,17 +147,18 @@ export default {
     }
   },
   mounted() {
-    this.setDefaultTime();
-    this.initEchartsInstance();
-    this.getData();
-    this.updateShortcuts();
-    window.addEventListener('resize', this.changeSize);
-  },
-  created() {
     this.guide_step = this.$store.state.guide_step;
     if (this.guide_step < 4) {
       this.toGuide();
+    } else {
+      this.setDefaultTime();
+      this.initEchartsInstance();
+      this.getData();
+      this.updateShortcuts();
+      window.addEventListener('resize', this.changeSize);
     }
+  },
+  created() {
   },
   methods: {
     updateShortcuts () {
@@ -326,6 +338,7 @@ export default {
       }
     },
     formatEchartsData(data) {
+      this.title_counts = {};
       const is_price_fields = ['amount_total', 'revenue'];
       for (let data_field_ref_key in this.data_field_ref) {
         const data_field = this.data_field_ref[data_field_ref_key];
@@ -338,7 +351,11 @@ export default {
             y_data.push(item['count']);
           }
         }
-
+        if (!!is_price_fields.includes(data_field_ref_key)) {
+          this.title_counts[data_field_ref_key] = this.formatPrice(Number(y_data.reduce((a, b) => a + b, 0).toFixed(2)));
+        } else {
+          this.title_counts[data_field_ref_key] = Number(y_data.reduce((a, b) => a + b, 0).toFixed(2));
+        }
         const options = this.getOptions(x_data, y_data, !!is_price_fields.includes(data_field_ref_key));
         this.setOptions(options, this.echarts_instances[data_field_ref_key]);
       }
@@ -377,7 +394,7 @@ export default {
   flex-direction: row;
 }
 .echarts-container {
-  height: 320px;
+  height: 350px;
   margin-top: 24px;
   width: calc((100% - 172px)/ 2);
 }
@@ -386,7 +403,7 @@ export default {
   height: 300px;
 }
 .echart-title {
-  margin: 12px 12px 12px 12px;
+  margin: 12px 12px;
 }
 </style>
 <style>

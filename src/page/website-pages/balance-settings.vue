@@ -29,7 +29,7 @@
         </div>
         <div style="display: flex;align-items: flex-end">
           <span style="color: #929292;padding-right: 12px;">{{$t('payout 30 days tip')}}</span>
-          <el-button v-show="balance_settings.currency" type="primary" size="small" @click="openWithdrawalDialog">{{$t('payout')}}</el-button>
+          <el-button v-show="has_balance_settings" type="primary" size="small" @click="openWithdrawalDialog">{{$t('payout')}}</el-button>
         </div>
       </div>
     </div>
@@ -45,8 +45,10 @@
               {{ balance_settings.first_name + balance_settings.last_name}}
             </span>
           </el-descriptions-item>
-          <el-descriptions-item :label="$t('country')">{{ balance_settings.country }}</el-descriptions-item>
-          <el-descriptions-item :label="$t('business type')">{{ $t(balance_settings.bussiness_type) }}</el-descriptions-item>
+          <el-descriptions-item :label="$t('country')">{{ getCountryFullName(balance_settings.country) }}</el-descriptions-item>
+          <el-descriptions-item :label="$t('business type')">
+            {{ $t(business_type_options[balance_settings.bussiness_type]) }}
+          </el-descriptions-item>
           <el-descriptions-item :label="$t('minimum threshold')" >{{BALANCE_SETTING.minimum_withdrawal_amount}}</el-descriptions-item>
           <el-descriptions-item :label="$t('payout frequency')" >{{$t(BALANCE_SETTING.withdrawal_period)}}</el-descriptions-item>
           <el-descriptions-item :label="$t('payout method')">
@@ -151,7 +153,7 @@
               </el-descriptions-item>
               <el-descriptions-item :label="$t('payout method')">
                 <div class="withdraw-width">
-                  {{$t(balance_settings.bussiness_type)}}
+                  {{$t(business_type_options[balance_settings.bussiness_type])}}
                 </div>
               </el-descriptions-item>
               <el-descriptions-item v-if="balance_settings.withdraw_type === 'card'" :label="$t('payout account number')" >
@@ -201,8 +203,9 @@
 <script>
 import EditWithdrawalSettingsDialog from '../components/edit-withdrawal-settings-dialog.vue'
 import CURRENCY_OPTIONS from "../../options/currency_options.json";
+import Countries from '../../options/countries.json';
 import {timestampToDateString} from "../../utils/dateUtils";
-import {accountWithdrawInfoApi, searchWithdrawAmountApi, withdrawRateApi, accountWithdrawInfoListApi, applyWithdrawApi} from "../../api/interface";
+import {accountWithdrawInfoApi, searchWithdrawAmountApi, withdrawRateApi, accountWithdrawInfoListApi, applyWithdrawApi, checkWithdrawApi} from "../../api/interface";
 export default {
   components: {
     EditWithdrawalSettingsDialog
@@ -214,6 +217,10 @@ export default {
         total_balance_format: '',
         withdrawable_format: '',
         currency: 'usd',
+      },
+      business_type_options: {
+        personal: 'individual/sole proprietorship',
+        company: 'corporation',
       },
       balance_settings: {},
       has_balance_settings: false,
@@ -246,6 +253,9 @@ export default {
     this.initData();
   },
   methods: {
+    /**
+     * 初始化数据
+     */
     createWithdraw () {
       let vm = this;
       let args = {
@@ -276,11 +286,32 @@ export default {
         console.log(err);
       });
     },
+    /**
+     * 打开提现设置编辑弹窗
+     */
     initData () {
       this.getRealAmount();
       this.getAccountWithdrawInfo();
       this.getWithdrawList();
     },
+    /**
+     * 获取国家的全称
+     * @param country
+     * @returns {*|string}
+     */
+    getCountryFullName (country) {
+      if (!country) {
+        return '';
+      }
+      for (let countriesKey in Countries) {
+        if (Countries[countriesKey].short_name.toLowerCase() === country.toLowerCase()) {
+          return Countries[countriesKey][this.$i18n.locale];
+        }
+      }
+    },
+    /**
+     * 获取账户提现信息
+     */
     getWithdrawList() {
       this.table_loading = true;
       let vm = this;
@@ -313,6 +344,9 @@ export default {
         console.log(err);
       });
     },
+    /**
+     * 获取提现设置
+     */
     getAccountWithdrawInfo () {
       let vm = this;
       accountWithdrawInfoApi().then(res => {
@@ -320,7 +354,6 @@ export default {
           return;
         }
         if (parseInt(res.data.code) === 100000) {
-          // 是否是空JSON？
           vm.has_balance_settings = JSON.stringify(res.data.data) !== '{}';
           vm.balance_settings = res.data.data;
         }
@@ -404,6 +437,12 @@ export default {
       }
       return currency + ' ' + price;
     },
+    /**
+     * 获取汇率
+     * @param from_currency
+     * @param to_currency
+     * @returns {Promise<*>}
+     */
     async getRate(from_currency, to_currency) {
       let args = {
         origin_currency: from_currency,
@@ -417,16 +456,37 @@ export default {
     /**
      * 打开提现弹窗
      */
-    async openWithdrawalDialog () {
+    openWithdrawalDialog () {
       // 先获取汇率
       if (!this.show_withdrawal_dialog) {
-        if (this.balance_settings.currency === 'usd') {
-          this.rate = 1;
-        } else {
-          this.rate = await this.getRate('usd', this.balance_settings.currency);
-        }
+        // 检查是否能够提现
+        let vm = this;
+        checkWithdrawApi().then(res => {
+          if (!res.data) {
+            return;
+          }
+          if (parseInt(res.data.code) === 100000) {
+            if (vm.balance_settings.currency === 'usd') {
+              vm.rate = 1;
+              vm.show_withdrawal_dialog = !vm.show_withdrawal_dialog;
+            } else {
+              this.rate = vm.getRate('usd', vm.balance_settings.currency).then(
+                rate => {
+                  vm.rate = rate;
+                  vm.show_withdrawal_dialog = !vm.show_withdrawal_dialog;
+                }
+              );
+            }
+          } else { // 不能提现
+            console.log(res.data.message);
+            vm.$alert(res.data.message, vm.$t('Tips'), {
+              confirmButtonText: vm.$t('OK')
+            });
+          }
+        }).catch(err => {
+          console.log(err);
+        });
       }
-      this.show_withdrawal_dialog = !this.show_withdrawal_dialog;
     },
     /**
      * 打开提现设置弹窗

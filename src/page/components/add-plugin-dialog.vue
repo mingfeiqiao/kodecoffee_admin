@@ -47,10 +47,12 @@ export default {
     rules () {
       return {
         name: [
-          { required: true, message: this.$t('1-100 characters required'), trigger: 'blur' }
+          { required: true, message: this.$t('1-100 characters required'), trigger: 'blur'},
+          { validator: this.validateTrimmedField, trigger: 'blur'}
         ],
         store_address: [
-          {message: this.$t('please input valid URL'), trigger: 'blur', type:  'url'}
+          { message: this.$t('please input valid URL'), trigger: 'blur', type:  'url'},
+          { validator: this.validateTrimmedField, trigger: 'blur'}
         ],
       }
     }
@@ -99,6 +101,13 @@ export default {
     }
   },
   methods : {
+    validateTrimmedField(rule, value, callback) {
+      if (value && value.trim() === '') {
+        callback(new Error(this.$t('Field cannot be empty')));
+      } else {
+        callback();
+      }
+    },
     resetForm() {
       this.plugin_data = {
         client_key: this.chosen_plugin_data.client_key || ""

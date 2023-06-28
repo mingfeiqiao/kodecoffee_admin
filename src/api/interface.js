@@ -43,6 +43,10 @@ instance.interceptors.response.use(
 instance.interceptors.request.use(
     config => {
       let token = localStorage.getItem(Vue.prototype.$mode + 'token');
+      let select_language = localStorage.getItem('selected_language');
+      if (select_language) {
+        config.headers['language'] = select_language;
+      }
       if (token) {
         config.headers.Authorization = token;
         config.headers['application-key']= localStorage.getItem(Vue.prototype.$mode + 'applicationKey');
@@ -123,6 +127,8 @@ export const withdrawRateApi = data => instance.post('/withdraw/search_withdraw_
 export const searchWithdrawAmountApi = data => instance.post('/withdraw/search_real_amount_withdraw', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 
 export const applyWithdrawApi = data => instance.post('/withdraw/apply_withdraw', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
+
+export const checkWithdrawApi = data => instance.post('/withdraw/search_allow_withdraw', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 
 export const extensionCancelSubscription = (headers, data) => {
   headers['Content-Type'] = 'application/json';

@@ -27,6 +27,7 @@ let localLang = localStorage.getItem('selected_language');
 if (!localLang) {
   const navLang = navigator.language;
   localLang = navLang === 'zh-CN' || navLang === 'en-US' ? navLang : false;
+  localStorage.setItem('selected_language', localLang);
 }
 const i18n = new VueI18n({
   locale: localLang,

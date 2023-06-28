@@ -7,7 +7,7 @@
            <el-form-item :label="$t('name')" prop="plan_name">
              <el-input v-model="plan.plan_name" :placeholder="$t('plan name placeholder')" style="width: 300px"></el-input>
            </el-form-item>
-           <el-form-item :label="$t('description')" >
+           <el-form-item :label="$t('description')" prop="plan_desc">
              <el-input type="textarea" v-model="plan.plan_desc" :placeholder="$t('plan description placeholder')" style="width: 300px"></el-input>
            </el-form-item>
          </div>
@@ -537,13 +537,25 @@ export default {
     handleSelectionChange(val) {
       this.multiple_selection = val;
     },
+    validateTrimmedField(rule, value, callback) {
+      if (value && value.trim() === '') {
+        callback(new Error(this.$t('Field cannot be empty')));
+      } else {
+        callback();
+      }
+    }
   },
   computed: {
     rules () {
       return {
         plan_name: [
-          { required: true, message: this.$t('1-100 characters required'), trigger: 'blur' }
-        ]
+          { required: true, message: this.$t('1-100 characters required'), trigger: 'blur', min: 1, max: 100 },
+          { validator: this.validateTrimmedField, trigger: 'blur'}
+        ],
+        plan_desc: [
+          { required: false,  trigger: 'blur', type: 'string', min: 0, max: 1000 },
+          { validator: this.validateTrimmedField, trigger: 'blur'}
+        ],
       }
     }
   }

@@ -70,22 +70,20 @@
               <div>{{ $t('Amount') }}</div>
             </template>
             <template slot-scope="scope">
-              <div v-if="scope.row.main_price_obj">
-                <div>
+              <div>
+                <div v-if="scope.row.main_price_obj">
                   {{scope.row.main_price_obj.price_format}}
                 </div>
-                <el-popover placement="bottom" trigger="hover">
+                <el-popover placement="bottom" trigger="hover" v-if="scope.row.other_price_obj && scope.row.other_price_obj.length > 0">
                   <div style="display: flex;align-items: center;flex-direction: column">
                     <div v-for="(price, index) in scope.row.other_price_obj" :key="index">
                       {{price.price_format}}
                     </div>
                   </div>
-                  <div slot="reference" style="color: #929292" v-if="scope.row.other_price_obj.length > 0">
+                  <div slot="reference" style="color: #929292">
                     {{$t('other price tip', {number: scope.row.other_price_obj.length})}}
                   </div>
                 </el-popover>
-              </div>
-              <div v-else>
               </div>
             </template>
           </el-table-column>
@@ -272,7 +270,6 @@ export default {
         vm.table_loading = false;
         if (parseInt(res.data.code )=== 100000) {
           vm.plan_list = vm.formatPlanList(res.data.data);
-          console.log(vm.plan_list);
           vm.total = res.data.totalCount;
         }
       }).catch(err => {
