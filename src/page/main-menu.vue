@@ -46,7 +46,7 @@
             </el-menu-item>
           </template>
         </template>
-        <el-menu-item index="bottom" style="position: absolute; bottom: 0;" >
+        <el-menu-item style="position: absolute; bottom: 0;" @click="gotoDocCenter($i18n.locale)" >
           <svg width="18" height="18" style="padding-right: 8px" fill="#fff">
             <use xlink:href="#help-center"></use>
           </svg>

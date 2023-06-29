@@ -419,7 +419,7 @@ export default {
       if (time) {
         return timestampToDateString(time, 'yyyy-MM-dd HH:II:SS');
       }
-      return "";
+      return "-";
     },
     /**
      * 格式化货币

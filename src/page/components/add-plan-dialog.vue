@@ -241,7 +241,7 @@ export default {
     operationType(newValue) {
       if(newValue === 'add') {
         this.plan = {
-          plan_id: "",
+          plan_key: "",
           plan_code : "",
           plan_icon: null,
           plan_name: "",

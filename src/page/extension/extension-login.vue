@@ -2,12 +2,12 @@
   <div style="display: flex;align-items: center;justify-content: center;width: 100%;height: 100%">
     <main>
       <div class="container">
-        <div style="padding: 24px 32px;height: 550px">
+        <div style="padding: 24px 32px;height: calc(100% - 120px)">
           <div style="padding-bottom: 24px">
             <div class="title-28">{{$t('billing management')}}</div>
           </div>
-          <div style="border: 1px solid rgba(233, 233, 233, 1);padding:24px;border-radius: 4px;height: calc(100% - 48px);">
-            <div v-if="!is_send_email">
+          <div style="border: 1px solid rgba(233, 233, 233, 1);border-radius: 4px;height: 100%;">
+            <div v-if="!is_send_email" style="height: 100%;padding:24px;">
               <div style="padding-bottom: 16px">{{$t('please input email')}}</div>
               <div style="display: flex;padding-bottom: 16px;">
                 <el-input v-model="input" placeholder="example@mail.com" style="max-width: 350px"></el-input>
@@ -22,14 +22,14 @@
                 </div>
               </div>
             </div>
-            <div v-else style="display: flex;align-items: center;flex-direction: column;height: 100%;">
-              <div style="width: 380px;">
-                <div style="height: 100px;display: flex;justify-content: center;text-align: center;padding-top: 50px">
+            <div v-else style="display: flex;align-items: center;flex-direction: column;padding:24px;">
+              <div style="padding: 30px;">
+                <div style="display: flex;justify-content: center;text-align: center;padding-top: 50px">
                   {{$t('email sent', {input: input})}}
                 </div>
               </div>
               <div style="height: 100%;display: flex;flex-direction: column;justify-content: space-between;width: 100%">
-                <div style="color: #1090FF;cursor: pointer;width: 100%;text-align: center" @click="toSubscription()">
+                <div style="color: #1090FF;cursor: pointer;width: 100%;text-align: center;padding: 30px 0" @click="toSubscription()">
                   {{$t('email verified')}}
                 </div>
                 <div>
@@ -145,10 +145,8 @@ export default {
 .container {
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.3);
   border-radius: 4px;
-  max-height: 680px;
-  max-width: 600px;
-  min-width: 600px;
-  min-height: 680px;
+  height: 600px;
+  width: 600px;
 }
 .send-button {
   margin-left: 16px;

@@ -137,7 +137,6 @@ export default {
           vm.total = res.data.totalCount;
         }
       }).catch(err => {
-        console.log(err);
         vm.table_loading = false;
       });
     },

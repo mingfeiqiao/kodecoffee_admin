@@ -252,9 +252,21 @@
     "The bank card number format is incorrect": "The bank card number format is incorrect",
     "Please complete the setup guide first": "Please complete the setup guide first",
     "Tips": "Tips",
-    "OK": "OK"
+    "OK": "OK",
+    "copy code": "copy code",
+    "Import the dependency package": "Import the dependency package (npm):",
+    "Add the following code to manifest.json": "Add the following code to manifest.json:",
+    "Copy the code below and paste it into your background.js" : "Copy the code below and paste it into your background.js:",
+    "Create kodepayContent.js and paste the code below": "Create kodepayContent.js and paste the code below:",
+    "Logout": "Logout"
   },
   "zh-CN": {
+    "Logout": "登出",
+    "Import the dependency package": "引入依赖包(npm):",
+    "Add the following code to manifest.json": "manifest.json中增加如下代码:",
+    "Copy the code below and paste it into your background.js" : "复制下面的代码到你的background.js:",
+    "Create kodepayContent.js and paste the code below": "创建kodepayContent.js并粘贴下面这段代码:",
+    "copy code": "复制代码",
     "OK": "确定",
     "Tips": "提示",
     "Please complete the setup guide first": "请先完成引导",

@@ -9,13 +9,13 @@
         </span>
     </div>
     <div style="padding-top: 24px">
-      <el-steps :active="currentStep" finish-status="success">
+      <el-steps :active="current_step" finish-status="success">
         <el-step v-for="(step, index) in guideSteps" :key="index" :title="$t(step.title)" :clickable="true" @click="goToStep(index)">
         </el-step>
       </el-steps>
     </div>
 
-    <div v-if="currentStep === 0">
+    <div v-show="current_step === 0">
       <div style="padding-top: 100px">
         <div>
           {{$t('please input extension name')}}
@@ -26,7 +26,7 @@
       </div>
 
     </div>
-    <div v-if="currentStep === 1">
+    <div v-show="current_step === 1">
       <div>
         <div style="padding-top: 80px">{{ $t('Create Plan and Price') }}</div>
         <div style="padding-top: 80px">
@@ -39,33 +39,80 @@
       </div>
 
     </div>
-    <div v-if="currentStep === 2">
-      <el-card style="margin-top: 80px">
-        <pre>
-// service_worker
+    <div v-show="current_step === 2">
+      <div style="margin-top: 24px">
+        <div>
+          <div class="title-14">{{'1.' + $t('Import the dependency package')}}</div>
+          <div class="code-container">
+            <pre>
+              <code class="language-javascript my-code-style">
+npm install kodepay</code>
+            </pre>
+            <div class="copy-button" @click="copy()">{{$t('copy code')}}</div>
+          </div>
+        </div>
+        <div>
+          <div class="title-14">{{'2.' + $t('Add the following code to manifest.json')}}</div>
+          <div class="code-container">
+            <pre>
+              <code class="language-javascript">
+"permissions": ["storage"],
+"content_scripts": [
+    {
+      // other content-scripts
+    },
+    {
+      "js": ["kodepayContent.js"],
+      "matches": ["https://kodepay.io/*"],
+      "run_at": "document_start"
+    }
+]</code>
+            </pre>
+            <div class="copy-button" @click="copy()">{{$t('copy code')}}</div>
+          </div>
+        </div>
+        <div>
+          <div class="title-14">{{'3.' + $t('Copy the code below and paste it into your background.js')}}</div>
+          <div class="code-container">
+            <pre>
+              <code class="language-javascript">
+{{`// service_worker
 import {Kodepay} from "kodepay";
-const kodepay_client = Kodepay.kodepay(your application_id, your extension_id, the environment you want to use);
-// example: const kodepay_client = Kodepay.kodepay(application_id, client_id, 'development')
+// example: const kodepay_client = Kodepay.kodepay(application_id, client_id, 'mode')
+const kodepay_client = Kodepay.kodepay('${application_key}', '${extension_key}', 'development');
 // get user info
 kodepay_client.get_user_info().then((user) => {
-      console.log(user);
- });
+   console.log(user);
+});
 // open login in page
 kodepay_client.open_login_page();
-
 // open user management page
-kodepay_client.open_user_management_page();
-
+ kodepay_client.open_user_management_page();
 // open payment page
-kodepay_client.open_payment_page(price_id);
-        </pre>
-      </el-card>
+kodepay_client.open_payment_page('${plan_key}');`
+}}</code>
+            </pre>
+            <div class="copy-button" @click="copy()">{{$t('copy code')}}</div>
+          </div>
+        </div>
+        <div>
+          <div class="title-14">{{'4.' + $t('Create kodepayContent.js and paste the code below')}}</div>
+          <div class="code-container">
+            <pre>
+              <code class="language-javascript">
+import {KodepayContent} from 'kodepay';
+KodepayContent.kodepay_content_start_listener();</code>
+            </pre>
+            <div class="copy-button" @click="copy()">{{$t('copy code')}}</div>
+          </div>
+        </div>
+      </div>
     </div>
-    <div v-if="currentStep === 3">
+    <div v-show="current_step === 3">
       <div style="display:flex;align-items: center;justify-content: center;flex-direction: column">
         <div style="padding-top: 80px">{{'🎉' + $t('Integration successful')}}</div>
         <div style="padding-top: 80px">
-          <span class="link">{{$t('Development integration process documentation')}}</span> <span class="link" style="padding-left: 24px">{{  $t('Help documentation center') }}</span>
+          <span class="link" @click="gotoDocCenter($i18n.locale)">{{  $t('Help documentation center') }}</span>
         </div>
         <el-button size="small" @click="finishGuide" type="primary" style="margin-top: 80px">
           {{ $t('Complete') }}
@@ -73,18 +120,25 @@ kodepay_client.open_payment_page(price_id);
       </div>
     </div>
     <div style="display: flex;align-items: center;justify-content: center;padding-top: 80px">
-      <el-button style="margin-top: 12px;" @click="nextStep" v-if="currentStep < 3" size="small" type="primary">{{$t('Next Step')}}</el-button>
+      <el-button style="margin-top: 12px;" @click="nextStep" v-if="current_step < 3" size="small" type="primary">{{$t('Next Step')}}</el-button>
     </div>
   </div>
 </template>
 <script>
 import {addPlan, addPlugin} from "../../api/interface";
+import Prism from 'prismjs';
+import 'prismjs/themes/prism.css';
+import Clipboard from "clipboard";
+import {gotoDocCenter} from "../../configs/common";
 
 export default {
   data() {
     return {
       plan_name: '',
       plugin_name:'',
+      application_key:"",
+      extension_key:"",
+      plan_key:"",
       guideSteps: [
         {
           title: 'Create Extension',
@@ -99,7 +153,7 @@ export default {
           title: 'Complete',
         },
       ],
-      currentStep: 0,
+      current_step: 0,
       plan_options: {
         '$3.99-recurring': {
           "en-US":"$3.99/month Recurring",
@@ -188,16 +242,33 @@ export default {
     };
   },
   created() {
-    this.currentStep = parseInt(localStorage.getItem('guideStep')) || 0;
-    if (this.currentStep === 4) {
+    this.current_step = parseInt(localStorage.getItem('guideStep')) || 0;
+    if (this.current_step === 4) {
       this.$router.push({path: '/dashboard'});
     }
+    //
+    this.application_key = localStorage.getItem(this.$mode + 'applicationKey') || "";
+    this.extension_key = localStorage.getItem('extensionKey') || "";
+    this.plan_key = localStorage.getItem('planKey') || "";
+  },
+  mounted() {
+    this.renderCodeBlocks();
   },
   methods: {
+    gotoDocCenter,
     preStep() {
-      if (this.currentStep > 0) {
-        this.currentStep--;
+      if (this.current_step > 0) {
+        this.current_step--;
       }
+    },
+    renderCodeBlocks () {
+      // 获取需要高亮的代码块
+      console.log('重新刷新');
+      const codeBlocks = document.querySelectorAll('pre code');
+      // 对每个代码块应用 Prism.js 的语法高亮
+      codeBlocks.forEach((codeBlock) => {
+        Prism.highlightElement(codeBlock);
+      });
     },
     finishGuide() {
       this.nextStep();
@@ -211,8 +282,8 @@ export default {
       this.plan_name = key;
     },
     nextStep() {
-      if (this.currentStep === 0) {
-        if (this.plugin_name === '') {
+      if (this.current_step === 0) {
+        if (!this.plugin_name || !this.plugin_name.trim()) {
           this.$message({
             message: this.$t('extension name is required'),
             type: 'warning'
@@ -221,8 +292,14 @@ export default {
           let vm = this;
           addPlugin({name: this.plugin_name}).then(res => {
             if (res.data && res.data.code && parseInt(res.data.code) === 100000) {
-              vm.currentStep++;
-              vm.setLocalStorageGuideStep(vm.currentStep);
+              vm.current_step++;
+              vm.extension_key = res.data.data.extension_id;
+              localStorage.setItem('extensionKey', vm.extension_key);
+              vm.setLocalStorageGuideStep(vm.current_step);
+              vm.$message({
+                message: vm.$t('create success'),
+                type: 'success'
+              });
             } else {
               this.$message({
                 message: res.data.message,
@@ -231,8 +308,8 @@ export default {
             }
           });
         }
-      } else if (this.currentStep === 1) {
-        if (this.plan_name === '') {
+      } else if (this.current_step === 1) {
+        if (this.plan_name === '' || this.plan_name.trim() === '') {
           this.$message({
             message: 'plan is required',
             type: 'warning'
@@ -244,8 +321,15 @@ export default {
           let vm = this;
           addPlan(args).then(res => {
             if (res.data && res.data.code && parseInt(res.data.code) === 100000) {
-              vm.currentStep++;
-              vm.setLocalStorageGuideStep(vm.currentStep);
+              vm.plan_key = res.data.data.product_key;
+              localStorage.setItem('planKey', vm.plan_key);
+              vm.$message({
+                message: vm.$t('create success'),
+                type: 'success'
+              });
+              vm.current_step++;
+              vm.setLocalStorageGuideStep(vm.current_step);
+              window.location.reload();
             } else {
               vm.$message({
                 message: res.data.message,
@@ -254,21 +338,68 @@ export default {
             }
           });
         }
-      } else if (this.currentStep === 2) { // 导入JS
-        this.currentStep++;
-        this.setLocalStorageGuideStep(this.currentStep);
-      } else if (this.currentStep === 3) { // 页面
-        this.currentStep++;
-        this.setLocalStorageGuideStep(this.currentStep);
+      } else if (this.current_step === 2) { // 导入JS
+        this.current_step++;
+        this.setLocalStorageGuideStep(this.current_step);
+      } else if (this.current_step === 3) { // 页面
+        this.current_step++;
+        localStorage.removeItem('extensionKey');
+        localStorage.removeItem('planKey');
+        this.setLocalStorageGuideStep(this.current_step);
       }
     },
+    copy (){
+      let clipboard = new Clipboard('.copy-button', {
+        text: (trigger) => {
+          const codeBlock = trigger.parentNode.querySelector('pre code');
+          return codeBlock.innerText;
+        }
+      })
+      clipboard.on('success', e => {
+        this.$message({
+          message: this.$t('copy success'),
+          type: 'success'
+        })
+        clipboard.destroy() // 释放内存
+      })
+      clipboard.on('error', e => {
+        // 不支持复制
+        this.$message({
+          message:  this.$t('browser not support copy'),
+          type: 'warning'
+        })
+        clipboard.destroy()
+      })
+    },
     goToStep(index) {
-      this.currentStep = index;
+      this.current_step = index;
     },
   }
 };
 </script>
 
 <style scoped lang="less">
-
+.code-container {
+  padding-bottom: 12px;
+  position: relative;
+}
+.my-code-style {
+  background: #f0f0f0;
+}
+.copy-button {
+  position: absolute;
+  cursor: pointer;
+  padding: 4px;
+  margin: 8px;
+  font-size: 12px;
+  color: #929292;
+  background: #fff;
+  border: 1px solid #ebebeb;
+  border-radius: 4px;
+  top: 0;
+  right: 0;
+}
+pre[class*="language-"] {
+  background-color: #F0F0F0;
+}
 </style>

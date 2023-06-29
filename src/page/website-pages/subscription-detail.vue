@@ -174,7 +174,7 @@ export default {
       if (time) {
         return timestampToDateString(time, 'yyyy-MM-dd HH:II:SS');
       }
-      return "";
+      return "-";
     },
     formatOrderStatus (pay_status) {
       if (pay_status && ORDER_OPTIONS.ORDER_STATUS_REF_OPTIONS[pay_status]) {

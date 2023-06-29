@@ -221,7 +221,7 @@ export default {
       return {
         total_revenue_data: {
           title: 'total revenue',
-          title_value:  this.formatPrice(data.real_amount_sum || 0),
+          title_value:  this.formatPrice(data.real_pay_amount_sum || 0),
           bottom: 'yesterday revenue',
           bottom_value:  this.formatPrice(data.real_amount_yesterday || 0),
         },

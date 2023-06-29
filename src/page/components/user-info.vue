@@ -5,7 +5,7 @@
       width="100"
       trigger="hover">
       <div @click="webLoginOut" style="cursor: pointer">
-        login out
+        {{$t('Logout')}}
       </div>
       <div slot="reference" style="display: flex;align-items: center;cursor: pointer">
         <el-image v-if="userInfo.icon" style="width: 32px; height: 32px;border-radius: 50%;" :src="userInfo.icon" fit="fill"></el-image>
@@ -45,8 +45,9 @@ export default {
         "userinfo": {
           // "user_id": 12345678,
           // "user_id":2870346,
-          // "user_id":2912918,
-          "user_id":"2840846",
+          "user_id":2840846,
+          // "user_id":"2840846",
+          // "user_id":"119",
           "email": "ligoogel1918@gmail.com",
           "username": "李谷歌",
           "created_at": "2023-05-29 20:27:01",

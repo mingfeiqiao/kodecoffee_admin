@@ -156,6 +156,9 @@ export default {
         type: 1,
         q: "",
       },
+      order:{
+        created_time:"desc"
+      },
       page: 1,
       page_size: 10,
       total: 0,
@@ -263,6 +266,7 @@ export default {
       if (Object.keys(condition).length !== 0) {
         args.condition = condition;
       }
+      args.order = this.order;
       let vm = this;
       vm.plan_list = [];
       vm.table_loading = true;

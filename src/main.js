@@ -10,8 +10,8 @@ import config from './configs/config';
 import enLocale from 'element-ui/lib/locale/lang/en'
 import zhLocale from 'element-ui/lib/locale/lang/zh-CN'
 import ElementLocale from 'element-ui/lib/locale'
-
 import * as echarts from 'echarts';
+import * as globalMethods from './configs/common';
 Vue.prototype.$echarts = echarts
 Vue.prototype.URL = config.URL;
 Vue.prototype.API_URL = config.API_URL;
@@ -29,6 +29,10 @@ if (!localLang) {
   localLang = navLang === 'zh-CN' || navLang === 'en-US' ? navLang : false;
   localStorage.setItem('selected_language', localLang);
 }
+// 将全局方法挂载到Vue原型上
+Object.keys(globalMethods).forEach(methodName => {
+  Vue.prototype[methodName] = globalMethods[methodName];
+});
 const i18n = new VueI18n({
   locale: localLang,
   fallbackLocale: localLang,

@@ -163,7 +163,7 @@ export default {
       if (time) {
         return timestampToDateString(time, 'yyyy-MM-dd HH:II:SS');
       }
-      return "";
+      return "-";
     },
     /**
      * 格式化退款金额 格式 US$ 99.00

@@ -131,12 +131,12 @@ const routes = [
         name: 'event-callback-settings',
         meta: { breadcrumbLabel: 'Event Callback Settings' }
       },
-      {
-        path: 'payment-channel-settings',
-        component: paymentChannelSettings,
-        name: 'payment-channel-settings',
-        meta: { breadcrumbLabel: 'Payment Channel Settings' }
-      }
+      // {
+      //   path: 'payment-channel-settings',
+      //   component: paymentChannelSettings,
+      //   name: 'payment-channel-settings',
+      //   meta: { breadcrumbLabel: 'Payment Channel Settings' }
+      // }
     ]
   },
   {

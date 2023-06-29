@@ -187,7 +187,7 @@ export default {
         pay_success_times: user_consumption_statistics.sum_settle_pay_success_count || 0,
         refunded_amount:  this.formatPrice(user_consumption_statistics.sum_settle_refund_amount, currency),
         last_payment: this.formatTime(user_consumption_statistics.lasted_pay_time),
-        created_time: this.formatTime(user_consumption_statistics.created_time)
+        created_time: this.formatTime(item.created_time)
       }
     },
     /**
@@ -323,7 +323,7 @@ export default {
       if (time) {
         return timestampToDateString(time, 'yyyy-MM-dd HH:II:SS');
       }
-      return "";
+      return "-";
     },
     handleOrderSizeChange() {
       this.getOrderListData();
