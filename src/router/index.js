@@ -22,6 +22,7 @@ import userLayout from "../page/website-pages/user-layout.vue";
 import userDetail from "../page/website-pages/user-detail.vue";
 
 import guide from "../page/website-pages/guide.vue";
+import extensionValidateEmail from "../page/extension/extension-validate-email.vue";
 Vue.use(Router);
 const routes = [
   {
@@ -141,6 +142,10 @@ const routes = [
   {
     path: '/extension/login',
     component: extensionLogin
+  },
+  {
+    path: '/extension/validate-email',
+    component: extensionValidateEmail
   },
   {
     path: '/extension/pay-manage',
