@@ -144,7 +144,7 @@ const routes = [
     component: extensionLogin
   },
   {
-    path: '/extension/validate-email',
+    path: '/extension/email-validate',
     component: extensionValidateEmail
   },
   {
