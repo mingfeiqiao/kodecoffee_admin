@@ -31,7 +31,7 @@
               <div class="column_content">
                 <div>
                   <img v-if="scope.row.plan_icon" :src="scope.row.plan_icon"  width="44" height="44"  style="border:1px solid #eee;border-radius:10px;display:block;float:left;max-width: 130%;" :alt="scope.row.plan_name">
-                  <svg  v-else width="46" height="46">
+                  <svg  v-else width="40" height="40">
                     <use xlink:href="#default-plan-icon"></use>
                   </svg>
                 </div>
@@ -56,7 +56,7 @@
                     {{$t(scope.row.plan_type_obj.type)}}
                   </div>
                   <div style="color: #929292">
-                    {{ '/ ' + ((parseInt(scope.row.plan_type_obj.interval_count) === 1) ? '' :  scope.row.plan_type_obj.interval_count) + ' ' + $t(scope.row.plan_type_obj.interval)}}
+                    {{$t('monthly')}}
                   </div>
                 </div>
                 <div v-else-if="scope.row.plan_type_obj.type === 'one_time'">

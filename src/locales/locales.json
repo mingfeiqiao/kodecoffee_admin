@@ -258,9 +258,11 @@
     "Add the following code to manifest.json": "Add the following code to manifest.json:",
     "Copy the code below and paste it into your background.js" : "Copy the code below and paste it into your background.js:",
     "Create kodepayContent.js and paste the code below": "Create kodepayContent.js and paste the code below:",
-    "Logout": "Logout"
+    "Logout": "Logout",
+    "monthly": "monthly"
   },
   "zh-CN": {
+    "monthly": "每月",
     "Logout": "登出",
     "Import the dependency package": "引入依赖包(npm):",
     "Add the following code to manifest.json": "manifest.json中增加如下代码:",
