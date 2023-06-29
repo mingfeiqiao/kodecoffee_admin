@@ -5,7 +5,7 @@
           {{ $t('4 steps to start') }}
         </span>
       <span style="color: #929292;padding-left: 12px">
-          {{ $t('in 10 min')}}
+          {{ $t('in 3 min')}}
         </span>
     </div>
     <div style="padding-top: 24px">
@@ -52,7 +52,45 @@ npm install kodepay</code>
           </div>
         </div>
         <div>
-          <div class="title-14">{{'2.' + $t('Add the following code to manifest.json')}}</div>
+          <div class="title-14">{{'2.' + $t('Create kodepayContent.js and paste the code below')}}</div>
+          <div class="code-container">
+            <pre>
+              <code class="language-javascript">
+import {KodepayContent} from 'kodepay';
+KodepayContent.kodepay_content_start_listener();</code>
+            </pre>
+            <div class="copy-button" @click="copy()">{{$t('copy code')}}</div>
+          </div>
+        </div>
+        <div>
+          <div class="title-14">{{'3.' + $t('Copy the code below and paste it into your background.js')}}</div>
+          <div class="code-container">
+            <pre>
+              <code class="language-javascript">
+{{`// service_worker
+import {Kodepay} from "kodepay";
+// example: const kodepay_client = Kodepay.kodepay(application_id, extension_id, 'mode')
+//You can find the application_id in the event callback settings page
+//You can find the extension_id in the extension page
+const kodepay_client = Kodepay.kodepay('${application_key}', '${extension_key}', 'development');
+// get user info
+kodepay_client.get_user_info().then((user) => {
+   console.log(user);
+});
+// open login in page
+kodepay_client.open_login_page();
+// open user management page
+ kodepay_client.open_user_management_page();
+// open payment page
+//You can find the plan_id in the plan page
+kodepay_client.open_payment_page('${plan_key}');`
+}}</code>
+            </pre>
+            <div class="copy-button" @click="copy()">{{$t('copy code')}}</div>
+          </div>
+        </div>
+        <div>
+          <div class="title-14">{{'4.' + $t('Add the following code to manifest.json')}}</div>
           <div class="code-container">
             <pre>
               <code class="language-javascript">
@@ -67,41 +105,6 @@ npm install kodepay</code>
       "run_at": "document_start"
     }
 ]</code>
-            </pre>
-            <div class="copy-button" @click="copy()">{{$t('copy code')}}</div>
-          </div>
-        </div>
-        <div>
-          <div class="title-14">{{'3.' + $t('Copy the code below and paste it into your background.js')}}</div>
-          <div class="code-container">
-            <pre>
-              <code class="language-javascript">
-{{`// service_worker
-import {Kodepay} from "kodepay";
-// example: const kodepay_client = Kodepay.kodepay(application_id, client_id, 'mode')
-const kodepay_client = Kodepay.kodepay('${application_key}', '${extension_key}', 'development');
-// get user info
-kodepay_client.get_user_info().then((user) => {
-   console.log(user);
-});
-// open login in page
-kodepay_client.open_login_page();
-// open user management page
- kodepay_client.open_user_management_page();
-// open payment page
-kodepay_client.open_payment_page('${plan_key}');`
-}}</code>
-            </pre>
-            <div class="copy-button" @click="copy()">{{$t('copy code')}}</div>
-          </div>
-        </div>
-        <div>
-          <div class="title-14">{{'4.' + $t('Create kodepayContent.js and paste the code below')}}</div>
-          <div class="code-container">
-            <pre>
-              <code class="language-javascript">
-import {KodepayContent} from 'kodepay';
-KodepayContent.kodepay_content_start_listener();</code>
             </pre>
             <div class="copy-button" @click="copy()">{{$t('copy code')}}</div>
           </div>
@@ -247,9 +250,9 @@ export default {
       this.$router.push({path: '/dashboard'});
     }
     //
-    this.application_key = localStorage.getItem(this.$mode + 'applicationKey') || "";
-    this.extension_key = localStorage.getItem('extensionKey') || "";
-    this.plan_key = localStorage.getItem('planKey') || "";
+    this.application_key = localStorage.getItem(this.$mode + 'applicationKey') || "your application id";
+    this.extension_key = localStorage.getItem('extensionKey') || "your extension id";
+    this.plan_key = localStorage.getItem('planKey') || "your plan id";
   },
   mounted() {
     this.renderCodeBlocks();
