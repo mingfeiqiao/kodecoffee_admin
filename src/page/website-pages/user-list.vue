@@ -14,9 +14,19 @@
                   :header-cell-style="{'background-color': 'var(--header-cell-background-color)','color': 'var(--header-cell-color)','font-weight': 'var(--header-cell-font-weight)'}"
         >
           <el-table-column prop="user_email" :label="$t('customer')"></el-table-column>
-          <el-table-column prop="total_spend" :label="$t('total spend')" sortable ></el-table-column>
+          <el-table-column prop="sum_settle_pay_amount" :label="$t('total spend')" sortable>
+            <template slot-scope="scope">
+              <span>{{scope.row.total_spend}}
+              </span>
+            </template>
+          </el-table-column>
           <el-table-column prop="payments_times" :label="$t('payments times')" sortable></el-table-column>
-          <el-table-column prop="refunded_amount" :label="$t('refunded amount')" sortable></el-table-column>
+          <el-table-column prop="sum_settle_refund_amount" :label="$t('refunded amount')" sortable>
+            <template slot-scope="scope">
+              <span>{{scope.row.refunded_amount}}
+              </span>
+            </template>
+          </el-table-column>
           <el-table-column prop="last_payment" :label="$t('last payments')"></el-table-column>
           <el-table-column prop="created_time" :label="$t('create time')"></el-table-column>
           <el-table-column :label="$t('Operation')" width="100" align="center">
@@ -52,9 +62,9 @@ export default {
       condition: {
       },
       ORDER_FIELD_REF: {
-        total_spend: "sum_settle_real_amount",
+        sum_settle_pay_amount: "sum_settle_pay_amount",
         payments_times: "sum_settle_pay_count",
-        refunded_amount: "sum_settle_refund_amount",
+        sum_settle_refund_amount: "sum_settle_refund_amount",
         created_time: "created_time"
       },
       ORDER_TYPE_REF: {
@@ -159,8 +169,10 @@ export default {
         user_key: item.user_key || "",
         user_email: item.email || "",
         total_spend: this.formatPrice(user_consumption_statistics.sum_settle_pay_amount, currency),
+        sum_settle_pay_amount: user_consumption_statistics.sum_settle_pay_amount || 0,
         payments_times: user_consumption_statistics.sum_settle_pay_success_count || 0,
         refunded_amount:  this.formatPrice(user_consumption_statistics.sum_settle_refund_amount, currency),
+        sum_settle_refund_amount: user_consumption_statistics.sum_settle_refund_amount || 0,
         last_payment: this.formatTime(user_consumption_statistics.lasted_pay_time),
         created_time: this.formatTime(item.created_time)
       }
@@ -204,11 +216,11 @@ export default {
      */
     handleSortChange({prop, order }) {
       if (order) {
-        let flag_is_have=false
+        let flag_is_have = false
         this.sort.forEach(element => {
           if (element.prop === prop) {
-            element.order=order
-            flag_is_have=true
+            element.order = order
+            flag_is_have = true
           }
         });
         if (!flag_is_have) {
@@ -217,11 +229,11 @@ export default {
             order:order
           })
         }
-      }else{  //不参与排序
+      } else{  //不参与排序
         let order_index=0
         this.sort.forEach((element,index) => {
           if (element.prop === prop) {
-            order_index=index
+            order_index = index
           }
         });
         this.sort.splice(order_index,1)

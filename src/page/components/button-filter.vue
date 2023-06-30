@@ -17,7 +17,7 @@
 }
 .is_active {
   color: #2f54eb;
-  border: 1px solid rgba(24, 144, 255, 1);
+  border: 1px solid #2f54eb;
 }
 </style>
 <template>
