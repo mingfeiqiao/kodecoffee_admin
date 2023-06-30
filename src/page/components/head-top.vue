@@ -15,9 +15,9 @@
           v-model="isTestMode"
           active-color="#13ce66"
           inactive-color="#ff4949"
-          active-text="测试模式"
+          :active-text="$t('Sandbox')"
           @change="checkoutMode"
-          inactive-text="正式模式">
+          :inactive-text="$t('Production')">
         </el-switch>
       </div>
       <div v-if="$store.state.guide_step < 4" style="background-color: #B7EB8F;margin-left: 24px;padding:3px 12px; border-radius: 4px;cursor: pointer" @click="toGuide">

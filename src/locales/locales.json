@@ -262,9 +262,13 @@
     "monthly": "monthly",
     "The balance refers to the amount remaining for developers after deducting fees, refunds, and dispute charges from their order revenue": "The balance refers to the amount remaining for developers after deducting fees, refunds, and dispute charges from their order revenue",
     "Payout amount refers to the balance that can be withdrawn after 14 days from the completion of the order": "Payout amount refers to the balance that can be withdrawn after 14 days from the completion of the order",
-    "5s to login": "Redirecting to the login page in 5 seconds."
+    "5s to login": "Redirecting to the login page in 5 seconds.",
+    "Sandbox": "Sandbox",
+    "Production": "Production"
   },
   "zh-CN": {
+    "Sandbox": "沙盒模式",
+    "Production": "正式模式",
     "5s to login": "5s后自动跳转到登录页面",
     "The balance refers to the amount remaining for developers after deducting fees, refunds, and dispute charges from their order revenue": "开发者的订单收入扣除手续费用、退款、争议费用后剩余的金额",
     "Payout amount refers to the balance that can be withdrawn after 14 days from the completion of the order": "订单完成14天以后余额可提现",
