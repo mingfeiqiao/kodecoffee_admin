@@ -87,10 +87,6 @@ export default {
           path: "/extension/pay-manage",
           query: vm.$route.query
         });
-      } else {
-        if (res && res.data && res.data.message) {
-          vm.$message.warning(res.data.message)
-        }
       }
     });
   },

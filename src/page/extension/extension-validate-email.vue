@@ -33,6 +33,12 @@ export default {
     let params = this.$route.query;
     if (params.code && params.message) {
       this.code = parseInt(params.code);
+      if(this.code === 100000) {
+        window.postMessage({
+          type: 'login in',
+          data: this.params
+        });
+      }
       this.message = params.message;
     }
   },
