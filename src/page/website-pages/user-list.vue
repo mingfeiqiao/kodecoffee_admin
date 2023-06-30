@@ -89,6 +89,12 @@ export default {
       };
       vm.table_loading = true;
       vm.table_data = [];
+      // 如果有created_time作为排序字段，那么删除这个排序字段，如果只有created_time作为排序字段，那么不做任何操作
+      let order = JSON.parse(JSON.stringify(args.order));
+      if(Object.keys(order).length > 1) {
+        delete order['created_time'];
+      }
+      args.order = order;
       customerListApi(args).then(res => {
         vm.table_loading = false;
         if (parseInt(res.data.code )=== 100000) {
