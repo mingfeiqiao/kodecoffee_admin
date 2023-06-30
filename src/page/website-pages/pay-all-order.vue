@@ -160,11 +160,17 @@ export default {
     this.table_data = this.getTableData();
   },
   methods: {
+    resetPageParams () {
+      this.page = 1;
+      this.page_size = 10;
+      this.total = 0;
+    },
     /**
      * tab切换
      */
     handleClick() {
       this.condition = {};
+      this.resetPageParams();
       if (this.active_order_type === 'disputed') {
         this.condition = {order_status: 'disputed'};
       }
@@ -178,25 +184,50 @@ export default {
      */
     reset() {
       this.condition = {};
+      this.resetPageParams();
       this.getTableData();
     },
     /**
      * 搜索
      */
     search() {
+      this.resetPageParams();
       this.getTableData();
+    },
+    /**
+     * 获取api参数
+     * @param condition
+     * @param orders
+     * @param page
+     * @param page_size
+     * @returns {{condition: {}, page, page_size, order: {}}}
+     */
+    getApiArgs (condition, orders, page, page_size) {
+      let condition_temp = {};
+      for (let key in condition) {
+        if (condition[key]) {
+          condition_temp[key] = condition[key];
+        }
+      }
+      let orders_temp = {};
+      for (let key in orders) {
+        if (orders[key]) {
+          orders[key] = this.order[key];
+        }
+      }
+      return {
+        'page': page,
+        'page_size': page_size,
+        'condition': condition_temp,
+        'order': orders_temp
+      }
     },
     /**
      * 获取表格数据
      * @returns {*}
      */
     getTableData () {
-      let args = {
-        'page': this.page,
-        'page_size': this.page_size,
-        'condition': this.condition,
-        'order':this.order
-      };
+      let args = this.getApiArgs(this.condition, this.order, this.page, this.page_size);
       let vm = this;
       vm.table_loading = true;
       this.table_data = [];
@@ -208,6 +239,10 @@ export default {
         if (parseInt(res.data.code) === 100000) {
           vm.table_data = vm.formatTableData(res.data.data);
           vm.total = res.data.totalCount;
+        } else {
+          if (res && res.data && res.data.message) {
+            vm.$message.warning(res.data.message)
+          }
         }
       }).catch(err => {
         vm.table_loading = false;
@@ -244,6 +279,7 @@ export default {
      * 分页
      */
     handleSizeChange(size) {
+      this.resetPageParams();
       this.page_size = size;
       this.getTableData();
     },

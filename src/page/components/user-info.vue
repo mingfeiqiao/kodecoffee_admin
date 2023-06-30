@@ -43,9 +43,9 @@ export default {
         "product_id": 70,
         "product_mark": 70,
         "userinfo": {
-          // "user_id": 12345678,
+          "user_id": 12345678,
           // "user_id":2870346,
-          "user_id":2840846,
+          // "user_id":2840846,
           // "user_id":"2840846",
           // "user_id":"119",
           "email": "ligoogel1918@gmail.com",
@@ -86,8 +86,14 @@ export default {
         };
         let vm = this;
         postUserInfo(vm.userInfo).then(function(res) {
-          localStorage.setItem(vm.$mode + 'userInfo', JSON.stringify(vm.userInfo));
-          vm.$store.commit('setLoginStatus', true); // 修改这一行
+          if (res.data && res.data.code && parseInt(res.data.code) === 100000) {
+            localStorage.setItem(vm.$mode + 'userInfo', JSON.stringify(vm.userInfo));
+            vm.$store.commit('setLoginStatus', true); // 修改这一行
+          } else {
+            if (res && res.data && res.data.message) {
+              vm.$message.warning(res.data.message)
+            }
+          }
         }).catch(function(err) {
           console.log(err);
         });
@@ -97,15 +103,26 @@ export default {
       }
     },
     webLoginOut() {
+      let vm = this;
       loginOut().then(res => {
-        // 清除本地存储的用户信息
-        localStorage.removeItem(this.MODECONFIG.PRODUCTION.mode + 'applicationKey');
-        localStorage.removeItem(this.MODECONFIG.PRODUCTION.mode + 'userInfo');
-        localStorage.removeItem(this.MODECONFIG.PRODUCTION.mode + 'token');
-        localStorage.removeItem(this.MODECONFIG.SANDBOX.mode + 'applicationKey');
-        localStorage.removeItem(this.MODECONFIG.SANDBOX.mode + 'userInfo');
-        localStorage.removeItem(this.MODECONFIG.SANDBOX.mode + 'token');
-        window.location.href = `${this.URL}/user/login`;
+        if (!res.data) {
+          vm.$message.error('error')
+          return;
+        }
+        if (parseInt(res.data.code) === 100000) {
+          // 清除本地存储的用户信息
+          localStorage.removeItem(this.MODECONFIG.PRODUCTION.mode + 'applicationKey');
+          localStorage.removeItem(this.MODECONFIG.PRODUCTION.mode + 'userInfo');
+          localStorage.removeItem(this.MODECONFIG.PRODUCTION.mode + 'token');
+          localStorage.removeItem(this.MODECONFIG.SANDBOX.mode + 'applicationKey');
+          localStorage.removeItem(this.MODECONFIG.SANDBOX.mode + 'userInfo');
+          localStorage.removeItem(this.MODECONFIG.SANDBOX.mode + 'token');
+          window.location.href = `${this.URL}/user/login`;
+        } else {
+          if (res && res.data && res.data.message) {
+            vm.$message.warning(res.data.message)
+          }
+        }
         // 最好把cookie 也清理了
       }).catch(err => {
         console.log(err)

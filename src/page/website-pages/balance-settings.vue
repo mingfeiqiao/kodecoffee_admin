@@ -8,7 +8,7 @@
             <div>
               <span style="color:#929292;">{{$t('balance')}}</span>
               <span>
-              <el-tooltip class="item" content="每笔订单扣除费用后剩下的累加" effect="light" placement="top">
+              <el-tooltip class="item" :content="$t('The balance refers to the amount remaining for developers after deducting fees, refunds, and dispute charges from their order revenue')" effect="light" placement="top">
                 <i class="el-icon-info" style="color:#929292;"></i>
               </el-tooltip>
             </span>
@@ -19,7 +19,7 @@
             <div>
               <span style="color:#929292;">{{$t('able to payout')}}</span>
               <span>
-              <el-tooltip class="item" content="订单14天以后（暂定完成支付14天后的订单）+ 扣除争议费用" effect="light" placement="top">
+              <el-tooltip class="item" :content="$t('Payout amount refers to the balance that can be withdrawn after 14 days from the completion of the order')" effect="light" placement="top">
                 <i class="el-icon-info"  style="color:#929292;"></i>
               </el-tooltip>
             </span>
@@ -49,8 +49,8 @@
           <el-descriptions-item :label="$t('business type')">
             {{ $t(business_type_options[balance_settings.bussiness_type]) }}
           </el-descriptions-item>
-          <el-descriptions-item :label="$t('minimum threshold')" >{{BALANCE_SETTING.minimum_withdrawal_amount}}</el-descriptions-item>
-          <el-descriptions-item :label="$t('payout frequency')" >{{$t(BALANCE_SETTING.withdrawal_period)}}</el-descriptions-item>
+          <el-descriptions-item :label="$t('minimum threshold')">{{BALANCE_SETTING.minimum_withdrawal_amount}}</el-descriptions-item>
+          <el-descriptions-item :label="$t('payout frequency')">{{$t(BALANCE_SETTING.withdrawal_period)}}</el-descriptions-item>
           <el-descriptions-item :label="$t('payout method')">
             <span v-if="balance_settings.withdraw_type === 'card'" style="display:flex;align-items: center">
               <svg style="width: 16px;height: 16px">
@@ -281,6 +281,10 @@ export default {
           });
           vm.show_withdrawal_dialog = false;
           vm.getWithdrawList();
+        } else {
+          if (res && res.data && res.data.message) {
+            vm.$message.warning(res.data.message)
+          }
         }
       }).catch(err => {
         console.log(err);
@@ -322,6 +326,10 @@ export default {
         }
         if (parseInt(res.data.code )=== 100000) {
           vm.table_data = vm.formatWithdrawList(res.data.data);
+        } else {
+          if (res && res.data && res.data.message) {
+            vm.$message.warning(res.data.message)
+          }
         }
       }).catch(err => {
         vm.table_loading = false;
@@ -339,6 +347,10 @@ export default {
         }
         if (parseInt(res.data.code )=== 100000) {
           vm.formatBalance(res.data.data);
+        } else {
+          if (res && res.data && res.data.message) {
+            vm.$message.warning(res.data.message)
+          }
         }
       }).catch(err => {
         console.log(err);
@@ -356,6 +368,10 @@ export default {
         if (parseInt(res.data.code) === 100000) {
           vm.has_balance_settings = JSON.stringify(res.data.data) !== '{}';
           vm.balance_settings = res.data.data;
+        } else {
+          if (res && res.data && res.data.message) {
+            vm.$message.warning(res.data.message)
+          }
         }
       }).catch(err => {
         console.log(err);
@@ -451,6 +467,10 @@ export default {
       let response = await withdrawRateApi(args);
       if (parseInt(response.data.code) === 100000) {
         return response.data.data.exchange_rate;
+      } else {
+        if (res && res.data && res.data.message) {
+          vm.$message.warning(res.data.message)
+        }
       }
     },
     /**
@@ -479,7 +499,7 @@ export default {
             }
           } else { // 不能提现
             console.log(res.data.message);
-            vm.$alert(res.data.message, vm.$t('Tips'), {
+            vm.$alert(res.data.message, res.data.title, {
               confirmButtonText: vm.$t('OK')
             });
           }

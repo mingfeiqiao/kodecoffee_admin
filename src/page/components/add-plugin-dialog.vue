@@ -143,14 +143,19 @@ export default {
           args.icon = icon;
         }
       }
+      let vm = this;
       addPlugin(args).then((res) => {
         if (parseInt(res.data.code) === 100000) {
-          this.$message({
+          vm.$message({
             message: 'success',
             type: 'success'
           });
-          this.dialog_form_visible = false;
-          this.$emit('operateSuccess');
+          vm.dialog_form_visible = false;
+          vm.$emit('operateSuccess');
+        } else {
+          if (res && res.data && res.data.message) {
+            vm.$message.warning(res.data.message)
+          }
         }
       }).catch((err) => {
         this.$message({
@@ -179,17 +184,22 @@ export default {
         }
       }
       args.client_key = this.chosen_plugin_data.client_key;
+      let vm = this;
       updatePlugin(args).then((res) => {
         if (parseInt(res.data.code) === 100000) {
-          this.$message({
+          vm.$message({
             message: 'success',
             type: 'success'
           });
-          this.dialog_form_visible = false;
-          this.$emit('operateSuccess');
+          vm.dialog_form_visible = false;
+          vm.$emit('operateSuccess');
+        } else {
+          if (res && res.data && res.data.message) {
+            vm.$message.warning(res.data.message)
+          }
         }
       }).catch((err) => {
-        this.$message({
+        vm.$message({
           message: 'fail',
           type: 'error'
         });
@@ -200,12 +210,12 @@ export default {
      * @param formName
      */
     submitForm(formName) {
-      this.$refs[formName].validate(async (valid) => {
+      this.$refs[formName].validate((valid) => {
         if (valid) {
           if (this.operationType === 'add') {
-            await this.addPluginData();
+            this.addPluginData();
           } else {
-            await this.updatePluginData();
+            this.updatePluginData();
           }
         } else {
           return false;

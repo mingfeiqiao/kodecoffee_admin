@@ -94,6 +94,10 @@ export default {
         if (parseInt(res.data.code )=== 100000) {
           vm.table_data = vm.formatUserList(res.data.data);
           vm.total = res.data.totalCount;
+        } else {
+          if (res && res.data && res.data.message) {
+            vm.$message.warning(res.data.message)
+          }
         }
       }).catch(err => {
         vm.table_loading = false;

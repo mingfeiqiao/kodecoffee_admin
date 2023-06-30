@@ -153,6 +153,10 @@ export default {
           vm.payment_detail = this.formatPaymentDetail(res.data.data);
           vm.billing_detail = this.formatBillingDetail(res.data.data);
           vm.cost_detail = this.formatCostDetail(res.data.data);
+        } else {
+          if (res && res.data && res.data.message) {
+            vm.$message.warning(res.data.message)
+          }
         }
       }).catch((err) => {
         console.log(err);

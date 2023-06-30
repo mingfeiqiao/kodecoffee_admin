@@ -129,7 +129,7 @@ export default {
       SUBSCRIPTION_OPERATION_MAP: {
         active: {
           message: 'cancel',
-          color: '#1980ff',
+          color: '#2F54EB',
           function: this.cancelSubscription
         }
       },
@@ -142,17 +142,17 @@ export default {
       ORDER_OPERATION_MAP:{
         succeed: {
           message: 'download',
-          color: '#1980ff',
+          color: '#2F54EB',
           function: this.openBillUrl
         },
         refunded: {
           message: 'download',
-          color: '#1980ff',
+          color: '#2F54EB',
           function: this.openBillUrl
         },
         disputed: {
           message: 'download',
-          color: '#1980ff',
+          color: '#2F54EB',
           function: this.openBillUrl
         }
       },
@@ -356,6 +356,7 @@ export default {
           vm.subscription_list = vm.formatSubscriptionListFromRes(resData.payinfo);
           vm.order_list = vm.formatOrderListFromRes(resData.invoice_list);
         } else {
+          vm.$message.warning('not login');
           vm.$router.push({
             path: "/extension/login",
             query: vm.$route.query
@@ -453,10 +454,9 @@ export default {
           });
           vm.getUserInfo();
         } else {
-          vm.$message({
-            message: resData.message,
-            type: 'error'
-          });
+          if (res && res.data && res.data.message) {
+            vm.$message.warning(res.data.message)
+          }
         }
       }).catch(err => {
         vm.$message({

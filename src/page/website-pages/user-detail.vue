@@ -160,6 +160,10 @@ export default {
           }
           if (parseInt(res.data.code) === 100000) {
             vm.user = vm.formatUserData(res.data.data);
+          } else {
+            if (res && res.data && res.data.message) {
+              vm.$message.warning(res.data.message)
+            }
           }
         }).catch(err => {
           console.log(err);
@@ -213,6 +217,10 @@ export default {
         if (parseInt(res.data.code) === 100000) {
           vm.order_list = vm.formatOrderList(res.data.data);
           vm.order_args.total = res.data.totalCount;
+        } else {
+          if (res && res.data && res.data.message) {
+            vm.$message.warning(res.data.message)
+          }
         }
       }).catch(err => {
         vm.order_args.table_loading = false;
@@ -241,6 +249,10 @@ export default {
         if (parseInt(res.data.code) === 100000) {
           vm.subscription_list = vm.formatSubscriptionList(res.data.data);
           vm.subscription_args.total = res.data.totalCount;
+        } else {
+          if (res && res.data && res.data.message) {
+            vm.$message.warning(res.data.message)
+          }
         }
       }).catch(err => {
         console.log(err);

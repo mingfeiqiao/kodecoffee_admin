@@ -7,7 +7,7 @@
         </div>
         <div>
           <div style="padding-left: 12px">
-            <el-input size="small" :placeholder="$t('input placeholder')" v-model="condition.q" clearable @keyup.enter.native="search">
+            <el-input size="small" :placeholder="$t('input placeholder')" v-model="condition.q" clearable @keyup.enter.native="search"  @clear="search">
             </el-input>
           </div>
         </div>
@@ -190,7 +190,6 @@ export default {
   },
   created() {
     this.getPlanList();
-    // this.testPlanList();
   },
   components: {
     EllipsisText,
@@ -198,56 +197,6 @@ export default {
     addPlanDialog
   },
   methods: {
-    testPlanList() {
-       this.plan_list = [
-         {
-           "name": "kodepay-mfei",// 产品名称
-           "desc": "kodepay mfei",// 产品描述
-           "is_trial": true,// 是否试用
-           "id": 1, //产品ID
-           "application_id": 538,// 应用ID
-           "is_deleted": 0, // 是否删除
-           "updated_at": "2023-06-03T15:47:22",// 更新时间
-           "icon": null, // icon图标
-           "trial_days": 3,// 试用天数
-           "account_id": 29,// 帐号ID
-           "is_actived": 1,// 是否激活
-           "created_at": "2023-06-03T15:47:22",// 创建时间
-           "app_price": [ // 产品价格结构体
-             {
-               "currency": "usd",// 币种
-               "amount": 1.99,// 金额
-               "interval": "day",// 周期
-               "id": 1,// 价格ID
-               "application_id": 538,// 应用ID
-               "is_deleted": 0,// 是否删除
-               "updated_at": "2023-06-03T15:47:22",// 更新时间
-               "type": "recurring",// 周期
-               "product_id": 1,// 产品ID
-               "interval_count": 1,// 周期数量
-               "account_id": 29,// 帐号ID
-               "is_actived": 1,// 是否激活
-               "created_at": "2023-06-03T15:47:22",// 创建时间
-               "app_price_currency": [// 产品价格多币种结构体
-                 {
-                   "amount": 1.99, // 金额
-                   "price_id": 1,// 产品价格ID
-                   "account_id": 29,// 帐号ID
-                   "application_id": 538,// 应用ID
-                   "is_deleted": 0,// 是否删除
-                   "updated_at": "2023-06-03T15:47:22",// 更新时间
-                   "currency": "usd",// 币种
-                   "product_id": 1,// 产品ID
-                   "id": 1,// 价格多币种ID
-                   "is_actived": 1,// 是否激活
-                   "created_at": "2023-06-03T15:47:22"// 创建时间
-                 }
-               ]
-             }
-           ]
-         }
-       ];
-    },
     /**
      * 获取计划列表
      */
@@ -275,12 +224,27 @@ export default {
         if (parseInt(res.data.code )=== 100000) {
           vm.plan_list = vm.formatPlanList(res.data.data);
           vm.total = res.data.totalCount;
+        } else {
+          if (res && res.data && res.data.message) {
+            vm.$message.warning(res.data.message)
+          }
         }
       }).catch(err => {
         vm.table_loading = false;
       });
     },
-
+    /**
+     * 格式化table数据
+     */
+    resetPageParams () {
+      this.page = 1;
+      this.page_size = 10;
+      this.total = 0;
+    },
+    /**
+     *
+     * @param client_key
+     */
     copy (client_key){
       let clipboard = new Clipboard('.copy_text', {
         text: () => {
@@ -322,6 +286,7 @@ export default {
      * @param val
      */
     handleSizeChange(val) {
+      this.resetPageParams();
       this.page_size = val;
       this.getPlanList();
     },
@@ -331,6 +296,7 @@ export default {
      */
     paymentModeChange(value) {
       this.condition.type = value;
+      this.resetPageParams();
       this.getPlanList();
     },
     formatPlanList (data) {
@@ -406,6 +372,7 @@ export default {
      * 搜索
      */
     search() {
+      this.resetPageParams();
       this.getPlanList();
     },
     operatePlan(plan_data, operation) {
@@ -416,6 +383,34 @@ export default {
       } else if (operation === 'add') {
         // 新增插件
         this.dialog_form_visible = true;
+      }
+    },
+    /**
+     * 获取api参数
+     * @param condition
+     * @param orders
+     * @param page
+     * @param page_size
+     * @returns {{condition: {}, page, page_size, order: {}}}
+     */
+    getApiArgs (condition, orders, page, page_size) {
+      let condition_temp = {};
+      for (let key in condition) {
+        if (condition[key]) {
+          condition_temp[key] = condition[key];
+        }
+      }
+      let orders_temp = {};
+      for (let key in orders) {
+        if (orders[key]) {
+          orders[key] = this.order[key];
+        }
+      }
+      return {
+        'page': page,
+        'page_size': page_size,
+        'condition': condition_temp,
+        'order': orders_temp
       }
     },
     /**

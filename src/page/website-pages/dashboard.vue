@@ -322,13 +322,14 @@ export default {
           vm.overall_data = vm.formatOverallData(res.data.data);
           vm.formatEchartsData(res.data.data);
         } else {
-          vm.$message.error(res.data.message);
+          if (res && res.data && res.data.message) {
+            vm.$message.warning(res.data.message)
+          }
           vm.setDefaultOptions();
         }
       }).catch(err => {
         vm.hideLoading();
         vm.setDefaultOptions();
-        vm.$message.error(err.message);
       })
     },
     setDefaultOptions () {

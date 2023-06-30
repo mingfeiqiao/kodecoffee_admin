@@ -69,7 +69,7 @@
     "billing management": "Billing Management",
     "付款列表": "付款列表",
     "please input email": "Email",
-    "send login": "Send→",
+    "send login": "Send →",
     "email format error": "email format error E-mail format is not correct, please re-enter",
     "send email to login": "We will send a verification email to this address, please log in to this email address and click Verify to activate.",
     "email sent": "A verification email has been sent to {input},\nPlease log in to your email and click Verify to activate. \nValid for 5 minutes",
@@ -259,9 +259,13 @@
     "Copy the code below and paste it into your background.js" : "Copy the code below and paste it into your background.js:",
     "Create kodepayContent.js and paste the code below": "Create kodepayContent.js and paste the code below:",
     "Logout": "Logout",
-    "monthly": "monthly"
+    "monthly": "monthly",
+    "The balance refers to the amount remaining for developers after deducting fees, refunds, and dispute charges from their order revenue": "The balance refers to the amount remaining for developers after deducting fees, refunds, and dispute charges from their order revenue",
+    "Payout amount refers to the balance that can be withdrawn after 14 days from the completion of the order": "Payout amount refers to the balance that can be withdrawn after 14 days from the completion of the order"
   },
   "zh-CN": {
+    "The balance refers to the amount remaining for developers after deducting fees, refunds, and dispute charges from their order revenue": "开发者的订单收入扣除手续费用、退款、争议费用后剩余的金额",
+    "Payout amount refers to the balance that can be withdrawn after 14 days from the completion of the order": "订单完成14天以后余额可提现",
     "monthly": "每月",
     "Logout": "登出",
     "Import the dependency package": "引入依赖包(npm):",
@@ -477,7 +481,7 @@
 
     "付款列表": "付款列表",
     "please input email": "请输入邮箱",
-    "send login": "发送→",
+    "send login": "发送 →",
     "email format error": "邮箱格式不正确，请重新输入",
     "send email to login": "我们会向该邮箱发送一封验证邮件，请登录该邮箱并点击验证链接以激活登录",
     "email sent": "已经向{input}邮箱发送一封验证邮件，请登录该邮箱并点击验证按钮以激活，邮件有效期5分钟",

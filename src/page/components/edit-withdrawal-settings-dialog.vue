@@ -318,10 +318,9 @@ export default {
                 vm.dialog_form_visible = false;
                 vm.$emit('operateSuccess');
               } else {
-                vm.$message({
-                  message: response.data.message,
-                  type: 'error'
-                });
+                if (response && response.data && response.data.message) {
+                  vm.$message.warning(response.data.message)
+                }
               }
             }).catch((error) => {
               vm.$message({
@@ -350,10 +349,9 @@ export default {
                 vm.dialog_form_visible = false;
                 vm.$emit('operateSuccess');
               } else {
-                vm.$message({
-                  message: response.data.message,
-                  type: 'error'
-                });
+                if (response && response.data && response.data.message) {
+                  vm.$message.warning(response.data.message)
+                }
               }
             }).catch((error) => {
               vm.$message({

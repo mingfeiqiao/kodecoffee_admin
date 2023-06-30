@@ -334,10 +334,9 @@ export default {
               vm.setLocalStorageGuideStep(vm.current_step);
               window.location.reload();
             } else {
-              vm.$message({
-                message: res.data.message,
-                type: 'warning'
-              });
+              if (res && res.data && res.data.message) {
+                vm.$message.warning(res.data.message)
+              }
             }
           });
         }

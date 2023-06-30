@@ -123,6 +123,10 @@ export default {
         if (res.data && parseInt(res.data.code) === 100000) {
           vm.subscription = this.formatSubscription(res.data.data);
           vm.order_list = this.formatOrderList(res.data.data.transaction_invoice);
+        } else {
+          if (res && res.data && res.data.message) {
+            vm.$message.warning(res.data.message)
+          }
         }
       }).catch((err) => {
         vm.table_loading = false;

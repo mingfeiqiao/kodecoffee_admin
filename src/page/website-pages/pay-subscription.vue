@@ -113,7 +113,44 @@ export default {
      */
     handleClick() {
       this.initCondition();
+      this.resetPageParams();
       this.getSubscriptionData();
+    },
+    /**
+     * 获取api参数
+     * @param condition
+     * @param orders
+     * @param page
+     * @param page_size
+     * @returns {{condition: {}, page, page_size, order: {}}}
+     */
+    getApiArgs (condition, orders, page, page_size) {
+      let condition_temp = {};
+      for (let key in condition) {
+        if (condition[key]) {
+          condition_temp[key] = condition[key];
+        }
+      }
+      let orders_temp = {};
+      for (let key in orders) {
+        if (orders[key]) {
+          orders[key] = this.order[key];
+        }
+      }
+      return {
+        'page': page,
+        'page_size': page_size,
+        'condition': condition_temp,
+        'order': orders_temp
+      }
+    },
+    /**
+     * 格式化table数据
+     */
+    resetPageParams () {
+      this.page = 1;
+      this.page_size = 10;
+      this.total = 0;
     },
     /**
      *
@@ -126,7 +163,7 @@ export default {
       this.table_loading = true;
       this.table_data = [];
       let vm = this;
-      let args = {condition:this.condition, order:this.order, page:this.page, page_size:this.page_size};
+      let args = this.getApiArgs(this.condition, this.order, this.page, this.page_size);
       subscriptionList(args).then(res => {
         vm.table_loading = false;
         if (!res.data) {
@@ -135,6 +172,10 @@ export default {
         if (parseInt(res.data.code) === 100000) {
           vm.table_data = vm.formatTableData(res.data.data);
           vm.total = res.data.totalCount;
+        } else {
+          if (res && res.data && res.data.message) {
+            vm.$message.warning(res.data.message)
+          }
         }
       }).catch(err => {
         vm.table_loading = false;
@@ -154,6 +195,7 @@ export default {
      * 分页
      */
     handleSizeChange(size) {
+      this.resetPageParams();
       this.page_size = size;
       this.getSubscriptionData();
     },

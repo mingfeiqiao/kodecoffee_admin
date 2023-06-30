@@ -436,10 +436,9 @@ export default {
           vm.dialog_form_visible = false;
           vm.$emit('operateSuccess');
         } else {
-          vm.$message({
-            message: res.data.message,
-            type: 'error'
-          });
+          if (res && res.data && res.data.message) {
+            vm.$message.warning(res.data.message)
+          }
         }
       }).catch(err => {
         vm.$message({
@@ -488,10 +487,9 @@ export default {
           vm.dialog_form_visible = false;
           vm.$emit('operateSuccess');
         } else {
-          vm.$message({
-            message: res.data.message,
-            type: 'error'
-          });
+          if (res && res.data && res.data.message) {
+            vm.$message.warning(res.data.message)
+          }
         }
       }).catch(err => {
         vm.$message({
@@ -522,12 +520,12 @@ export default {
      */
     onSubmit(formName) {
       // submit
-      this.$refs[formName].validate(async (valid) => {
+      this.$refs[formName].validate((valid) => {
         if (valid) {
           if (this.operationType === 'add') {
-            await this.addPlanData();
+           this.addPlanData();
           } else {
-            await this.updatePlanData();
+           this.updatePlanData();
           }
         } else {
           return false;

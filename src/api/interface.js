@@ -29,7 +29,7 @@ instance.interceptors.response.use(
     error => {
       // 如果用户token已经过期，那么我需要重定向到登录页面
       if (error.response && error.response.status === 401) { // 这里是token过期
-        // 清空本地存储的token和cookie
+        this.$alert(error.response.data.message);
         document.cookie = '';
         localStorage.removeItem(Vue.prototype.$mode + 'applicationKey');
         localStorage.removeItem(Vue.prototype.$mode + 'userInfo')
@@ -110,12 +110,6 @@ export const customerDetailApi = (id,data) => instance.post(`/app/customers/deta
 
 export const dashBoardApi = (data) => instance.post('/dashboard/dashboard', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 // 插件端相关
-export const extensionLoginIn = () => instance.get('/extension/login');
-export const extensionUpdateEmail = data => instance.post('/extension/update-email', data);
-export const extensionPayRecord = () => instance.get('/extension/pay-record');
-// 取消订阅接口
-export const extensionPayStatus = () => instance.get('/extension/pay-status');
-export const getUserInfo = () => instance.get('/user/info');
 
 export const addWithdrawInfoApi = data => instance.post('/withdraw/add_withdraw_info', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 
@@ -150,4 +144,12 @@ export const extensionLogin = (headers, data) => {
   data = JSON.stringify(data);
   return instance.post('/api/extension/login', data, {headers ,method: 'POST'});
 }
+
+export const extensionLoginIn = () => instance.get('/extension/login');
+export const extensionUpdateEmail = data => instance.post('/extension/update-email', data);
+export const extensionPayRecord = () => instance.get('/extension/pay-record');
+// 取消订阅接口
+export const extensionPayStatus = () => instance.get('/extension/pay-status');
+export const getUserInfo = () => instance.get('/user/info');
+
 export default instance;
