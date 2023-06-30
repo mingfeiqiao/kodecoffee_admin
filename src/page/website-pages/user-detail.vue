@@ -234,7 +234,7 @@ export default {
       let args = {
         'page': this.order_args.page,
         'page_size': this.order_args.page_size,
-        'condition': {'customer_id': this.$route.params.id},
+        'condition': {'customer_id': this.$route.params.id, 'plan_type':"recurring"},
         'order':{'created_time': 'desc'}
       };
       this.subscription_args.table_loading = true;

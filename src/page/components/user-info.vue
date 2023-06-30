@@ -43,10 +43,10 @@ export default {
         "product_id": 70,
         "product_mark": 70,
         "userinfo": {
-          "user_id": 12345678,
+          // "user_id": 12345678,
           // "user_id":2870346,
           // "user_id":2840846,
-          // "user_id":"2840846",
+          "user_id":"2843847",
           // "user_id":"119",
           "email": "ligoogel1918@gmail.com",
           "username": "李谷歌",

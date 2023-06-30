@@ -134,7 +134,7 @@ export default {
       let orders_temp = {};
       for (let key in orders) {
         if (orders[key]) {
-          orders[key] = this.order[key];
+          orders_temp[key] = orders[key];
         }
       }
       return {
@@ -184,8 +184,8 @@ export default {
     formatTableData(data) {
       data.forEach(item => {
         item.subscription_id = item.id;
-        item.created_time = timestampToDateString(item.created_time, 'yyyy-MM-dd HH:II:SS');
-        item.plan_end_time = timestampToDateString(item.plan_end_time);
+        item.created_time = item.created_time ? timestampToDateString(item.created_time, 'yyyy-MM-dd HH:II:SS') :"-";
+        item.plan_end_time = item.plan_end_time ? timestampToDateString(item.plan_end_time) : "-";
         item.subscription_status_obj = this.SUBSCRIPTION_STATUS[this.SUBSCRIPTION_STATUS_REF[item.order_status]];
         return item;
       });

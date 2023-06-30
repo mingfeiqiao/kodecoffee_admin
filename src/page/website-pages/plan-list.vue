@@ -403,7 +403,7 @@ export default {
       let orders_temp = {};
       for (let key in orders) {
         if (orders[key]) {
-          orders[key] = this.order[key];
+          orders_temp[key] = orders[key];
         }
       }
       return {

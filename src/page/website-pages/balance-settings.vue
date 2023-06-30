@@ -20,7 +20,7 @@
               <span style="color:#929292;">{{$t('able to payout')}}</span>
               <span>
               <el-tooltip class="item" :content="$t('Payout amount refers to the balance that can be withdrawn after 14 days from the completion of the order')" effect="light" placement="top">
-                <i class="el-icon-info"  style="color:#929292;"></i>
+                <i class="el-icon-info" style="color:#929292;"></i>
               </el-tooltip>
             </span>
             </div>
@@ -29,7 +29,7 @@
         </div>
         <div style="display: flex;align-items: flex-end">
           <span style="color: #929292;padding-right: 12px;">{{$t('payout 30 days tip')}}</span>
-          <el-button v-show="has_balance_settings" type="primary" size="small" @click="openWithdrawalDialog">{{$t('payout')}}</el-button>
+          <el-button v-show="is_balance_settings_loaded" type="primary" size="small" @click="openWithdrawalDialog">{{$t('payout')}}</el-button>
         </div>
       </div>
     </div>
@@ -224,6 +224,7 @@ export default {
       },
       balance_settings: {},
       has_balance_settings: false,
+      is_balance_settings_loaded:false,
       rate:"",
       BALANCE_SETTING: {
         minimum_withdrawal_amount: 'US$ 100',
@@ -362,6 +363,7 @@ export default {
     getAccountWithdrawInfo () {
       let vm = this;
       accountWithdrawInfoApi().then(res => {
+        vm.is_balance_settings_loaded = true;
         if (!res.data) {
           return;
         }

@@ -29,12 +29,14 @@ instance.interceptors.response.use(
     error => {
       // 如果用户token已经过期，那么我需要重定向到登录页面
       if (error.response && error.response.status === 401) { // 这里是token过期
-        this.$alert(error.response.data.message);
-        document.cookie = '';
-        localStorage.removeItem(Vue.prototype.$mode + 'applicationKey');
-        localStorage.removeItem(Vue.prototype.$mode + 'userInfo')
-        localStorage.removeItem(Vue.prototype.$mode + 'token');
-        window.location.href = 'https://kodepay.io/user/login';
+        Vue.prototype.$alert(error.response.data.message);
+        setTimeout(() => {
+          document.cookie = '';
+          localStorage.removeItem(Vue.prototype.$mode + 'applicationKey');
+          localStorage.removeItem(Vue.prototype.$mode + 'userInfo')
+          localStorage.removeItem(Vue.prototype.$mode + 'token');
+          window.location.href = 'https://kodepay.io/user/login';
+        }, 5000);
       }
       return Promise.reject(error);
     }

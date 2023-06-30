@@ -376,6 +376,8 @@ export default {
       order_list.map(item => {
         if (item.created_time) {
           item.created_time = this.timestampToDateString(item.created_time, 'yyyy-MM-dd HH:II:SS');
+        } else {
+          item.created_time = '-';
         }
         if (this.ORDER_STATUS_REF[item.pay_status]) {
           item.order_status = this.ORDER_STATUS_REF[item.pay_status];
