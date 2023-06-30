@@ -90,7 +90,7 @@ export default {
         un_completed: {
           "message": "unCompleted",
           "color":"rgba(16, 16, 16, 100)",
-          "background-color":"rgba(198, 198, 198, 100)"
+          "background-color":"#F0F0F0"
         },
         succeed: {
           "message": "Succeed",
@@ -100,17 +100,17 @@ export default {
         failed: {
           "message": "Failed",
           "color":"rgba(247, 72, 82, 1)",
-          "background-color":"rgba(198, 198, 198, 100)"
+          "background-color":"#FFF1F0"
         },
         refunded: {
           "message": "Refunded",
           "color":"rgba(16, 16, 16, 100)",
-          "background-color":"rgba(198, 198, 198, 100)"
+          "background-color":"#F0F0F0"
         },
         disputed: {
           "message": "Disputed",
           "color":"rgba(247, 72, 82, 1)",
-          "background-color":"rgba(198, 198, 198, 100)"
+          "background-color":"#FFF1F0"
         },
       },
       billing_detail: {
