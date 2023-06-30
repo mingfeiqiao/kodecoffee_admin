@@ -155,6 +155,7 @@ export default {
       return {
         user_id: data.user_id || "",
         prod_name: data.prod_name || "",
+        client_name:data.client_name || "",
         price_format: this.formatPrice(data.pay_amount, data.currency) || "",
         user_email: data.user_email || "",
         subscription_status_obj: this.formatSubscriptionObj(data.order_status) || "",
