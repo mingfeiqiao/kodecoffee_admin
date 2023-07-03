@@ -2431,6 +2431,11 @@ create-hmac@^1.1.0, create-hmac@^1.1.4, create-hmac@^1.1.7:
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
 
+crisp-sdk-web@^1.0.19:
+  version "1.0.19"
+  resolved "https://registry.npmjs.org/crisp-sdk-web/-/crisp-sdk-web-1.0.19.tgz#83213f18d4fbd1eb185eb3fbaffb948b7fdd99d5"
+  integrity sha512-kV/MyXVnQrVUwO9Stb7bUYr34BnslVhb5UZTUAa/qz1LvTrKtCBu5SYHyIYDiC29CHKrVXPenVyerpH/ZvuF/g==
+
 cross-env@^5.0.1:
   version "5.2.1"
   resolved "https://registry.npmjs.org/cross-env/-/cross-env-5.2.1.tgz#b2c76c1ca7add66dc874d11798466094f551b34d"
