@@ -6,34 +6,34 @@
       "icon": "dashboard-icon"
     },
     {
-      "title": "Payment List",
-      "url": "payment-list",
+      "title": "Payments",
+      "url": "payments",
       "icon": "payment-list-icon",
       "children": [
         {
           "title": "All Orders",
-          "url": "/pay-all-order"
+          "url": "/orders"
         },
         {
           "title": "Subscriptions",
-          "url": "/pay-subscription"
+          "url": "/subscriptions"
         }
       ]
     },
     {
-      "title": "User List",
+      "title": "Customers",
       "icon": "custom-list-icon",
-      "url": "/user-list"
+      "url": "/customers"
     },
     {
-      "title": "Plugin List",
+      "title": "Extensions",
       "icon": "plugin-list-icon",
-      "url": "/plugin-list"
+      "url": "/extensions"
     },
     {
-      "title": "Product List",
+      "title": "Plans",
       "icon": "subscription-list-icon",
-      "url": "/product-list"
+      "url": "/plans"
     },
     {
       "title": "Settings",
@@ -47,10 +47,6 @@
         {
           "title": "Event Callback Settings",
           "url": "/event-callback-settings"
-        },
-        {
-          "title": "Payment Channel Settings",
-          "url": "/payment-channel-settings"
         }
       ]
     }

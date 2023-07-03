@@ -1,20 +1,25 @@
 <template>
   <el-container style="width: 100%;height: 100%">
-    <el-aside :width="isCollapse ? '64px' : '256px'" ref="sidebar">
+    <el-aside :width="isCollapse ? '64px' : '256px'" ref="sidebar"  class="sidebar">
       <el-menu :default-active="currentMenu" :collapse="isCollapse" router style="height: calc(100% - 10px); bottom: 0;"
                background-color="#001529"
                text-color="#FFF"
                active-text-color="#FFF"
                active-background-color="#409eff"
+               @open="handleOpen" @close="handleClose"
+               class="el-menu-vertical-demo"
       >
         <el-menu-item index="top" style="height: 64px;">
-          <div style="display: flex; align-items: center; justify-content: center; height: 100%;">
-            <img src="https://zbase-global.zingfront.com/saasbox/product/icon/8ea7800dcf7c5da442c7c04a0e7d5b55.png" alt="" style="width: 200px; height: 30px;">
+          <div v-if="isCollapse" >
+            <img src="../assets/logo-101.png" alt="kodepay" style="width: 30px;height: 30px">
+          </div>
+          <div v-else style="display: flex; align-items: center; justify-content: center; height: 100%;">
+            <img src="../assets/logo.png" alt="kodepay" style="width: 200px; height: 30px;">
           </div>
         </el-menu-item>
         <template v-for="menu of MENU">
           <template v-if="menu.children">
-            <el-submenu :index="menu.url">
+            <el-submenu :index="menu.url" >
               <template slot="title">
                 <svg width="18" height="18" style="padding-right: 8px" fill="#fff">
                   <use :xlink:href="'#' + menu.icon"></use>
@@ -41,11 +46,11 @@
             </el-menu-item>
           </template>
         </template>
-        <el-menu-item index="bottom" style="position: absolute; bottom: 0;" >
+        <el-menu-item style="position: absolute; bottom: 0;" @click="gotoDocCenter($i18n.locale)" >
           <svg width="18" height="18" style="padding-right: 8px" fill="#fff">
-            <use xlink:href="#dashboard-icon"></use>
+            <use xlink:href="#help-center"></use>
           </svg>
-          <span slot="title">{{'xxxx'}}</span>
+          <span slot="title">{{$t('document and help')}}</span>
         </el-menu-item>
       </el-menu>
     </el-aside>
@@ -57,7 +62,7 @@
         <div class="breadcrumb">
           <el-breadcrumb separator="/">
             <el-breadcrumb-item>
-              <router-link to="/">Home</router-link>
+              <router-link to="/">{{$t('Home')}}</router-link>
             </el-breadcrumb-item>
             <el-breadcrumb-item v-for="(breadcrumb, index) in breadcrumbs" :key="index">
               <router-link :to="breadcrumb.route">{{ $t(breadcrumb.label) }}</router-link>
@@ -65,9 +70,9 @@
           </el-breadcrumb>
         </div>
       </div>
-      <el-main v-if="isLoginIn " style="padding: 24px; background-color: #f0f0f0;" >
-        <div v-if="$route.name !== 'dashboard'" >
-          <div style="background-color: #ffffff;padding: 24px;height: 100%" >
+      <el-main v-if="isLoginIn " style="padding: 24px; background-color: #f0f0f0;height: 100%" >
+        <div v-if="$route.name !== 'dashboard'" style="min-height: calc(100% - 48px);">
+          <div style="background-color: #ffffff;padding: 24px;min-height: calc(100% - 48px);" >
             <router-view v-if="is_option_load"></router-view>
           </div>
         </div>
@@ -121,12 +126,10 @@ export default {
       },
     },
   },
-  watch: {
-  },
   created() {
     this.isLoginIn =  !!localStorage.getItem(this.$mode + 'userInfo');
-    console.log('是否：',this.isLoginIn)
     this.initOptions();
+    this.currentMenu = this.$route.path; // 初始化当前路由路径
   },
   methods: {
     collapseChange(collapse) {
@@ -136,14 +139,11 @@ export default {
       this.isCollapse = !this.isCollapse;
     },
     handleOpen(key, keyPath) {
-      console.log(key, keyPath);
     },
     handleClose(key, keyPath) {
-      console.log(key, keyPath);
     },
     handleMenuItemClick(url) {
       this.currentMenu = url;
-      console.log(url);
     },
     initOptions() {
       let vm = this;
@@ -183,5 +183,11 @@ export default {
 }
 .el-menu-item.is-active {
   background-color: @theme-main-color !important;
+}
+
+</style>
+<style>
+.sidebar .el-submenu__title i {
+  color: #ffffff;
 }
 </style>

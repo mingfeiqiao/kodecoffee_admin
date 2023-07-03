@@ -1,15 +1,15 @@
 <template>
   <div class="container">
     <div class="border-bottom" >
-      <div class="title-20">余额</div>
+      <div class="title-20">{{$t('balance')}}</div>
       <div style="padding: 24px 0;display: flex;justify-content: space-between;align-items: flex-end;">
         <div style="display: flex;align-items: center;justify-content: flex-start;">
           <div style="padding-right: 30px">
             <div>
-              <span style="color:#929292;">总余额</span>
+              <span style="color:#929292;">{{$t('balance')}}</span>
               <span>
-              <el-tooltip class="item" content="Left Top 提示文字" effect="light" placement="top">
-                <i class="el-icon-info" style="color:#939393;"></i>
+              <el-tooltip class="item" :content="$t('The balance refers to the amount remaining for developers after deducting fees, refunds, and dispute charges from their order revenue')" effect="light" placement="top">
+                <i class="el-icon-info" style="color:#929292;"></i>
               </el-tooltip>
             </span>
             </div>
@@ -17,10 +17,10 @@
           </div>
           <div style="padding-right: 30px">
             <div>
-              <span style="color:#939393;">可提现</span>
+              <span style="color:#929292;">{{$t('able to payout')}}</span>
               <span>
-              <el-tooltip class="item" content="Left Top 提示文字" effect="light" placement="top">
-                <i class="el-icon-info"  style="color:#929292;"></i>
+              <el-tooltip class="item" :content="$t('Payout amount refers to the balance that can be withdrawn after 14 days from the completion of the order')" effect="light" placement="top">
+                <i class="el-icon-info" style="color:#929292;"></i>
               </el-tooltip>
             </span>
             </div>
@@ -28,39 +28,55 @@
           </div>
         </div>
         <div style="display: flex;align-items: flex-end">
-          <span style="color: #929292;padding-right: 12px;">每30天可以进行一次提现</span>
-          <el-button type="primary" size="small" @click="openWithdrawalDialog">提现</el-button>
+          <span style="color: #929292;padding-right: 12px;">{{$t('payout 30 days tip')}}</span>
+          <el-button v-show="is_balance_settings_loaded" type="primary" size="small" @click="openWithdrawalDialog">{{$t('payout')}}</el-button>
         </div>
       </div>
     </div>
     <div class="border-bottom" style="padding-bottom: 24px">
       <div style="padding: 24px 0">
-        <span class="title-16">提现设置</span>
-        <span class="link" style="padding-left: 24px;" @click="openWithdrawalSettingsDialog">编辑信息</span>
+        <span class="title-16">{{$t('payout settings')}}</span>
+        <span class="link" style="padding-left: 24px;" @click="openWithdrawalSettingsDialog">{{$t('edit payout settings')}}</span>
       </div>
       <div>
         <el-descriptions direction="vertical">
-          <el-descriptions-item label="姓名">{{ balance_settings.full_name}}</el-descriptions-item>
-          <el-descriptions-item label="所在国家">{{ balance_settings.country }}</el-descriptions-item>
-          <el-descriptions-item label="业务类型">{{ balance_settings.business_type }}</el-descriptions-item>
-          <el-descriptions-item label="提现币种和最小金额" >{{ balance_settings.withdrawal_currency + balance_settings.minimum_withdrawal_amount }}</el-descriptions-item>
-          <el-descriptions-item label="提现周期" >{{ balance_settings.withdrawal_period }}</el-descriptions-item>
-          <el-descriptions-item label="提现方式" >{{ balance_settings.withdrawal_method }}</el-descriptions-item>
+          <el-descriptions-item :label="$t('full name')">
+            <span v-if="balance_settings.first_name && balance_settings.last_name">
+              {{ balance_settings.first_name + balance_settings.last_name}}
+            </span>
+          </el-descriptions-item>
+          <el-descriptions-item :label="$t('country')">{{ getCountryFullName(balance_settings.country) }}</el-descriptions-item>
+          <el-descriptions-item :label="$t('business type')">
+            {{ $t(business_type_options[balance_settings.bussiness_type]) }}
+          </el-descriptions-item>
+          <el-descriptions-item :label="$t('minimum threshold')">{{BALANCE_SETTING.minimum_withdrawal_amount}}</el-descriptions-item>
+          <el-descriptions-item :label="$t('payout frequency')">{{$t(BALANCE_SETTING.withdrawal_period)}}</el-descriptions-item>
+          <el-descriptions-item :label="$t('payout method')">
+            <span v-if="balance_settings.withdraw_type === 'card'" style="display:flex;align-items: center">
+              <svg style="width: 16px;height: 16px">
+                <use xlink:href="#bank-card"></use>
+              </svg>
+              <span style="padding-left: 8px">{{formatCard(balance_settings.card_num)}}</span>
+            </span>
+            <span v-if="balance_settings.withdraw_type=== 'paypal'" style="display:flex;align-items: center">
+              <svg style="width: 16px;height: 16px">
+                <use xlink:href="#paypal"></use>
+              </svg>
+              <span style="padding-left: 8px">{{balance_settings.paypal_email}}</span>
+            </span>
+          </el-descriptions-item>
         </el-descriptions>
       </div>
       <div style="background-color: rgba(250, 250, 250, 1);padding: 8px 24px;">
-        <div>提现说明</div>
-        <pre style="white-space: pre-wrap;word-wrap: break-word;">
-{{`1. 申请提现后，我们会安排专业的财务团队进行审核，3~7个工作日内会完成审核和打款操作，具体到账日期根据各个银行不等一般7个工作日内到账。
-2. 请确保你填写的提现信息正确，打款后不可撤销。
-3. 每次提现的最小额度为100美元，并且每次提现的金额为100美元的整数倍，提现时我们支持美金和人民币账户，如选择人民币我们会按照提现时的汇率计算出对应的转账金额。
-4. 我们当前支持中国大陆银行卡、香港银行卡、新加坡银行卡，钱包支持PayPal和Payoneer。`}}
+        <div style="font-weight: bold">{{$t('payouts instructions')}}</div>
+        <pre style="white-space: pre-wrap;word-wrap: break-word;margin-top: 8px">
+{{$t('payouts instructions content')}}
         </pre>
         <div style="display: flex;align-items: center;justify-content: space-between;">
           <div>
-            <span>有疑问或者其他问题？</span>
+            <span style="color: #C6C6C6">{{ $t('more question') }}</span>
             <span class="link">
-              联系我们
+              {{$t('contact us')}}
             </span>
           </div>
           <div>
@@ -71,100 +87,432 @@
               ZingFront
             </span>
             <span style="color: #1D39C4;cursor: pointer">
-              了解更多
+              {{$t('learn more')}}
             </span>
           </div>
         </div>
       </div>
     </div>
     <div>
-      <div class="title-16" style="padding: 24px 0">提现记录</div>
+      <div class="title-16" style="padding: 24px 0">{{ $t('payout records') }}</div>
       <div>
         <el-table :data="table_data" style="width: 100%"
                   :empty-text="$t('no data')"
+                  v-loading="table_loading"
                   :header-cell-style="{'background-color': 'var(--header-cell-background-color)','color': 'var(--header-cell-color)','font-weight': 'var(--header-cell-font-weight)'}"        >
-          <el-table-column prop="balance_format" label="金额"></el-table-column>
-          <el-table-column prop="account_format" label="账户"></el-table-column>
-          <el-table-column prop="time" label="提现时间"></el-table-column>
+          <el-table-column prop="amount_format" :label="$t('Amount')"></el-table-column>
+          <el-table-column prop="payout_method_format" :label="$t('account')">
+            <template slot-scope="scope" v-if="scope.row.withdraw_type">
+              <span v-if="scope.row.withdraw_type === 'card'">
+                {{$t('card')}} {{formatCard(scope.row.card_num)}}
+              </span>
+              <span v-if="scope.row.withdraw_type === 'paypay'">
+                {{$t('paypal')}} {{scope.row.paypal}}
+              </span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="status" :label="$t('status')">
+            <template slot-scope="scope" v-if="scope.row.status_obj">
+              <span>{{ $t(scope.row.status_obj.message) }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="apply_time" :label="$t('apply time')"></el-table-column>
+          <el-table-column prop="remarks" :label="$t('remarks')">
+            <template slot-scope="scope">
+              <span v-if="scope.row.status === 'reject'">
+                 {{$t(scope.row.comment_option)}}
+              </span>
+              <span v-if="scope.row.status ==='approved' ">
+                {{`${formatTime(scope.row.updated_time)} ${$t('approved tip')}`}}
+              </span>
+            </template>
+          </el-table-column>
         </el-table>
       </div>
     </div>
-     <edit-withdrawal-settings-dialog :visible="show_withdrawal_settings_edit_dialog" @visibleChange="visibleChange" @operateSuccess="operateSuccess"></edit-withdrawal-settings-dialog>
-     <el-dialog  :visible.sync="show_withdrawal_dialog" :show-close="false">
-       <div style="padding: 16px 24px">
-         <div class="title-16" style="padding-bottom: 16px;border-bottom: 1px solid rgba(232, 232, 232, 1)">申请提现</div>
-         <span style="display:flex;justify-content: center;align-items: center;padding-top:24px">
-           <span style="color: #101010;width: 80%;background-color: rgba(230, 247, 255, 1);border-radius: 5px;height: 40px;line-height: 40px;padding: 0 12px;text-align: left">
+     <edit-withdrawal-settings-dialog :visible="show_withdrawal_settings_edit_dialog" :operationType="has_balance_settings ? 'update' : 'add'" @visibleChange="visibleChange" @operateSuccess="operateSuccess" :balance_settings="balance_settings"></edit-withdrawal-settings-dialog>
+    <div v-if="show_withdrawal_dialog">
+      <el-dialog  :visible.sync="show_withdrawal_dialog" :show-close="false">
+        <div style="padding: 16px 24px">
+          <div class="title-16" style="padding-bottom: 16px;border-bottom: 1px solid rgba(232, 232, 232, 1)">{{$t('apply payout')}}</div>
+          <div style="display:flex;justify-content: center;align-items: center;padding-top:24px;">
+           <div style="width: 80%;background-color: rgba(230, 247, 255, 1);border-radius: 5px;padding: 12px 12px;text-align: left;display: flex;align-items: center">
               <i class="el-icon-warning" style="color: #1990FF"></i>
-              <span>
-                资金将直接打入该账户，无法退回。请确认账户信息正确
-              </span>
-           </span>
-         </span>
-         <div class="custom-descriptions-container" style="display: flex;align-items: center;justify-content: center">
-           <el-descriptions border :column="1"  class="custom-descriptions">
-             <el-descriptions-item label="提现金额">
-             </el-descriptions-item>
-             <el-descriptions-item label="收款方式">
-             </el-descriptions-item>
-             <el-descriptions-item label="银行账户">
-             </el-descriptions-item>
-             <el-descriptions-item label="开户行">
-             </el-descriptions-item>
-             <el-descriptions-item label="账户人姓名">
-             </el-descriptions-item>
-             <el-descriptions-item label="提现币种">
-             </el-descriptions-item>
-           </el-descriptions>
+              <div style="padding-left: 8px">
+                {{ $t('apply payout tip') }}
+              </div>
+           </div>
          </div>
-         <div style="display: flex;flex-direction: row-reverse;align-items: center;">
-           <el-button @click="show_withdrawal_dialog = false" size="small" style="margin-left: 12px">{{ $t('cancel') }}</el-button>
-           <el-button type="primary"  size="small">{{$t('create')}}</el-button>
-         </div>
-       </div>
-     </el-dialog>
+          <div class="custom-descriptions-container" style="display: flex;align-items: center;justify-content: center">
+            <el-descriptions border :column="1"  class="custom-descriptions">
+              <el-descriptions-item :label="$t('payout amount')">
+                <div class="withdraw-width">
+                  <span class="title-20"> {{balance.withdrawable_format}} </span>
+                  <span style="color: #929292;">{{ $t('available') +' '+ balance.total_balance_format}} </span>
+                </div>
+              </el-descriptions-item>
+              <el-descriptions-item :label="$t('payout method')">
+                <div class="withdraw-width">
+                  {{$t(business_type_options[balance_settings.bussiness_type])}}
+                </div>
+              </el-descriptions-item>
+              <el-descriptions-item v-if="balance_settings.withdraw_type === 'card'" :label="$t('payout account number')" >
+                <div class="withdraw-width">
+                  {{balance_settings.card_num}}
+                </div>
+              </el-descriptions-item>
+              <el-descriptions-item v-if="balance_settings.withdraw_type === 'card'" :label="$t('account opening bank')">
+                  <div class="withdraw-width">
+                    {{balance_settings.bank_name}}
+                  </div>
+                </el-descriptions-item>
+              <el-descriptions-item v-if="balance_settings.withdraw_type === 'card'" :label="$t('account holder name')">
+                  <div class="withdraw-width">
+                    {{balance_settings.bank_account_hold_name}}
+                  </div>
+                </el-descriptions-item>
+              <el-descriptions-item v-if="balance_settings.withdraw_type === 'card'" :label="$t('transfer currency')">
+                  <div class="withdraw-width">
+                    <div v-if="CURRENCY_OPTIONS[balance_settings.currency]" style="width: 70px">
+                      {{CURRENCY_OPTIONS[balance_settings.currency][$i18n.locale]}}
+                    </div>
+                    <div style="width: 70px">
+                      {{ rateChange('usd', balance_settings.currency, balance.withdraw_amount)}}
+                    </div>
+                    <div style="padding-left: 12px;color: #929292;width: calc(100% - 140px)">
+                      {{$t('calculate by rate')}}
+                    </div>
+                  </div>
+                </el-descriptions-item>
+              <el-descriptions-item  v-if="balance_settings.withdraw_type === 'paypal'" :label="$t('paypal email')">
+                <div class="withdraw-width">
+                  {{balance_settings.paypal_email}}
+                </div>
+              </el-descriptions-item>
+            </el-descriptions>
+          </div>
+          <div style="display: flex;flex-direction: row-reverse;align-items: center;">
+            <el-button @click="openWithdrawalDialog" size="small" style="margin-left: 12px">{{ $t('cancel') }}</el-button>
+            <el-button type="primary"  @click="createWithdraw" size="small">{{$t('create')}}</el-button>
+          </div>
+        </div>
+      </el-dialog>
+    </div>
   </div>
 </template>
 <script>
 import EditWithdrawalSettingsDialog from '../components/edit-withdrawal-settings-dialog.vue'
+import CURRENCY_OPTIONS from "../../options/currency_options.json";
+import Countries from '../../options/countries.json';
+import {timestampToDateString} from "../../utils/dateUtils";
+import {accountWithdrawInfoApi, searchWithdrawAmountApi, withdrawRateApi, accountWithdrawInfoListApi, applyWithdrawApi, checkWithdrawApi} from "../../api/interface";
 export default {
   components: {
     EditWithdrawalSettingsDialog
   },
   data () {
     return {
+      CURRENCY_OPTIONS:CURRENCY_OPTIONS,
       balance: {
-        total_balance_format: 'US$ 0.00',
-        withdrawable_format: 'US$ 0.00',
+        total_balance_format: '',
+        withdrawable_format: '',
+        currency: 'usd',
       },
-      balance_settings: {
-        full_name:"",
-        country:"",
-        business_type:"",
-        withdrawal_currency:"",
-        minimum_withdrawal_amount:"xxxxx",
-        withdrawal_period:"",
-        withdrawal_method:"",
+      business_type_options: {
+        personal: 'individual/sole proprietorship',
+        company: 'corporation',
+      },
+      balance_settings: {},
+      has_balance_settings: false,
+      is_balance_settings_loaded:false,
+      rate:"",
+      BALANCE_SETTING: {
+        minimum_withdrawal_amount: 'US$ 100',
+        withdrawal_period: 'payout 30 days tip',
       },
       table_loading: false,
       show_withdrawal_dialog: false,
       show_withdrawal_settings_edit_dialog : false,
-      table_data: [
-        {
-          balance_format: 'US$ 0.00',
-          account_format: 'PayPal ****** 1234',
-          time: '2020-12-12 12:12:12'
-        }
-      ]
+      table_data: [],
+      WITHDRAW_STATUS_OPTIONS: {
+        approved:{
+          message:"approved",
+          color:"#389E0D"
+        },
+        pending:{
+          message:"pending",
+          color:"#101010"
+        },
+        reject:{
+          message:"reject",
+          color:"#E14040"
+        },
+      }
     }
   },
+  created() {
+    this.initData();
+  },
   methods: {
+    /**
+     * 初始化数据
+     */
+    createWithdraw () {
+      let vm = this;
+      let args = {
+        withdraw_type: vm.balance_settings.withdraw_type,
+        settle_currency: vm.balance.currency,
+        settle_amount: vm.balance.left_amount,
+        real_settle_amount:vm.balance.withdraw_amount,
+        paypal_email: vm.balance_settings.paypal_email,
+        card_num: vm.balance_settings.card_num,
+        bank_name: vm.balance_settings.bank_name,
+        bank_account_hold_name: vm.balance_settings.bank_account_hold_name,
+        withdraw_currency: vm.balance_settings.currency,
+        withdraw_amount: vm.balance.withdraw_amount,
+      };
+      applyWithdrawApi(args).then(res => {
+        if (!res.data) {
+          return;
+        }
+        if (parseInt(res.data.code) === 100000) {
+          vm.$message({
+            message: vm.$t('success'),
+            type: 'success'
+          });
+          vm.show_withdrawal_dialog = false;
+          vm.getWithdrawList();
+        } else {
+          if (res && res.data && res.data.message) {
+            vm.$message.warning(res.data.message)
+          }
+        }
+      }).catch(err => {
+        console.log(err);
+      });
+    },
+    /**
+     * 打开提现设置编辑弹窗
+     */
+    initData () {
+      this.getRealAmount();
+      this.getAccountWithdrawInfo();
+      this.getWithdrawList();
+    },
+    /**
+     * 获取国家的全称
+     * @param country
+     * @returns {*|string}
+     */
+    getCountryFullName (country) {
+      if (!country) {
+        return '';
+      }
+      for (let countriesKey in Countries) {
+        if (Countries[countriesKey].short_name.toLowerCase() === country.toLowerCase()) {
+          return Countries[countriesKey][this.$i18n.locale];
+        }
+      }
+    },
+    /**
+     * 获取账户提现信息
+     */
+    getWithdrawList() {
+      this.table_loading = true;
+      let vm = this;
+      accountWithdrawInfoListApi().then(res => {
+        vm.table_loading = false;
+        if (!res.data) {
+          return;
+        }
+        if (parseInt(res.data.code )=== 100000) {
+          vm.table_data = vm.formatWithdrawList(res.data.data);
+        } else {
+          if (res && res.data && res.data.message) {
+            vm.$message.warning(res.data.message)
+          }
+        }
+      }).catch(err => {
+        vm.table_loading = false;
+        console.log(err);
+      });
+    },
+    /**
+     * 获取账户余额和可提现余额
+     */
+    getRealAmount () {
+      let vm = this;
+      searchWithdrawAmountApi().then(res => {
+        if (!res.data) {
+          return;
+        }
+        if (parseInt(res.data.code )=== 100000) {
+          vm.formatBalance(res.data.data);
+        } else {
+          if (res && res.data && res.data.message) {
+            vm.$message.warning(res.data.message)
+          }
+        }
+      }).catch(err => {
+        console.log(err);
+      });
+    },
+    /**
+     * 获取提现设置
+     */
+    getAccountWithdrawInfo () {
+      let vm = this;
+      accountWithdrawInfoApi().then(res => {
+        vm.is_balance_settings_loaded = true;
+        if (!res.data) {
+          return;
+        }
+        if (parseInt(res.data.code) === 100000) {
+          vm.has_balance_settings = JSON.stringify(res.data.data) !== '{}';
+          vm.balance_settings = res.data.data;
+        } else {
+          if (res && res.data && res.data.message) {
+            vm.$message.warning(res.data.message)
+          }
+        }
+      }).catch(err => {
+        console.log(err);
+      })
+    },
+    /**
+     * 格式化balance
+     * @param data
+     */
+    formatBalance (data) {
+      if (!data) {
+        return;
+      }
+      data.total_balance_format = this.formatPrice(data.currency, data.left_amount || 0);
+      data.withdrawable_format = this.formatPrice(data.currency, data.withdraw_amount || 0);
+      this.balance = data;
+    },
+    /**
+     * 格式化提现列表
+     * @param data
+     * @returns {*|*[]}
+     */
+    formatWithdrawList (data) {
+      if (Array.isArray(data) && data.length > 0) {
+        data.map(item => {
+          item.amount_format = this.formatPrice(item.settle_currency, item.real_settle_amount);
+          item.status_obj = this.WITHDRAW_STATUS_OPTIONS[item.status] || {};
+          item.apply_time = this.formatTime(item.created_time);
+          return item;
+        });
+        return data;
+      }
+      return [];
+    },
+    rateChange (from_currency, to_currency, amount) {
+      if (from_currency === to_currency) {
+        return this.formatPrice(to_currency, amount);
+      } else {
+        // 保留两位小数
+        return this.formatPrice(to_currency, (amount * this.rate).toFixed(2));
+      }
+    },
+    /**
+     * 格式化银行卡号
+     * @param card_number
+     * @returns {string}
+     */
+    formatCard (card_number) {
+      // 截取后四位，其他用*代替
+      if (card_number) {
+        return `**** **** **** ${card_number.slice(-4)}`;
+      }
+      return "";
+    },
+    /**
+     * 格式化时间
+     * @param time
+     * @returns {string}
+     */
+    formatTime (time) {
+      if (time) {
+        return timestampToDateString(time, 'yyyy-MM-dd HH:II:SS');
+      }
+      return "-";
+    },
+    /**
+     * 格式化货币
+     * @param currency
+     * @param price
+     * @returns {string}
+     */
+    formatPrice (currency, price) {
+      let symbol = '';
+      for (const currency_key in CURRENCY_OPTIONS) {
+        if (currency_key.toLowerCase() === currency) {
+          symbol = CURRENCY_OPTIONS[currency_key]['symbol'];
+          return symbol + ' ' + price;
+        }
+      }
+      return currency + ' ' + price;
+    },
+    /**
+     * 获取汇率
+     * @param from_currency
+     * @param to_currency
+     * @returns {Promise<*>}
+     */
+    async getRate(from_currency, to_currency) {
+      let args = {
+        origin_currency: from_currency,
+        to_currency: to_currency,
+      };
+      let response = await withdrawRateApi(args);
+      if (parseInt(response.data.code) === 100000) {
+        return response.data.data.exchange_rate;
+      } else {
+        if (res && res.data && res.data.message) {
+          vm.$message.warning(res.data.message)
+        }
+      }
+    },
     /**
      * 打开提现弹窗
      */
     openWithdrawalDialog () {
-      this.show_withdrawal_dialog = !this.show_withdrawal_dialog;
+      // 先获取汇率
+      if (!this.show_withdrawal_dialog) {
+        // 检查是否能够提现
+        let vm = this;
+        checkWithdrawApi().then(res => {
+          if (!res.data) {
+            return;
+          }
+          if (parseInt(res.data.code) === 100000) {
+            if (vm.balance_settings.currency === 'usd') {
+              vm.rate = 1;
+              vm.show_withdrawal_dialog = !vm.show_withdrawal_dialog;
+            } else {
+              this.rate = vm.getRate('usd', vm.balance_settings.currency).then(
+                rate => {
+                  vm.rate = rate;
+                  vm.show_withdrawal_dialog = !vm.show_withdrawal_dialog;
+                }
+              );
+            }
+          } else { // 不能提现
+            console.log(res.data.message);
+            vm.$alert(res.data.message, res.data.title, {
+              confirmButtonText: vm.$t('OK')
+            });
+          }
+        }).catch(err => {
+          console.log(err);
+        });
+      }
     },
+    /**
+     * 打开提现设置弹窗
+     */
     openWithdrawalSettingsDialog () {
       this.show_withdrawal_settings_edit_dialog = !this.show_withdrawal_settings_edit_dialog;
     },
@@ -173,6 +521,7 @@ export default {
     },
     operateSuccess () {
       this.show_withdrawal_settings_edit_dialog = false;
+      this.getAccountWithdrawInfo();
     }
   },
 }
@@ -180,15 +529,16 @@ export default {
 <style scoped lang="less">
 .container {
 }
-.container /deep/ .el-descriptions-item__cell {
-  padding-bottom: 24px;
-}
 .border-bottom {
   border-bottom: 1px solid #ebeef5;
 }
 .custom-descriptions-container /deep/ .el-descriptions-item__label {
-  width: 200px;
+  min-width: 100px;
   padding: 12px;
+  color: #929292;
+}
+.container /deep/ .el-descriptions-item__label {
+  color: #929292;
 }
 .custom-descriptions-container {
   padding: 24px 0;
@@ -198,5 +548,17 @@ export default {
 }
 .container /deep/ .el-dialog__body {
   padding: 0;
+}
+.more-question {
+  color: val(--color-text-secondary)
+}
+.withdraw-width {
+  display: flex;
+  justify-content: space-between;
+  width: 300px;
+  align-items: center;
+}
+pre {
+  font-family: inherit;
 }
 </style>

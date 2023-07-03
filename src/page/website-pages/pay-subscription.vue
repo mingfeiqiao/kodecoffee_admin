@@ -3,13 +3,13 @@
     <el-tabs v-model="active_subscription_type" @tab-click="handleClick">
       <el-tab-pane v-for="(option, index) in subscription_option" :key="index" :label="$t(option.label)" :name="option.value">
         <div>
-          <el-table :data="table_data" style="width: 100%" @row-click="openSubscriptionDetail"
+          <el-table :data="table_data" style="width: 100%"
                     :empty-text="$t('no data')"
                     v-loading="table_loading"
                     :header-cell-style="{'background-color': 'var(--header-cell-background-color)','color': 'var(--header-cell-color)','font-weight': 'var(--header-cell-font-weight)'}"          >
             <el-table-column prop="user_email" :label="$t('customer')"  width="auto">
               <template slot-scope="scope">
-                <span class="link" @click="openSubscriptionDetail(scope.row.subscription_id)">{{scope.row.user_email}}</span>
+                <span class="link" @click="openUserDetail(scope.row.user_id)">{{ scope.row.user_email}}</span>
               </template>
             </el-table-column>
             <el-table-column prop="prod_name" :label="$t('sell plan')" width="auto" >
@@ -21,9 +21,14 @@
                 </span>
               </template>
             </el-table-column>
-            <el-table-column width="auto" prop="plan_end_time" :label="$t('next invoice')">
+            <el-table-column width="auto" prop="plan_end_time" :label="$t('subscription expired time')">
             </el-table-column>
             <el-table-column prop="created_time" width="auto" :label="$t('create time')">
+            </el-table-column>
+            <el-table-column width="100" align="center" :label="$t('Operation')">
+              <template slot-scope="scope">
+                <span class="link" @click="openSubscriptionDetail(scope.row.subscription_id)">{{ $t('detail') }}</span>
+              </template>
             </el-table-column>
           </el-table>
           <div style="padding-top:12px;display: flex;align-items: center;justify-content: center;">
@@ -34,7 +39,7 @@
               :current-page.sync="page"
               :page-sizes="[10,20]"
               :page-size="page_size"
-              layout="prev, pager, next"
+              layout="total, sizes, prev, pager, next, jumper"
               :total="total">
             </el-pagination>
           </div>
@@ -86,6 +91,9 @@ export default {
     this.getSubscriptionData();
   },
   methods: {
+    openUserDetail (user_id) {
+      this.$router.push({path: "/customers/detail/" + user_id});
+    },
     initCondition () {
       this.condition = {};
       if (this.active_subscription_type === 'effective') { // 所有生效的订阅
@@ -105,20 +113,57 @@ export default {
      */
     handleClick() {
       this.initCondition();
+      this.resetPageParams();
       this.getSubscriptionData();
+    },
+    /**
+     * 获取api参数
+     * @param condition
+     * @param orders
+     * @param page
+     * @param page_size
+     * @returns {{condition: {}, page, page_size, order: {}}}
+     */
+    getApiArgs (condition, orders, page, page_size) {
+      let condition_temp = {};
+      for (let key in condition) {
+        if (condition[key]) {
+          condition_temp[key] = condition[key];
+        }
+      }
+      let orders_temp = {};
+      for (let key in orders) {
+        if (orders[key]) {
+          orders_temp[key] = orders[key];
+        }
+      }
+      return {
+        'page': page,
+        'page_size': page_size,
+        'condition': condition_temp,
+        'order': orders_temp
+      }
+    },
+    /**
+     * 格式化table数据
+     */
+    resetPageParams () {
+      this.page = 1;
+      this.page_size = 10;
+      this.total = 0;
     },
     /**
      *
      * @param subscription_id
      */
     openSubscriptionDetail(subscription_id) {
-      this.$router.push({path: `/pay-subscription/detail/${subscription_id}`});
+      this.$router.push({path: `/subscriptions/detail/${subscription_id}`});
     },
     getSubscriptionData () {
       this.table_loading = true;
       this.table_data = [];
       let vm = this;
-      let args = {condition:this.condition, order:this.order, page:this.page, page_size:this.page_size};
+      let args = this.getApiArgs(this.condition, this.order, this.page, this.page_size);
       subscriptionList(args).then(res => {
         vm.table_loading = false;
         if (!res.data) {
@@ -127,17 +172,20 @@ export default {
         if (parseInt(res.data.code) === 100000) {
           vm.table_data = vm.formatTableData(res.data.data);
           vm.total = res.data.totalCount;
+        } else {
+          if (res && res.data && res.data.message) {
+            vm.$message.warning(res.data.message)
+          }
         }
       }).catch(err => {
-        console.log(err);
         vm.table_loading = false;
       });
     },
     formatTableData(data) {
       data.forEach(item => {
         item.subscription_id = item.id;
-        item.created_time = timestampToDateString(item.created_time, 'yyyy-MM-dd HH:II:SS');
-        item.plan_end_time = timestampToDateString(item.plan_end_time);
+        item.created_time = item.created_time ? timestampToDateString(item.created_time, 'yyyy-MM-dd HH:II:SS') :"-";
+        item.plan_end_time = item.plan_end_time ? timestampToDateString(item.plan_end_time) : "-";
         item.subscription_status_obj = this.SUBSCRIPTION_STATUS[this.SUBSCRIPTION_STATUS_REF[item.order_status]];
         return item;
       });
@@ -146,13 +194,16 @@ export default {
     /**
      * 分页
      */
-    handleSizeChange() {
+    handleSizeChange(size) {
+      this.resetPageParams();
+      this.page_size = size;
       this.getSubscriptionData();
     },
     /**
      * 分页
      */
-    handleCurrentChange() {
+    handleCurrentChange(val) {
+      this.page = val;
       this.getSubscriptionData();
     },
   },

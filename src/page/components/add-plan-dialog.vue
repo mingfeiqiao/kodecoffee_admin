@@ -1,14 +1,14 @@
 <template>
   <div>
-    <el-dialog :title="operationType === 'add' ? $t('create new plan') : $t('update plan')" v-if="dialog_form_visible" :visible.sync="dialog_form_visible" width="50%" :modal-append-to-body="false" destroy-on-close>
-     <el-form ref="form" :model="plan"  label-width="80px" label-position="top" size="mini">
+    <el-dialog :title="operationType === 'add' ? $t('create new plan') : $t('update plan')"  :visible.sync="dialog_form_visible" width="50%" :modal-append-to-body="false" destroy-on-close>
+     <el-form ref="ruleForm" :model="plan"  label-width="120px" label-position="top" size="mini" :rules="rules">
        <div style="display:flex;align-items: center;justify-content: space-between; ">
          <div style="min-width: 250px;">
-           <el-form-item :label="$t('name')">
-             <el-input v-model="plan.plan_name" :placeholder="$t('plan name placeholder')"></el-input>
+           <el-form-item :label="$t('name')" prop="plan_name">
+             <el-input v-model="plan.plan_name" :placeholder="$t('plan name placeholder')" style="width: 300px"></el-input>
            </el-form-item>
-           <el-form-item :label="$t('description')">
-             <el-input type="textarea" v-model="plan.plan_desc" :placeholder="$t('plan description placeholder')"></el-input>
+           <el-form-item :label="$t('description')" prop="plan_desc">
+             <el-input type="textarea" v-model="plan.plan_desc" :placeholder="$t('plan description placeholder')" style="width: 300px"></el-input>
            </el-form-item>
          </div>
          <div>
@@ -18,12 +18,12 @@
          </div>
        </div>
        <div>
-         <el-form-item v-if="unable_modify">
+         <el-form-item>
            <div style="display: flex;align-items: center">
              <div style="padding-right: 20px">
                {{$t('billing method')}}
              </div>
-             <el-radio v-model="plan_type_obj.type" v-for="option of type_option" :key="option.value" :label="option.value">
+             <el-radio v-model="plan_type_obj.type" v-for="option of type_option" :key="option.value" :label="option.value" :disabled="!unable_modify">
                {{ $t(option.label) }}
              </el-radio>
            </div>
@@ -113,9 +113,9 @@
            <div v-if="operationType ==='add'" style="color: #929292;">
              {{  $t('plan update tip') }}
            </div>
-           <div style="float: right">
+           <div style="float: right;padding-top: 24px">
              <el-button @click="dialog_form_visible = false" >{{ $t('cancel') }}</el-button>
-             <el-button type="primary" @click="onSubmit">{{operationType === 'add' ? $t('create') : $t('update')}}</el-button>
+             <el-button type="primary" @click="onSubmit('ruleForm')">{{operationType === 'add' ? $t('create') : $t('update')}}</el-button>
            </div>
          </el-form-item>
        </div>
@@ -239,7 +239,38 @@ export default {
       })
     },
     operationType(newValue) {
+      if(newValue === 'add') {
+        this.plan = {
+          plan_key: "",
+          plan_code : "",
+          plan_icon: null,
+          plan_name: "",
+          plan_desc: "",
+        };
+        this.plan_type_obj = {
+          type: 'recurring'
+        };
+        this.plan_trial_obj = {
+          is_trial: true,
+          trial_days: 3
+        };
+        this.main_price_obj = {
+          price: 1.99,
+          currency: 'usd'
+        };
+        this.other_price_obj = [];
+      }
       this.unable_modify = newValue !== 'add';
+    },
+    chosen_plan_data(newValue) {
+      if (this.chosen_plan_data && this.chosen_plan_data.plan_id) {
+        this.plan = JSON.parse(JSON.stringify(this.chosen_plan_data))
+        this.plan_type_obj = this.plan.plan_type_obj;
+        this.plan_trial_obj = this.plan.plan_trial_obj;
+        this.main_price_obj = this.plan.main_price_obj;
+        this.other_price_obj = this.plan.other_price_obj;
+      }
+      return newValue;
     }
   },
   methods: {
@@ -405,10 +436,9 @@ export default {
           vm.dialog_form_visible = false;
           vm.$emit('operateSuccess');
         } else {
-          vm.$message({
-            message: res.data.message,
-            type: 'error'
-          });
+          if (res && res.data && res.data.message) {
+            vm.$message.warning(res.data.message)
+          }
         }
       }).catch(err => {
         vm.$message({
@@ -425,7 +455,7 @@ export default {
       // 比对chosen_plan_data和plan的icon, name, is_trial, trial_days, desc查看是否有修改,找出修改的数据
       let args = {};
       if (this.plan.plan_name !== this.chosen_plan_data.plan_name) {
-        args.name = this.plan.name;
+        args.name = this.plan.plan_name;
       }
       if (this.plan.plan_desc !== this.chosen_plan_data.plan_desc) {
         args.desc = this.plan.plan_desc;
@@ -457,10 +487,9 @@ export default {
           vm.dialog_form_visible = false;
           vm.$emit('operateSuccess');
         } else {
-          vm.$message({
-            message: res.data.message,
-            type: 'error'
-          });
+          if (res && res.data && res.data.message) {
+            vm.$message.warning(res.data.message)
+          }
         }
       }).catch(err => {
         vm.$message({
@@ -481,26 +510,52 @@ export default {
         return response.data.data.url;
       } else {
         this.$message({
-          message: '上传图片失败',
+          message: 'upload error',
           type: 'error'
         });
       }
     },
     /**
-     *
+     * 提交
      */
-    async onSubmit() {
+    onSubmit(formName) {
       // submit
-      if (this.operationType === 'add') {
-        await this.addPlanData();
-      } else {
-        await this.updatePlanData();
-      }
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          if (this.operationType === 'add') {
+           this.addPlanData();
+          } else {
+           this.updatePlanData();
+          }
+        } else {
+          return false;
+        }
+      });
     },
-
     handleSelectionChange(val) {
       this.multiple_selection = val;
     },
+    validateTrimmedField(rule, value, callback) {
+      if (value && value.trim() === '') {
+        callback(new Error(this.$t('Field cannot be empty')));
+      } else {
+        callback();
+      }
+    }
+  },
+  computed: {
+    rules () {
+      return {
+        plan_name: [
+          { required: true, message: this.$t('1-100 characters required'), trigger: 'blur', min: 1, max: 100 },
+          { validator: this.validateTrimmedField, trigger: 'blur'}
+        ],
+        plan_desc: [
+          { required: false,  trigger: 'blur', type: 'string', min: 0, max: 1000 },
+          { validator: this.validateTrimmedField, trigger: 'blur'}
+        ],
+      }
+    }
   }
 }
 </script>

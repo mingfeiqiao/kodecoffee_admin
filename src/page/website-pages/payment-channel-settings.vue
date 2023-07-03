@@ -57,7 +57,6 @@ export default {
   },
   methods: {
     settingChange(setting) {
-      console.log(setting)
       if(setting.require) {
         this.$confirm('是否开启支付渠道？', '提示', {
           confirmButtonText: '确定',

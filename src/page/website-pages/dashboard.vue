@@ -1,19 +1,33 @@
 <template>
   <div style="width:100%;height: 100%;">
+    <div>
+      <div style="display:flex;justify-content: center;align-items: center;padding-bottom:12px" v-if="$store.state.guide_step < 4">
+        <div style="width: 100%;background-color: rgba(230, 247, 255, 1);border-radius: 5px;padding: 8px 8px;text-align: left;display: flex;align-items: center">
+          <i class="el-icon-warning" style="color: #1990FF"></i>
+          <div style="padding-left: 8px">
+            <span>{{ `${$t('The onboarding process is completed')} ${$store.state.guide_step}/4`  }}</span>
+          </div>
+          <div @click="toGuide" class="link" style="padding-left: 12px">
+            {{ $t('Continue')}}
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="dashboard-card-container">
       <dashboard-card v-for="(value, key) in overall_data" :key="key" :data="value"></dashboard-card>
     </div>
     <div style="margin-top: 24px;background-color: #ffffff;height: 100%;padding: 24px">
       <div>
-        <div>
+        <div class="picker">
           <el-date-picker
             size="small"
             v-model="date_range"
             type="daterange"
             format="yyyy-MM-dd"
+            popper-class="my-date-picker"
             value-format="yyyy-MM-dd"
             @change="dateRangeChange"
-            :picker-options="pickerOptions"
+            :picker-options="picker_options"
             :range-separator="$t('to')"
             :start-placeholder="$t('start date')"
             :end-placeholder="$t('end date')">
@@ -21,7 +35,10 @@
         </div>
         <div style="display: flex;flex-wrap: wrap;justify-content: space-between;align-items: center;">
           <div class="echarts-container" v-for="(value,key) in title_ref" :key="key">
-            <div class="echart-title">{{$t(value)}}</div>
+            <div class="echart-title">
+              <span style="font-size: 16px">{{ `${$t(value)}`}}</span>
+              <span>{{ `(${title_counts[key]})`}}</span>
+            </div>
             <div :id="echarts_ids[key]" class="chart"></div>
           </div>
         </div>
@@ -48,7 +65,7 @@ export default {
         new_subscription: 'kodepay-new-subscription-chart',
         new_customer: 'kodepay-new-customer-chart',
       },
-      pickerOptions : {
+      picker_options : {
         disabledDate (time) {
           return time.getTime() > Date.now();
         }
@@ -61,13 +78,21 @@ export default {
         new_subscription:"active_recurring_list",
         new_customer:"user_count_list",
       },
-      title_ref:{
+      title_ref:{ // 图标的title
         amount_total: "gross volume",
         revenue: "net volume",
         order:"orders",
         success_pay:"successful payments",
         new_subscription:"new subscriptions",
         new_customer:"new customers",
+      },
+      title_counts:{ // 图表的总额
+        amount_total: "",
+        revenue: "",
+        order:"",
+        success_pay:"",
+        new_subscription:"",
+        new_customer:"",
       },
       echarts_instances: {
         amount_total: null,
@@ -116,15 +141,64 @@ export default {
       },
     }
   },
+  watch: {
+    '$i18n.locale'() {
+      this.updateShortcuts();
+    }
+  },
   mounted() {
-    this.setDefaultTime();
-    this.initEchartsInstance();
-    this.getData();
-    window.addEventListener('resize', this.changeSize)
+    this.guide_step = this.$store.state.guide_step;
+    if (this.guide_step < 4) {
+      this.toGuide();
+    } else {
+      this.setDefaultTime();
+      this.initEchartsInstance();
+      this.getData();
+      this.updateShortcuts();
+      window.addEventListener('resize', this.changeSize);
+    }
   },
   created() {
   },
   methods: {
+    updateShortcuts () {
+      this.$set(this.picker_options, 'shortcuts', this.getShortcuts());
+    },
+    getShortcuts () {
+        return  [
+          {
+            text: this.$t('Last week'),
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+              picker.$emit('pick', [start, end]);
+            }
+          },
+          {
+            text: this.$t('Last month'),
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: this.$t('Last three months'),
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+             picker.$emit('pick', [start, end]);
+            }
+        }]
+      },
+    /**
+     * 跳转到guide页面
+     */
+    toGuide () {
+      this.$router.push({path: '/guide'})
+    },
     /**
      *
      */
@@ -147,7 +221,7 @@ export default {
       return {
         total_revenue_data: {
           title: 'total revenue',
-          title_value:  this.formatPrice(data.real_amount_sum || 0),
+          title_value:  this.formatPrice(data.real_pay_amount_sum || 0),
           bottom: 'yesterday revenue',
           bottom_value:  this.formatPrice(data.real_amount_yesterday || 0),
         },
@@ -248,13 +322,14 @@ export default {
           vm.overall_data = vm.formatOverallData(res.data.data);
           vm.formatEchartsData(res.data.data);
         } else {
-          vm.$message.error(res.data.message);
+          if (res && res.data && res.data.message) {
+            vm.$message.warning(res.data.message)
+          }
           vm.setDefaultOptions();
         }
       }).catch(err => {
         vm.hideLoading();
         vm.setDefaultOptions();
-        vm.$message.error(err.message);
       })
     },
     setDefaultOptions () {
@@ -264,6 +339,7 @@ export default {
       }
     },
     formatEchartsData(data) {
+      this.title_counts = {};
       const is_price_fields = ['amount_total', 'revenue'];
       for (let data_field_ref_key in this.data_field_ref) {
         const data_field = this.data_field_ref[data_field_ref_key];
@@ -276,7 +352,11 @@ export default {
             y_data.push(item['count']);
           }
         }
-
+        if (!!is_price_fields.includes(data_field_ref_key)) {
+          this.title_counts[data_field_ref_key] = this.formatPrice(Number(y_data.reduce((a, b) => a + b, 0).toFixed(2)));
+        } else {
+          this.title_counts[data_field_ref_key] = Number(y_data.reduce((a, b) => a + b, 0).toFixed(2));
+        }
         const options = this.getOptions(x_data, y_data, !!is_price_fields.includes(data_field_ref_key));
         this.setOptions(options, this.echarts_instances[data_field_ref_key]);
       }
@@ -315,7 +395,7 @@ export default {
   flex-direction: row;
 }
 .echarts-container {
-  height: 320px;
+  height: 350px;
   margin-top: 24px;
   width: calc((100% - 172px)/ 2);
 }
@@ -324,6 +404,11 @@ export default {
   height: 300px;
 }
 .echart-title {
-  margin: 12px 12px 12px 12px;
+  margin: 12px 12px;
+}
+</style>
+<style>
+.el-picker-panel__sidebar {
+  width: 120px;
 }
 </style>

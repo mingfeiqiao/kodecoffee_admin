@@ -49,6 +49,22 @@
     </div>
     <div>
       <div>
+        <el-descriptions :title="$t('payment details')">
+          <el-descriptions-item :label="$t('Amount')">
+            <span v-if="order_detail.currency === cost_detail.settle_currency">
+              {{order_detail.price_format}}
+            </span>
+            <span v-else>
+              {{`${order_detail.price_format}→${cost_detail.settle_amount_format}`}}
+            </span>
+          </el-descriptions-item>
+          <el-descriptions-item :label="$t('cost')" >{{ cost_detail.cost_format}}</el-descriptions-item>
+          <el-descriptions-item :label="$t('net income')">{{ cost_detail.net_income_format }}</el-descriptions-item>
+        </el-descriptions>
+      </div>
+    </div>
+    <div>
+      <div>
         <el-descriptions :title="$t('payment method')" v-if="payment_detail">
           <el-descriptions-item :label="$t('payment method')" v-if="payment_detail.type">{{ $t(payment_detail.type) }}</el-descriptions-item>
           <el-descriptions-item :label="$t('Type')" v-if="showBrand">{{ payment_detail.brand }}</el-descriptions-item>
@@ -74,7 +90,7 @@ export default {
         un_completed: {
           "message": "unCompleted",
           "color":"rgba(16, 16, 16, 100)",
-          "background-color":"rgba(198, 198, 198, 100)"
+          "background-color":"#F0F0F0"
         },
         succeed: {
           "message": "Succeed",
@@ -84,17 +100,17 @@ export default {
         failed: {
           "message": "Failed",
           "color":"rgba(247, 72, 82, 1)",
-          "background-color":"rgba(198, 198, 198, 100)"
+          "background-color":"#FFF1F0"
         },
         refunded: {
           "message": "Refunded",
           "color":"rgba(16, 16, 16, 100)",
-          "background-color":"rgba(198, 198, 198, 100)"
+          "background-color":"#F0F0F0"
         },
         disputed: {
           "message": "Disputed",
           "color":"rgba(247, 72, 82, 1)",
-          "background-color":"rgba(198, 198, 198, 100)"
+          "background-color":"#FFF1F0"
         },
       },
       billing_detail: {
@@ -118,6 +134,13 @@ export default {
         created_time: "",
         payment_type:"",
         card_number:"",
+      },
+      cost_detail: {
+        settle_amount:"", // 结算货币的实际金额
+        settle_currency:"usd", // 结算币种
+        settle_amount_format:"", // 订单实际金额格式化
+        cost_format:"", // 费用格式化
+        net_income_format:"", // 净收入格式化
       }
     };
   },
@@ -129,6 +152,11 @@ export default {
           vm.order_detail = this.formatOrderDetail(res.data.data);
           vm.payment_detail = this.formatPaymentDetail(res.data.data);
           vm.billing_detail = this.formatBillingDetail(res.data.data);
+          vm.cost_detail = this.formatCostDetail(res.data.data);
+        } else {
+          if (res && res.data && res.data.message) {
+            vm.$message.warning(res.data.message)
+          }
         }
       }).catch((err) => {
         console.log(err);
@@ -137,7 +165,7 @@ export default {
   },
   methods: {
     openUserDetail (user_id) {
-      this.$router.push({path: "/user-list/detail/" + user_id});
+      this.$router.push({path: "/customers/detail/" + user_id});
     },
     formatOrderDetail (data) {
       return {
@@ -156,6 +184,16 @@ export default {
         created_time: this.formatCreatedTime(data.created_time),
         payment_type: this.getPaymentType(data),
         card_number: this.getCardNumber(data),
+      };
+    },
+    formatCostDetail (data) {
+      return {
+        settle_amount: data.settle_pay_amount || "",
+        settle_currency: "usd",
+        settle_amount_format: this.formatPrice(data.settle_pay_amount, 'usd'),
+        settle_refund_amount_format: this.formatPrice(data.settle_refund_amount, 'usd'),
+        cost_format: this.formatPrice(data.settle_platform_off_amount, 'usd'),
+        net_income_format: this.formatPrice(data.settlt_real_amount, 'usd'),
       };
     },
     formatCreatedTime (created_time) {

@@ -11,6 +11,13 @@ const install = function (Vue) {
       return false;
     }
   };
+  Vue.prototype.validateTrimmedField = function (rule, value, callback) {
+    if (value && value.trim() === '') {
+      callback(new Error(Vue.prototype.$t('Field cannot be empty')));
+    } else {
+      callback();
+    }
+  }
   Vue.prototype.WebP = !!checkWebp();
   Vue.prototype.loadScript = function (src, callback) {
     let script = document.createElement('script'),

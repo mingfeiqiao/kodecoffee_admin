@@ -1,28 +1,28 @@
 <template>
   <el-dialog :title="operationType === 'add' ? $t('create plugin') : $t('update plugin')" v-if="dialog_form_visible" :visible.sync="dialog_form_visible" width="50%"  :destroy-on-close="true">
     <div>
-      <el-form :model="plugin_data" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-        <el-form-item :label="$t('extension id') + ':'" prop="client_key">
+      <el-form :model="plugin_data" :rules="rules" ref="ruleForm" label-width="120px">
+        <el-form-item :label="$t('extension id') + ':'" prop="client_key" v-if="operationType !== 'add'">
           <div>{{ plugin_data.client_key }}</div>
         </el-form-item>
         <el-form-item :label="$t('name') + ':'" prop="name">
-          <el-input v-model="plugin_data.name">
+          <el-input v-model="plugin_data.name" :placeholder="$t('please input extension name')">
           </el-input>
         </el-form-item>
         <el-form-item :label="$t('icon') + ':'" prop="icon">
           <img-upload :icon_url="plugin_data.icon" @iconUpSourceChange="iconUpSourceChange"></img-upload>
         </el-form-item>
-        <el-form-item :label="$t('description') + ':'" prop="desc">
-          <el-input type="textarea" v-model="plugin_data.description"></el-input>
+        <el-form-item :label="$t('description') + ':'" prop="description">
+          <el-input type="textarea" v-model="plugin_data.description" :placeholder="$t('please input description')"></el-input>
         </el-form-item>
         <el-form-item :label="$t('store address') + ':'" prop="store_address">
-          <el-input v-model="plugin_data.store_address"></el-input>
+          <el-input v-model="plugin_data.store_address" :placeholder="$t('please input store address')"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="submitForm('ruleForm')">
+          <el-button type="primary" size="small" @click="submitForm('ruleForm')">
             {{ operationType === 'add' ? $t('create') : $t('update') }}
           </el-button>
-          <el-button @click="resetForm('ruleForm')">{{ $t('Reset') }}</el-button>
+          <el-button @click="resetForm('ruleForm')" size="small">{{ $t('Reset') }}</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -36,17 +36,26 @@ export default {
   data () {
     return {
       icon_file: null,
-      rules: {
-        name: [
-          { required: true, message: '请输入插件名称', trigger: 'blur' }
-        ]
-      },
       dialog_form_visible: false,
       plugin_data : {},
     }
   },
   components : {
     imgUpload
+  },
+  computed: {
+    rules () {
+      return {
+        name: [
+          { required: true, message: this.$t('1-100 characters required'), trigger: 'blur'},
+          { validator: this.validateTrimmedField, trigger: 'blur'}
+        ],
+        store_address: [
+          { message: this.$t('please input valid URL'), trigger: 'blur', type:  'url'},
+          { validator: this.validateTrimmedField, trigger: 'blur'}
+        ],
+      }
+    }
   },
   watch : {
     visible(newValue) {
@@ -92,6 +101,13 @@ export default {
     }
   },
   methods : {
+    validateTrimmedField(rule, value, callback) {
+      if (value && value.trim() === '') {
+        callback(new Error(this.$t('Field cannot be empty')));
+      } else {
+        callback();
+      }
+    },
     resetForm() {
       this.plugin_data = {
         client_key: this.chosen_plugin_data.client_key || ""
@@ -110,7 +126,7 @@ export default {
         return response.data.data.url;
       } else {
         this.$message({
-          message: '上传图片失败',
+          message: 'upload icon error',
           type: 'error'
         });
       }
@@ -127,18 +143,23 @@ export default {
           args.icon = icon;
         }
       }
+      let vm = this;
       addPlugin(args).then((res) => {
         if (parseInt(res.data.code) === 100000) {
-          this.$message({
-            message: '操作成功',
+          vm.$message({
+            message: 'success',
             type: 'success'
           });
-          this.dialog_form_visible = false;
-          this.$emit('operateSuccess');
+          vm.dialog_form_visible = false;
+          vm.$emit('operateSuccess');
+        } else {
+          if (res && res.data && res.data.message) {
+            vm.$message.warning(res.data.message)
+          }
         }
       }).catch((err) => {
         this.$message({
-          message: '操作失败',
+          message: 'fail',
           type: 'error'
         });
       });
@@ -163,18 +184,23 @@ export default {
         }
       }
       args.client_key = this.chosen_plugin_data.client_key;
+      let vm = this;
       updatePlugin(args).then((res) => {
         if (parseInt(res.data.code) === 100000) {
-          this.$message({
-            message: '操作成功',
+          vm.$message({
+            message: 'success',
             type: 'success'
           });
-          this.dialog_form_visible = false;
-          this.$emit('operateSuccess');
+          vm.dialog_form_visible = false;
+          vm.$emit('operateSuccess');
+        } else {
+          if (res && res.data && res.data.message) {
+            vm.$message.warning(res.data.message)
+          }
         }
       }).catch((err) => {
-        this.$message({
-          message: '操作失败',
+        vm.$message({
+          message: 'fail',
           type: 'error'
         });
       });
@@ -184,12 +210,12 @@ export default {
      * @param formName
      */
     submitForm(formName) {
-      this.$refs[formName].validate(async (valid) => {
+      this.$refs[formName].validate((valid) => {
         if (valid) {
           if (this.operationType === 'add') {
-            await this.addPluginData();
+            this.addPluginData();
           } else {
-            await this.updatePluginData();
+            this.updatePluginData();
           }
         } else {
           return false;

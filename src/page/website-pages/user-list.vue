@@ -2,8 +2,7 @@
   <div>
     <div>
       <div style="max-width: 300px;">
-        <el-input v-model="condition.q" :placeholder="$t('please input email')"  size="mini" >
-          <i slot="suffix" class="el-input__icon el-icon-search" @click="search"></i>
+        <el-input v-model="condition.q" :placeholder="$t('please input email')"  size="small" clearable @keyup.enter.native="search" @clear="search">
         </el-input>
       </div>
       <div style="padding-top: 24px">
@@ -14,17 +13,27 @@
                   :header-cell-class-name="handleHeaderCellClass"
                   :header-cell-style="{'background-color': 'var(--header-cell-background-color)','color': 'var(--header-cell-color)','font-weight': 'var(--header-cell-font-weight)'}"
         >
-          <el-table-column prop="user_key" :label="$t('id')">
+          <el-table-column prop="user_email" :label="$t('customer')"></el-table-column>
+          <el-table-column prop="sum_settle_pay_amount" :label="$t('total spend')" sortable>
             <template slot-scope="scope">
-              <span class="link" @click="openUserDetail(scope.row.user_id)">{{scope.row.user_key}}</span>
+              <span>{{scope.row.total_spend}}
+              </span>
             </template>
           </el-table-column>
-          <el-table-column prop="user_email" :label="$t('customer')"></el-table-column>
-          <el-table-column prop="total_spend" :label="$t('total spend')" sortable ></el-table-column>
           <el-table-column prop="payments_times" :label="$t('payments times')" sortable></el-table-column>
-          <el-table-column prop="refunded_amount" :label="$t('refunded amount')" sortable></el-table-column>
+          <el-table-column prop="sum_settle_refund_amount" :label="$t('refunded amount')" sortable>
+            <template slot-scope="scope">
+              <span>{{scope.row.refunded_amount}}
+              </span>
+            </template>
+          </el-table-column>
           <el-table-column prop="last_payment" :label="$t('last payments')"></el-table-column>
           <el-table-column prop="created_time" :label="$t('create time')"></el-table-column>
+          <el-table-column :label="$t('Operation')" width="100" align="center">
+            <template slot-scope="scope">
+              <span class="link" @click="openUserDetail(scope.row.user_id)">{{$t('detail')}}</span>
+            </template>
+          </el-table-column>
         </el-table>
         <div style="padding-top:12px;display: flex;align-items: center;justify-content: center;">
           <el-pagination
@@ -34,7 +43,7 @@
             :current-page.sync="page"
             :page-sizes="[10,20]"
             :page-size="page_size"
-            layout="prev, pager, next"
+            layout="total, sizes, prev, pager, next, jumper"
             :total="total">
           </el-pagination>
         </div>
@@ -53,9 +62,9 @@ export default {
       condition: {
       },
       ORDER_FIELD_REF: {
-        total_spend: "sum_settle_real_amount",
+        sum_settle_pay_amount: "sum_settle_pay_amount",
         payments_times: "sum_settle_pay_count",
-        refunded_amount: "sum_settle_refund_amount",
+        sum_settle_refund_amount: "sum_settle_refund_amount",
         created_time: "created_time"
       },
       ORDER_TYPE_REF: {
@@ -75,7 +84,7 @@ export default {
   },
   methods: {
     openUserDetail (user_id) {
-      this.$router.push({path: "/user-list/detail/" + user_id});
+      this.$router.push({path: "/customers/detail/" + user_id});
     },
     search() {
       this.getData();
@@ -86,15 +95,25 @@ export default {
         condition: vm.condition,
         page: vm.page,
         page_size: vm.page_size,
-        sort: this.formatSortParams(this.sort)
+        order: this.formatSortParams(this.sort)
       };
       vm.table_loading = true;
       vm.table_data = [];
+      // 如果有created_time作为排序字段，那么删除这个排序字段，如果只有created_time作为排序字段，那么不做任何操作
+      let order = JSON.parse(JSON.stringify(args.order));
+      if(Object.keys(order).length > 1) {
+        delete order['created_time'];
+      }
+      args.order = order;
       customerListApi(args).then(res => {
         vm.table_loading = false;
         if (parseInt(res.data.code )=== 100000) {
           vm.table_data = vm.formatUserList(res.data.data);
           vm.total = res.data.totalCount;
+        } else {
+          if (res && res.data && res.data.message) {
+            vm.$message.warning(res.data.message)
+          }
         }
       }).catch(err => {
         vm.table_loading = false;
@@ -104,13 +123,15 @@ export default {
     /**
      * 当前页
      */
-    handleCurrentChange() {
+    handleCurrentChange(val) {
+      this.page = val;
       this.getData();
     },
     /**
      * 每页显示条数
      */
-    handleSizeChange() {
+    handleSizeChange(size) {
+      this.page_size = size;
       this.getData();
     },
     formatSortParams (sort) {
@@ -148,8 +169,10 @@ export default {
         user_key: item.user_key || "",
         user_email: item.email || "",
         total_spend: this.formatPrice(user_consumption_statistics.sum_settle_pay_amount, currency),
-        payments_times: this.formatPrice(user_consumption_statistics.sum_settle_pay_success_count, currency),
+        sum_settle_pay_amount: user_consumption_statistics.sum_settle_pay_amount || 0,
+        payments_times: user_consumption_statistics.sum_settle_pay_success_count || 0,
         refunded_amount:  this.formatPrice(user_consumption_statistics.sum_settle_refund_amount, currency),
+        sum_settle_refund_amount: user_consumption_statistics.sum_settle_refund_amount || 0,
         last_payment: this.formatTime(user_consumption_statistics.lasted_pay_time),
         created_time: this.formatTime(item.created_time)
       }
@@ -162,7 +185,7 @@ export default {
       if (time) {
         return timestampToDateString(time, 'yyyy-MM-dd HH:II:SS');
       }
-      return "";
+      return "-";
     },
     /**
      * 格式化退款金额 格式 US$ 99.00
@@ -176,7 +199,7 @@ export default {
         }
         return currency + ' ' + price;
       }
-      return "";
+      return "US$ 0";
     },
     //排序方法
     handleHeaderCellClass({column}){
@@ -193,11 +216,11 @@ export default {
      */
     handleSortChange({prop, order }) {
       if (order) {
-        let flag_is_have=false
+        let flag_is_have = false
         this.sort.forEach(element => {
           if (element.prop === prop) {
-            element.order=order
-            flag_is_have=true
+            element.order = order
+            flag_is_have = true
           }
         });
         if (!flag_is_have) {
@@ -206,11 +229,11 @@ export default {
             order:order
           })
         }
-      }else{  //不参与排序
+      } else{  //不参与排序
         let order_index=0
         this.sort.forEach((element,index) => {
           if (element.prop === prop) {
-            order_index=index
+            order_index = index
           }
         });
         this.sort.splice(order_index,1)
