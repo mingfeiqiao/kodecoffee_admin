@@ -26,14 +26,6 @@ import extensionValidateEmail from "../page/extension/extension-validate-email.v
 Vue.use(Router);
 const routes = [
   {
-    path: '/vendors',
-    redirect: '/',
-  },
-  {
-    path: '/sandbox-vendors',
-    redirect: '/',
-  },
-  {
     path: '/',
     redirect: '/dashboard',
   },

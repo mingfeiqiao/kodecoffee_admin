@@ -86,12 +86,15 @@ export default {
         });
         return;
       }
-      // 获取当前 URL 路径
+      // 获取当前 URL 路径'
+
       if(this.$mode === this.MODECONFIG.SANDBOX.mode)  {
         // 跳转到正式环境
+        localStorage.setItem('lastMode', this.MODECONFIG.PRODUCTION.mode);
         window.location.href = this.MODECONFIG.PRODUCTION.baseURL;
       } else {
         // 跳转到沙箱环境
+        localStorage.setItem('lastMode', this.MODECONFIG.SANDBOX.mode);
         window.location.href = this.MODECONFIG.SANDBOX.baseURL;
       }
     }

@@ -9,6 +9,15 @@ import NewIcon from "./page/components/new-icon.vue";
 
 export default {
   components: {NewIcon},
+  created() {
+    if (this.$mode !== localStorage.getItem('lastMode')) {
+      if (localStorage.getItem('lastMode') === 'vendors') {
+        window.location.href = this.MODECONFIG.PRODUCTION.baseURL;
+      } else {
+        window.location.href = this.MODECONFIG.SANDBOX.baseURL;
+      }
+    }
+  }
 }
 </script>
 <style lang="less">

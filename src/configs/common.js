@@ -1,3 +1,4 @@
+import Vue from "vue";
 export const EN_CODE = 'en-US';
 export const ZH_CODE = 'zh-CN';
 export const gotoDocCenter = function (language) {
@@ -6,4 +7,7 @@ export const gotoDocCenter = function (language) {
   } else {
     window.open('https://kodepay.io/en/guide/running', '_blank');
   }
+}
+export const OpenCrispChat = function () {
+  Vue.prototype.$Crisp.chat.open();
 }

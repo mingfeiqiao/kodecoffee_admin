@@ -73,20 +73,30 @@
 {{$t('payouts instructions content')}}
         </pre>
         <div style="display: flex;align-items: center;justify-content: space-between;">
-          <div>
+          <div style="display: flex">
             <span style="color: #C6C6C6">{{ $t('more question') }}</span>
-            <span class="link">
-              {{$t('contact us')}}
+            <span class="link" @click="OpenCrispChat" style="display:flex;align-items: center;padding-left: 8px">
+              <span style="display: flex">
+                <svg style="width: 16px;height: 16px">
+                  <use xlink:href="#chat-with-us"></use>
+                </svg>
+              </span>
+              <span>
+                {{$t('contact us')}}
+              </span>
             </span>
           </div>
-          <div>
+          <div style="display:flex;">
             <span>
               KodePay Power by
             </span>
-            <span>
-              ZingFront
+            <span style="display: flex;align-items: center;padding-left: 12px">
+              <img src="../../assets/zingfront.png" width="20" height="20" alt="zingfront">
+              <span style="font-size: 12px;font-weight: bold;padding-left: 2px">
+                ZingFront
+              </span>
             </span>
-            <span style="color: #1D39C4;cursor: pointer">
+            <span class="link" style="padding-left: 12px">
               {{$t('learn more')}}
             </span>
           </div>
@@ -206,6 +216,7 @@ import CURRENCY_OPTIONS from "../../options/currency_options.json";
 import Countries from '../../options/countries.json';
 import {timestampToDateString} from "../../utils/dateUtils";
 import {accountWithdrawInfoApi, searchWithdrawAmountApi, withdrawRateApi, accountWithdrawInfoListApi, applyWithdrawApi, checkWithdrawApi} from "../../api/interface";
+import {OpenCrispChat} from "../../configs/common";
 export default {
   components: {
     EditWithdrawalSettingsDialog
