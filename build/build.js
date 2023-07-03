@@ -8,23 +8,6 @@ const chalk = require('chalk');
 const webpack = require('webpack');
 const config = require('../config');
 const webpackConfig = require('./webpack.prod.conf');
-/**
- * 获取最新的accessKeyId和accessKeySecret, 该方法会在每次构建时调用
- * @returns {string[]}
- */
-function getAccessKey () {
-	let fs = require('fs');
-	let path = require("path");
-	let content = fs.readFileSync(path.join(__dirname,'./accesskey.txt')).toString()
-	content = content.split('\n')
-	return content;
-}
-const accessKey = getAccessKey();
-if (!accessKey || accessKey.length < 2) {
-	console.log('####注意从测试环境获取最新的accessKeyId和accessKeySecret####');
-	console.log('####accessKeyId和accessKeySecret所在文件地址(测试机及所有线上机器): /nas/zbase/security-credentials/ali_ram ####');
-	return;
-}
 const spinner = ora('building for production...');
 spinner.start();
 

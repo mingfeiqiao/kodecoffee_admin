@@ -26,6 +26,7 @@
       <el-descriptions  class="order-descriptions">
         <el-descriptions-item :label="$t('customer')"><span class="link" @click="openUserDetail">{{subscription.user_email}}</span></el-descriptions-item>
         <el-descriptions-item :label="$t('create time')">{{ subscription.created_time }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('subscription expired time')">{{ subscription.plan_end_time }}</el-descriptions-item>
         <el-descriptions-item :label="$t('sell plan')">{{ subscription.prod_name }}</el-descriptions-item>
         <el-descriptions-item :label="$t('extension')">{{ subscription.client_name }}</el-descriptions-item>
         <el-descriptions-item :label="$t('subscription id')" >{{ subscription.subscription_id }}</el-descriptions-item>
@@ -88,7 +89,7 @@ export default {
         canceling: {
           "message": "Canceling",
           "color":"rgba(16, 16, 16, 100)",
-          "background-color":"rgba(198, 198, 198, 100)"
+          "background-color":"#F0F0F0"
         },
         active: {
           "message": "Active",
@@ -98,17 +99,17 @@ export default {
         pastdue: {
           "message": "Failed",
           "color":"rgba(247, 72, 82, 1)",
-          "background-color":"rgba(198, 198, 198, 100)"
+          "background-color":"#FFF1F0"
         },
         canceled: {
           "message": "Canceled",
           "color":"rgba(16, 16, 16, 100)",
-          "background-color":"rgba(198, 198, 198, 100)"
+          "background-color":"#F0F0F0"
         },
         invalid: {
           "message": "Expired",
-          "color":"rgba(247, 72, 82, 1)",
-          "background-color":"rgba(198, 198, 198, 100)"
+          "color":"rgba(16, 16, 16, 100)",
+          "background-color":"#F0F0F0"
         },
       }
     };
@@ -122,6 +123,10 @@ export default {
         if (res.data && parseInt(res.data.code) === 100000) {
           vm.subscription = this.formatSubscription(res.data.data);
           vm.order_list = this.formatOrderList(res.data.data.transaction_invoice);
+        } else {
+          if (res && res.data && res.data.message) {
+            vm.$message.warning(res.data.message)
+          }
         }
       }).catch((err) => {
         vm.table_loading = false;
@@ -131,10 +136,10 @@ export default {
   },
   methods: {
     openUserDetail () {
-      this.$router.push({path: "/user-list/detail/" + this.subscription.user_id});
+      this.$router.push({path: "/customers/detail/" + this.subscription.user_id});
     },
     openOrderDetail (order_id) {
-      this.$router.push({path: "/pay-all-order/detail/" + order_id});
+      this.$router.push({path: "/orders/detail/" + order_id});
     },
     formatOrderList (transaction_invoice) {
       if (transaction_invoice && Array.isArray(transaction_invoice) && transaction_invoice.length > 0) {
@@ -154,6 +159,7 @@ export default {
       return {
         user_id: data.user_id || "",
         prod_name: data.prod_name || "",
+        client_name:data.client_name || "",
         price_format: this.formatPrice(data.pay_amount, data.currency) || "",
         user_email: data.user_email || "",
         subscription_status_obj: this.formatSubscriptionObj(data.order_status) || "",
@@ -173,7 +179,7 @@ export default {
       if (time) {
         return timestampToDateString(time, 'yyyy-MM-dd HH:II:SS');
       }
-      return "";
+      return "-";
     },
     formatOrderStatus (pay_status) {
       if (pay_status && ORDER_OPTIONS.ORDER_STATUS_REF_OPTIONS[pay_status]) {

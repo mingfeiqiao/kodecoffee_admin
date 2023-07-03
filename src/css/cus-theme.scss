@@ -1,0 +1,21 @@
+/* 改变主题色变量 */
+$--color-primary: #2F54EB;
+$--color-success: #52C41A;
+$--color-warning: #FAAD14;
+$--color-danger: #F5222D;
+$--color-text-primary: #101010;
+$--color-info: #101010;
+$--color-text-regular: #101010;
+$--color-text-secondary: #101010;
+$--button-default-font-color: #101010;
+$--form-label-font-size: 14px;
+$--datepicker-off-font-color: $--color-text-primary;
+$--button-font-size: 14px;
+$--table-font-color: $--color-text-primary;
+$--table-header-background-color: #FAFAFA;
+$--table-header-font-color: $--color-text-primary;
+// 表头背景色
+$--table-header-bg: #85ce61;
+/* 改变 icon 字体路径变量，必需 */
+$--font-path: '~element-ui/lib/theme-chalk/fonts';
+@import "~element-ui/packages/theme-chalk/src/index";

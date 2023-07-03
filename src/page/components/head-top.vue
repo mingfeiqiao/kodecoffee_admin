@@ -15,10 +15,14 @@
           v-model="isTestMode"
           active-color="#13ce66"
           inactive-color="#ff4949"
-          active-text="测试模式"
+          :active-text="$t('Sandbox')"
           @change="checkoutMode"
-          inactive-text="正式模式">
+          :inactive-text="$t('Production')">
         </el-switch>
+      </div>
+      <div v-if="$store.state.guide_step < 4" style="background-color: #B7EB8F;margin-left: 24px;padding:3px 12px; border-radius: 4px;cursor: pointer" @click="toGuide">
+        <span>{{$t('Setup Guide')}}</span>
+        <span>{{  `${$store.state.guide_step}/4`}}</span>
       </div>
     </div>
     <div style="display: flex;align-items: center">
@@ -38,7 +42,8 @@ export default {
   data () {
     return {
       isTestMode: false,
-      isCollapse: false
+      isCollapse: false,
+      is_finish_guide: false,
     }
   },
   components: {
@@ -56,16 +61,31 @@ export default {
     }
   },
   created() {
+    this.guide_step = localStorage.getItem('guideStep') || 0;
+    this.$store.commit('setGuideStep', this.guide_step);
     this.isCollapse = this.collapse;
     this.isTestMode = this.$mode === this.MODECONFIG.SANDBOX.mode;
+    if (this.guide_step < 4 && !this.isTestMode) {
+      window.location.href = this.MODECONFIG.SANDBOX.baseURL;
+    }
   },
   methods: {
+    toGuide() {
+      this.$router.push('/guide');
+    },
     changeCollapse() {
       this.isCollapse = !this.isCollapse;
       this.$emit('collapseChange', this.isCollapse);
     },
     checkoutMode() {
-      this.isTestMode = !this.isTestMode;
+      if (!this.isTestMode && this.$store.state.guide_step < 4) {
+        this.isTestMode = true;
+        this.$message({
+          message: this.$t('Please complete the setup guide first'),
+          type: 'warning'
+        });
+        return;
+      }
       // 获取当前 URL 路径
       if(this.$mode === this.MODECONFIG.SANDBOX.mode)  {
         // 跳转到正式环境

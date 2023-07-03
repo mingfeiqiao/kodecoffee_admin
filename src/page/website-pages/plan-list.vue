@@ -1,24 +1,20 @@
 <template>
   <div class="container">
     <div style="display: flex;width: 100%;flex-direction: row;align-items: center;justify-content: space-between;padding-bottom: 24px">
-      <el-button type="primary" size="mini" @click="operatePlan({}, 'add')">
-        {{$t('create plan')}}
-      </el-button>
       <div style="display:flex;align-items: center;justify-content: center">
         <div style="display: flex">
           <device-filter :data="payment_modes" @change="paymentModeChange" :device="condition.type"></device-filter>
         </div>
         <div>
           <div style="padding-left: 12px">
-            <el-input
-                size="mini"
-                :placeholder="$t('input placeholder')"
-                v-model="condition.q">
-              <i slot="suffix" class="el-input__icon el-icon-search" style="cursor: pointer" @click="search"></i>
+            <el-input size="small" :placeholder="$t('input placeholder')" v-model="condition.q" clearable @keyup.enter.native="search"  @clear="search">
             </el-input>
           </div>
         </div>
       </div>
+      <el-button type="primary" size="small" @click="operatePlan({}, 'add')">
+        {{$t('create plan')}}
+      </el-button>
     </div>
     <div>
       <div style="display: flex;align-items: center;flex-direction: column">
@@ -27,8 +23,6 @@
                   :empty-text="$t('no data')"
                   :header-cell-style="{'background-color': 'var(--header-cell-background-color)','color': 'var(--header-cell-color)','font-weight': 'var(--header-cell-font-weight)'}"
         >
-          <el-table-column prop="plan_code" :label="$t('id')" width="200">
-          </el-table-column>
           <el-table-column  width="300" >
             <template slot="header" slot-scope="scope">
               <div>{{$t('name')}}</div>
@@ -37,23 +31,24 @@
               <div class="column_content">
                 <div>
                   <img v-if="scope.row.plan_icon" :src="scope.row.plan_icon"  width="44" height="44"  style="border:1px solid #eee;border-radius:10px;display:block;float:left;max-width: 130%;" :alt="scope.row.plan_name">
-                  <svg  v-else width="46" height="46">
+                  <svg  v-else width="40" height="40">
                     <use xlink:href="#default-plan-icon"></use>
                   </svg>
                 </div>
                 <div class="column_right">
                   <div style="padding-left:10px;text-align: left;">
-                    <ellipsis-text :text="scope.row.plan_name" :max_width="230"></ellipsis-text>
-                    <ellipsis-text :text="scope.row.plan_desc" :max_width="230"></ellipsis-text>
+                    <div>
+                      <ellipsis-text :text="scope.row.plan_name" :max_width="230"></ellipsis-text>
+                    </div>
+                    <div style="color: #929292">
+                      <ellipsis-text :text="scope.row.plan_desc" :max_width="230"></ellipsis-text>
+                    </div>
                   </div>
                 </div>
               </div>
             </template>
           </el-table-column>
-          <el-table-column width="auto">
-            <template slot="header" slot-scope="scope">
-              <div>{{$t('Type')}}</div>
-            </template>
+          <el-table-column width="auto" :label="$t('Type')">
             <template slot-scope="scope">
               <div v-if="scope.row.plan_type_obj">
                 <div v-if="scope.row.plan_type_obj.type === 'recurring'">
@@ -61,7 +56,7 @@
                     {{$t(scope.row.plan_type_obj.type)}}
                   </div>
                   <div style="color: #929292">
-                    {{ '/ ' + ((parseInt(scope.row.plan_type_obj.interval_count) === 1) ? '' :  scope.row.plan_type_obj.interval_count) + ' ' + $t(scope.row.plan_type_obj.interval)}}
+                    {{$t('monthly')}}
                   </div>
                 </div>
                 <div v-else-if="scope.row.plan_type_obj.type === 'one_time'">
@@ -75,40 +70,49 @@
               <div>{{ $t('Amount') }}</div>
             </template>
             <template slot-scope="scope">
-              <div v-if="scope.row.main_price_obj && scope.row.other_price_obj">
-                <div>
+              <div>
+                <div v-if="scope.row.main_price_obj">
                   {{scope.row.main_price_obj.price_format}}
                 </div>
-                <el-popover placement="bottom" trigger="hover">
+                <el-popover placement="bottom" trigger="hover" v-if="scope.row.other_price_obj && scope.row.other_price_obj.length > 0">
                   <div style="display: flex;align-items: center;flex-direction: column">
                     <div v-for="(price, index) in scope.row.other_price_obj" :key="index">
                       {{price.price_format}}
                     </div>
                   </div>
-                  <div slot="reference" style="color: #929292" v-if="scope.row.other_price_obj.length > 0">
+                  <div slot="reference" style="color: #929292">
                     {{$t('other price tip', {number: scope.row.other_price_obj.length})}}
                   </div>
                 </el-popover>
               </div>
+            </template>
+          </el-table-column>
+          <el-table-column width="100" :label="$t('trial')" >
+            <template slot-scope="scope">
+              <div v-if="scope.row.plan_trial_obj && scope.row.plan_trial_obj.is_trial" >{{scope.row.plan_trial_obj.trial_days + ' ' + $t('days')}}</div>
               <div v-else>
+                {{ $t('no trial') }}
               </div>
             </template>
           </el-table-column>
-          <el-table-column width="100" >
-            <template slot="header" slot-scope="scope">
-              <div>{{$t('trial')}}</div>
-            </template>
+          <el-table-column prop="plan_code" :label="$t('id')" width="230">
             <template slot-scope="scope">
-              <div v-if="scope.row.plan_trial_obj && scope.row.plan_trial_obj.is_trial" >{{scope.row.plan_trial_obj.trial_days + ' ' + $t('days')}}</div>
+              <div style="display:flex;align-items: center">
+                <span>{{scope.row.plan_code}}</span>
+                <span v-if="scope.row.plan_code" style="display: flex;align-items: center">
+                  <svg width="16" height="16" @click="copy(scope.row.plan_code)" style="cursor: pointer;padding-left: 8px" class="copy_text">
+                    <use xlink:href="#copy">
+                    </use>
+                  </svg>
+              </span>
+              </div>
+
             </template>
           </el-table-column>
-          <el-table-column prop="operation">
-            <template slot="header" slot-scope="scope">
-              <div style="text-align: center">{{$t('Operation')}}</div>
-            </template>
+          <el-table-column prop="operation" :label="$t('Operation')" width="100" align="center">
             <template slot-scope="scope">
               <div class="column_content">
-                <span style="color: #1090FF; cursor: pointer" @click="operatePlan(scope.row, 'edit')">{{$t('edit')}}</span>
+                <span class="link" @click="operatePlan(scope.row, 'edit')">{{$t('edit')}}</span>
               </div>
             </template>
           </el-table-column>
@@ -121,14 +125,13 @@
             :current-page.sync="page"
             :page-sizes="[10,20]"
             :page-size="page_size"
-            layout="prev, pager, next"
+            layout="total, sizes, prev, pager, next, jumper"
             :total="total">
           </el-pagination>
         </div>
-
       </div>
     </div>
-    <div>
+    <div v-if="dialog_form_visible">
       <add-plan-dialog
         :visible="dialog_form_visible"
         @visibleChange="visibleChange"
@@ -145,12 +148,16 @@ import addPlanDialog from "../components/add-plan-dialog.vue";
 import {planList} from "../../api/interface";
 import CURRENCY_OPTIONS from "../../options/currency_options.json";
 import EllipsisText from "../components/ellipsis-text.vue";
+import Clipboard from "clipboard";
 export default {
   data() {
     return {
       condition: {
         type: 1,
         q: "",
+      },
+      order:{
+        created_time:"desc"
       },
       page: 1,
       page_size: 10,
@@ -183,7 +190,6 @@ export default {
   },
   created() {
     this.getPlanList();
-    // this.testPlanList();
   },
   components: {
     EllipsisText,
@@ -191,56 +197,6 @@ export default {
     addPlanDialog
   },
   methods: {
-    testPlanList() {
-       this.plan_list = [
-         {
-           "name": "kodepay-mfei",// 产品名称
-           "desc": "kodepay mfei",// 产品描述
-           "is_trial": true,// 是否试用
-           "id": 1, //产品ID
-           "application_id": 538,// 应用ID
-           "is_deleted": 0, // 是否删除
-           "updated_at": "2023-06-03T15:47:22",// 更新时间
-           "icon": null, // icon图标
-           "trial_days": 3,// 试用天数
-           "account_id": 29,// 帐号ID
-           "is_actived": 1,// 是否激活
-           "created_at": "2023-06-03T15:47:22",// 创建时间
-           "app_price": [ // 产品价格结构体
-             {
-               "currency": "usd",// 币种
-               "amount": 1.99,// 金额
-               "interval": "day",// 周期
-               "id": 1,// 价格ID
-               "application_id": 538,// 应用ID
-               "is_deleted": 0,// 是否删除
-               "updated_at": "2023-06-03T15:47:22",// 更新时间
-               "type": "recurring",// 周期
-               "product_id": 1,// 产品ID
-               "interval_count": 1,// 周期数量
-               "account_id": 29,// 帐号ID
-               "is_actived": 1,// 是否激活
-               "created_at": "2023-06-03T15:47:22",// 创建时间
-               "app_price_currency": [// 产品价格多币种结构体
-                 {
-                   "amount": 1.99, // 金额
-                   "price_id": 1,// 产品价格ID
-                   "account_id": 29,// 帐号ID
-                   "application_id": 538,// 应用ID
-                   "is_deleted": 0,// 是否删除
-                   "updated_at": "2023-06-03T15:47:22",// 更新时间
-                   "currency": "usd",// 币种
-                   "product_id": 1,// 产品ID
-                   "id": 1,// 价格多币种ID
-                   "is_actived": 1,// 是否激活
-                   "created_at": "2023-06-03T15:47:22"// 创建时间
-                 }
-               ]
-             }
-           ]
-         }
-       ];
-    },
     /**
      * 获取计划列表
      */
@@ -259,19 +215,57 @@ export default {
       if (Object.keys(condition).length !== 0) {
         args.condition = condition;
       }
+      args.order = this.order;
       let vm = this;
       vm.plan_list = [];
       vm.table_loading = true;
       planList(args).then(res => {
         vm.table_loading = false;
         if (parseInt(res.data.code )=== 100000) {
-          vm.plan_list = res.data.data;
-          vm.plan_list = vm.formatPlanList(vm.plan_list);
+          vm.plan_list = vm.formatPlanList(res.data.data);
           vm.total = res.data.totalCount;
+        } else {
+          if (res && res.data && res.data.message) {
+            vm.$message.warning(res.data.message)
+          }
         }
       }).catch(err => {
         vm.table_loading = false;
       });
+    },
+    /**
+     * 格式化table数据
+     */
+    resetPageParams () {
+      this.page = 1;
+      this.page_size = 10;
+      this.total = 0;
+    },
+    /**
+     *
+     * @param client_key
+     */
+    copy (client_key){
+      let clipboard = new Clipboard('.copy_text', {
+        text: () => {
+          return client_key
+        }
+      })
+      clipboard.on('success', e => {
+        this.$message({
+          message: this.$t('copy success'),
+          type: 'success'
+        })
+        clipboard.destroy() // 释放内存
+      })
+      clipboard.on('error', e => {
+        // 不支持复制
+        this.$message({
+          message:  this.$t('browser not support copy'),
+          type: 'warning'
+        })
+        clipboard.destroy() // 释放内存
+      })
     },
     /**
      * 操作成功
@@ -284,7 +278,7 @@ export default {
      * @param val
      */
     handleCurrentChange(val) {
-      this.args.page = val;
+      this.page = val;
       this.getPlanList();
     },
     /**
@@ -292,6 +286,7 @@ export default {
      * @param val
      */
     handleSizeChange(val) {
+      this.resetPageParams();
       this.page_size = val;
       this.getPlanList();
     },
@@ -301,6 +296,7 @@ export default {
      */
     paymentModeChange(value) {
       this.condition.type = value;
+      this.resetPageParams();
       this.getPlanList();
     },
     formatPlanList (data) {
@@ -368,7 +364,7 @@ export default {
       for (const currency_key in CURRENCY_OPTIONS) {
         if (currency_key.toLowerCase() === currency) {
           symbol = CURRENCY_OPTIONS[currency_key]['symbol'];
-          return `${symbol} ${price} ${CURRENCY_OPTIONS[currency_key]['full_name']}`;
+          return `${symbol} ${price}`;
         }
       }
     },
@@ -376,6 +372,7 @@ export default {
      * 搜索
      */
     search() {
+      this.resetPageParams();
       this.getPlanList();
     },
     operatePlan(plan_data, operation) {
@@ -386,6 +383,34 @@ export default {
       } else if (operation === 'add') {
         // 新增插件
         this.dialog_form_visible = true;
+      }
+    },
+    /**
+     * 获取api参数
+     * @param condition
+     * @param orders
+     * @param page
+     * @param page_size
+     * @returns {{condition: {}, page, page_size, order: {}}}
+     */
+    getApiArgs (condition, orders, page, page_size) {
+      let condition_temp = {};
+      for (let key in condition) {
+        if (condition[key]) {
+          condition_temp[key] = condition[key];
+        }
+      }
+      let orders_temp = {};
+      for (let key in orders) {
+        if (orders[key]) {
+          orders_temp[key] = orders[key];
+        }
+      }
+      return {
+        'page': page,
+        'page_size': page_size,
+        'condition': condition_temp,
+        'order': orders_temp
       }
     },
     /**

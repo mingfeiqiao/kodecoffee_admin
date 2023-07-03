@@ -5,7 +5,7 @@
   border-width: 1px;
   border-color: #e4e4e4;
   border-style: solid;
-  line-height: 26px;
+  line-height: 32px;
 }
 .left {
   border-radius: 4px 0 0 4px;
@@ -16,8 +16,8 @@
   border-left:none;
 }
 .is_active {
-  color: #1090FF;
-  border: 1px solid rgba(24, 144, 255, 1);
+  color: #2f54eb;
+  border: 1px solid #2f54eb;
 }
 </style>
 <template>
@@ -48,7 +48,6 @@ export default {
   },
   watch: {
     device(newDevice) {
-      console.log(newDevice);
       this.local_device = newDevice;
     }
   },

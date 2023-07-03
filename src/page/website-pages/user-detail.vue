@@ -31,7 +31,7 @@
           <template slot-scope="scope">
             <div style="display: flex;flex-direction: column">
               <span>{{ scope.row.plan_name }}</span>
-              <span>{{ scope.row.currency.toUpperCase() + ' ' + scope.row.price_format + '/' + $t('month')}}</span>
+              <span>{{ scope.row.price_format + '/' + $t('month')}}</span>
             </div>
           </template>
         </el-table-column>
@@ -55,7 +55,7 @@
           :current-page.sync="subscription_args.page"
           :page-sizes="[10,20]"
           :page-size="subscription_args.page_size"
-          layout="prev, pager, next"
+          layout="total, sizes, prev, pager, next, jumper"
           :total="subscription_args.total">
         </el-pagination>
       </div>
@@ -94,7 +94,7 @@
           :current-page.sync="order_args.page"
           :page-sizes="[10,20]"
           :page-size="order_args.page_size"
-          layout="prev, pager, next"
+          layout="total, sizes, prev, pager, next, jumper"
           :total="order_args.total">
         </el-pagination>
       </div>
@@ -146,7 +146,7 @@ export default {
      * @param order_id
      */
     openOrderDetail (order_id) {
-      this.$router.push({path: "/pay-all-order/detail/" + order_id});
+      this.$router.push({path: "/orders/detail/" + order_id});
     },
     /**
      * 订阅列表分页
@@ -160,6 +160,10 @@ export default {
           }
           if (parseInt(res.data.code) === 100000) {
             vm.user = vm.formatUserData(res.data.data);
+          } else {
+            if (res && res.data && res.data.message) {
+              vm.$message.warning(res.data.message)
+            }
           }
         }).catch(err => {
           console.log(err);
@@ -187,7 +191,7 @@ export default {
         pay_success_times: user_consumption_statistics.sum_settle_pay_success_count || 0,
         refunded_amount:  this.formatPrice(user_consumption_statistics.sum_settle_refund_amount, currency),
         last_payment: this.formatTime(user_consumption_statistics.lasted_pay_time),
-        created_time: this.formatTime(user_consumption_statistics.created_time)
+        created_time: this.formatTime(item.created_time)
       }
     },
     /**
@@ -213,6 +217,10 @@ export default {
         if (parseInt(res.data.code) === 100000) {
           vm.order_list = vm.formatOrderList(res.data.data);
           vm.order_args.total = res.data.totalCount;
+        } else {
+          if (res && res.data && res.data.message) {
+            vm.$message.warning(res.data.message)
+          }
         }
       }).catch(err => {
         vm.order_args.table_loading = false;
@@ -226,7 +234,7 @@ export default {
       let args = {
         'page': this.order_args.page,
         'page_size': this.order_args.page_size,
-        'condition': {'customer_id': this.$route.params.id},
+        'condition': {'customer_id': this.$route.params.id, 'plan_type':"recurring"},
         'order':{'created_time': 'desc'}
       };
       this.subscription_args.table_loading = true;
@@ -239,9 +247,12 @@ export default {
           return;
         }
         if (parseInt(res.data.code) === 100000) {
-          console.log(SUBSCRIPTION_STATUS_OPTIONS);
           vm.subscription_list = vm.formatSubscriptionList(res.data.data);
           vm.subscription_args.total = res.data.totalCount;
+        } else {
+          if (res && res.data && res.data.message) {
+            vm.$message.warning(res.data.message)
+          }
         }
       }).catch(err => {
         console.log(err);
@@ -324,7 +335,7 @@ export default {
       if (time) {
         return timestampToDateString(time, 'yyyy-MM-dd HH:II:SS');
       }
-      return "";
+      return "-";
     },
     handleOrderSizeChange() {
       this.getOrderListData();

@@ -20,8 +20,23 @@ import extensionPayManage from "../page/extension/extension-pay-manage.vue";
 import extensionPayStatus from "../page/extension/extension-pay-status.vue";
 import userLayout from "../page/website-pages/user-layout.vue";
 import userDetail from "../page/website-pages/user-detail.vue";
+
+import guide from "../page/website-pages/guide.vue";
+import extensionValidateEmail from "../page/extension/extension-validate-email.vue";
 Vue.use(Router);
 const routes = [
+  {
+    path: '/vendors',
+    redirect: '/',
+  },
+  {
+    path: '/sandbox-vendors',
+    redirect: '/',
+  },
+  {
+    path: '/',
+    redirect: '/dashboard',
+  },
   {
     path: '/',
     component: mainMenu,
@@ -33,10 +48,16 @@ const routes = [
         meta: { breadcrumbLabel: 'Dashboard' }
       },
       {
-        path: 'pay-all-order',
+        path: 'guide',
+        component: guide,
+        name: 'guide',
+        meta: { breadcrumbLabel: 'Guide' }
+      },
+      {
+        path: 'orders',
         component: payAllOrderLayout,
-        name: 'pay-all-order',
-        meta: { breadcrumbLabel: 'Pay All Order' },
+        name: 'orders',
+        meta: { breadcrumbLabel: 'Orders' },
         children: [
           {
             path: '/',
@@ -45,16 +66,16 @@ const routes = [
           {
             path: 'detail/:id',
             component: OrderDetail,
-            name: 'pay-all-order-detail',
+            name: 'orders-detail',
             meta: { breadcrumbLabel: 'Order Detail' }
           },
         ]
       },
       {
-        path: 'pay-subscription',
+        path: 'subscriptions',
         component: paySubscriptionLayout,
-        name: 'pay-subscription',
-        meta: { breadcrumbLabel: 'Pay Subscription' },
+        name: 'subscriptions',
+        meta: { breadcrumbLabel: 'Subscriptions' },
         children: [
           {
             path: '/',
@@ -62,17 +83,17 @@ const routes = [
           },
           {
             path: 'detail/:id',
-            name: 'pay-subscription-detail',
+            name: 'subscriptions-detail',
             component: subscriptionDetail,
             meta: { breadcrumbLabel: 'Subscription Detail' }
           },
         ]
       },
       {
-        path: 'user-list',
+        path: 'customers',
         component: userLayout,
-        name: 'user-list',
-        meta: { breadcrumbLabel: 'User List' },
+        name: 'customers',
+        meta: { breadcrumbLabel: 'Customers' },
         children: [
           {
             path: '/',
@@ -80,23 +101,23 @@ const routes = [
           },
           {
             path: 'detail/:id',
-            name: 'user-detail',
+            name: 'customer-detail',
             component: userDetail,
-            meta: { breadcrumbLabel: 'User Detail' }
+            meta: { breadcrumbLabel: 'Customer Detail' }
           },
         ]
       },
       {
-        path: 'plugin-list',
+        path: 'extensions',
         component: pluginList,
-        name: 'plugin-list',
-        meta: { breadcrumbLabel: 'Plugin List' }
+        name: 'extensions',
+        meta: { breadcrumbLabel: 'Extensions' }
       },
       {
-        path: 'product-list',
+        path: 'plans',
         component: productList,
-        name: 'product-list',
-        meta: { breadcrumbLabel: 'Product List' }
+        name: 'plans',
+        meta: { breadcrumbLabel: 'Plans' }
       },
       {
         path: 'balance-settings',
@@ -110,25 +131,21 @@ const routes = [
         name: 'event-callback-settings',
         meta: { breadcrumbLabel: 'Event Callback Settings' }
       },
-      {
-        path: 'payment-channel-settings',
-        component: paymentChannelSettings,
-        name: 'payment-channel-settings',
-        meta: { breadcrumbLabel: 'Payment Channel Settings' }
-      }
+      // {
+      //   path: 'payment-channel-settings',
+      //   component: paymentChannelSettings,
+      //   name: 'payment-channel-settings',
+      //   meta: { breadcrumbLabel: 'Payment Channel Settings' }
+      // }
     ]
-  },
-  {
-    path: '/vendors',
-    redirect: '/',
-  },
-  {
-    path: '/sandbox-vendors',
-    redirect: '/',
   },
   {
     path: '/extension/login',
     component: extensionLogin
+  },
+  {
+    path: '/extension/email-validate',
+    component: extensionValidateEmail
   },
   {
     path: '/extension/pay-manage',

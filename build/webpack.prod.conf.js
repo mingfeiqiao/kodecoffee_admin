@@ -57,6 +57,7 @@ const webpackConfig = merge(baseWebpackConfig, {
 		new HtmlWebpackPlugin({
 			filename: process.env.NODE_ENV === 'testing' ? 'index.html' : config.build.index,
 			template: 'index.html',
+      favicon: './src/assets/favicon.ico',
 			inject: true,
 			minify: {
 				removeComments: true,

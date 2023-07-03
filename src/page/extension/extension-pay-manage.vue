@@ -2,103 +2,110 @@
   <div style="display: flex;align-items: center;justify-content: center;width: 100%;height: 100%">
     <main>
       <div class="container">
-        <div style="padding-bottom: 24px">
-          <div class="title-28">{{$t('billing management')}}</div>
-        </div>
-        <el-tabs v-model="activeName" @tab-click="handleClick">
-          <el-tab-pane :label="$t('subscriptions info')" name="1">
-            <div style="border: 1px solid rgba(233, 233, 233, 1);border-radius: 4px;padding: 16px 24px;">
-              <div>
-                <div style="padding-bottom: 16px" class="title-20">{{$t('account info')}}</div>
-                <div>
-                  <div style="display: flex;padding-bottom: 16px" class="title-14">
-                    <span>{{$t('email:')}}</span>
-                    <span>{{user_info.email}}</span>
-                  </div>
-                </div>
-              </div>
-              <div style="border: 1px solid rgba(232, 232, 232, 1);"></div>
-              <div style="padding: 16px 0;" class="title-16">{{$t('subscriptions info')}}</div>
-              <div class="tab-container">
-                <el-table :data="subscription_list" style="width: 100%;" height="300"
-                          :empty-text="$t('no data')"
-                          :header-cell-style="{'background-color': 'var(--header-cell-background-color)','color': 'var(--header-cell-color)','font-weight': 'var(--header-cell-font-weight)'}"
-                >
-                  <el-table-column prop="plan_name" :label="$t('subscriptions')" min-width="80" max-width="120">
-                  </el-table-column>
-                  <el-table-column :label="$t('status')" align="center">
-                    <template slot-scope="scope">
+        <div style="padding: 24px 32px;height: calc(100% - 48px)">
+          <div>
+            <div style="padding-bottom: 24px">
+              <div class="title-28">{{$t('billing management')}}</div>
+            </div>
+            <div>
+              <el-tabs v-model="activeName" @tab-click="handleClick">
+                <el-tab-pane :label="$t('subscriptions info')" name="1">
+                  <div style="border: 1px solid rgba(233, 233, 233, 1);border-radius: 4px;padding: 24px;height: 380px">
+                    <div>
+                      <div style="padding-bottom: 16px" class="title-20">{{$t('account info')}}</div>
+                      <div>
+                        <div style="display: flex;padding-bottom: 16px" class="title-14">
+                          <span>{{$t('email:')}}</span>
+                          <span>{{user_info.email}}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div style="border: 1px solid rgba(232, 232, 232, 1);"></div>
+                    <div style="padding: 16px 0;" class="title-16">{{$t('subscriptions info')}}</div>
+                    <div class="tab-container">
+                      <el-table :data="subscription_list"
+                                height="250"
+                                :empty-text="$t('no data')"
+                                :header-cell-style="{'background-color': 'var(--header-cell-background-color)','color': 'var(--header-cell-color)','font-weight': 'var(--header-cell-font-weight)'}"
+                      >
+                        <el-table-column prop="plan_name" :label="$t('subscriptions')" min-width="80" max-width="120">
+                        </el-table-column>
+                        <el-table-column :label="$t('status')" align="center">
+                          <template slot-scope="scope">
                       <span :style="{'color': scope.row.color}">
                         {{ $t(scope.row.subscription_status_message) }}
                       </span>
-                    </template>
-                  </el-table-column>
-                  <el-table-column  width="120" align="center">
-                    <template slot="header" slot-scope="scope">
-                      <div style="display: flex;align-items: center;justify-content: center;">
+                          </template>
+                        </el-table-column>
+                        <el-table-column  width="120" align="center">
+                          <template slot="header" slot-scope="scope">
+                            <div style="display: flex;align-items: center;justify-content: center;">
                         <span>
                         {{$t('subscription expired time')}}
                         </span>
-                        <span>
+                              <span>
                           <el-tooltip class="item" :content="$t('subscription expired tip')" effect="light" placement="top">
                             <i class="el-icon-info" style="color: #c4c4c4"></i>
                           </el-tooltip>
                         </span>
-                      </div>
-                    </template>
-                    <template slot-scope="scope">
+                            </div>
+                          </template>
+                          <template slot-scope="scope">
                       <span>
                         <span>
                           {{scope.row.plan_end}}
                         </span>
                       </span>
-                    </template>
-                  </el-table-column>
-                  <el-table-column :label="$t('Operation')" width="80px" align="center">
-                    <template slot-scope="scope">
-                      <span :style="{'color': scope.row.operation ? scope.row.operation.color : '#101010', 'cursor': 'pointer'}"
+                          </template>
+                        </el-table-column>
+                        <el-table-column :label="$t('Operation')" width="80px" align="center">
+                          <template slot-scope="scope">
+                      <span :style="{'color': scope.row.operation ? scope.row.operation.color : '', 'cursor': 'pointer'}"
                             @click="scope.row.operation ? scope.row.operation.function(scope.row) : ''"
                       >
                          {{ scope.row.operation ? $t(scope.row.operation.message) : '' }}
                       </span>
-                    </template>
-                  </el-table-column>
-                </el-table>
-              </div>
-            </div>
-          </el-tab-pane>
-          <el-tab-pane :label="$t('orders record')" name="2">
-            <div style="border: 1px solid rgba(233, 233, 233, 1);border-radius: 4px;padding: 16px 24px;">
-              <div style="padding: 16px 0;" class="title-16">{{$t('orders record')}}</div>
-              <div class="tab-container">
-                <el-table :data="order_list" style="width: 100%"  height="400"
-                          :empty-text="$t('no data')"
-                          :header-cell-style="{'background-color': 'var(--header-cell-background-color)','color': 'var(--header-cell-color)','font-weight': 'var(--header-cell-font-weight)'}"
-                >
-                  <el-table-column prop="plan_name" :label="$t('sell plan')" max-width="160" align="center" >
-                  </el-table-column>
-                  <el-table-column prop="order_status" :label="$t('status')"  width="100"  align="center">
-                    <template slot-scope="scope">
+                          </template>
+                        </el-table-column>
+                      </el-table>
+                    </div>
+                  </div>
+                </el-tab-pane>
+                <el-tab-pane :label="$t('orders record')" name="2">
+                  <div style="border: 1px solid rgba(233, 233, 233, 1);border-radius: 4px;padding: 16px 24px;">
+                    <div style="padding: 16px 0;" class="title-16">{{$t('orders record')}}</div>
+                    <div class="tab-container">
+                      <el-table :data="order_list" style="width: 100%"  height="340"
+                                :empty-text="$t('no data')"
+                                :header-cell-style="{'background-color': 'var(--header-cell-background-color)','color': 'var(--header-cell-color)','font-weight': 'var(--header-cell-font-weight)'}"
+                      >
+                        <el-table-column prop="plan_name" :label="$t('sell plan')" max-width="160" align="center" >
+                        </el-table-column>
+                        <el-table-column prop="order_status" :label="$t('status')"  width="100"  align="center">
+                          <template slot-scope="scope">
                       <span :style="{'color': scope.row.order_status_color}">
                         {{ $t(scope.row.order_status_message)}}
                       </span>
-                    </template>
-                  </el-table-column>
-                  <el-table-column :label="$t('create time')" prop="created_time" align="center">
-                  </el-table-column>
-                  <el-table-column :label="$t('receipt')" align="center" width="100">
-                    <template slot-scope="scope">
+                          </template>
+                        </el-table-column>
+                        <el-table-column :label="$t('create time')" prop="created_time" align="center">
+                        </el-table-column>
+                        <el-table-column :label="$t('receipt')" align="center" width="100">
+                          <template slot-scope="scope">
                       <span v-if="scope.row.order_operation" :style="{'color': scope.row.order_operation.color, 'cursor':'pointer'}"
                             @click="scope.row.order_operation.function(scope.row.invoice_pdf_url)">
                         {{$t(scope.row.order_operation.message)}}
                       </span>
-                    </template>
-                  </el-table-column>
-                </el-table>
-              </div>
+                          </template>
+                        </el-table-column>
+                      </el-table>
+                    </div>
+                  </div>
+                </el-tab-pane>
+              </el-tabs>
             </div>
-          </el-tab-pane>
-        </el-tabs>
+          </div>
+        </div>
       </div>
       <div>
         <language-change></language-change>
@@ -122,7 +129,7 @@ export default {
       SUBSCRIPTION_OPERATION_MAP: {
         active: {
           message: 'cancel',
-          color: '#1980ff',
+          color: '#2F54EB',
           function: this.cancelSubscription
         }
       },
@@ -135,17 +142,17 @@ export default {
       ORDER_OPERATION_MAP:{
         succeed: {
           message: 'download',
-          color: '#1980ff',
+          color: '#2F54EB',
           function: this.openBillUrl
         },
         refunded: {
           message: 'download',
-          color: '#1980ff',
+          color: '#2F54EB',
           function: this.openBillUrl
         },
         disputed: {
           message: 'download',
-          color: '#1980ff',
+          color: '#2F54EB',
           function: this.openBillUrl
         }
       },
@@ -343,13 +350,13 @@ export default {
     getUserInfo () {
       let vm = this;
       extensionUserInfo(vm.common_headers).then(res => {
-        console.log(res);
         let resData = res.data;
         if (parseInt(resData.code) === 100000) {
           vm.user_info = resData.userinfo;
           vm.subscription_list = vm.formatSubscriptionListFromRes(resData.payinfo);
           vm.order_list = vm.formatOrderListFromRes(resData.invoice_list);
         } else {
+          vm.$message.warning('not login');
           vm.$router.push({
             path: "/extension/login",
             query: vm.$route.query
@@ -369,6 +376,8 @@ export default {
       order_list.map(item => {
         if (item.created_time) {
           item.created_time = this.timestampToDateString(item.created_time, 'yyyy-MM-dd HH:II:SS');
+        } else {
+          item.created_time = '-';
         }
         if (this.ORDER_STATUS_REF[item.pay_status]) {
           item.order_status = this.ORDER_STATUS_REF[item.pay_status];
@@ -439,7 +448,6 @@ export default {
     cancelSubscription (row) {
       let vm = this;
       extensionCancelSubscription(vm.common_headers,{transaction_id: row.transaction_id}).then(res => {
-        console.log(res);
         let resData = res.data;
         if (parseInt(resData.code) === 100000) {
           vm.$message({
@@ -448,10 +456,9 @@ export default {
           });
           vm.getUserInfo();
         } else {
-          vm.$message({
-            message: resData.message,
-            type: 'error'
-          });
+          if (res && res.data && res.data.message) {
+            vm.$message.warning(res.data.message)
+          }
         }
       }).catch(err => {
         vm.$message({
@@ -467,8 +474,6 @@ export default {
      * @param event
      */
     handleClick(tab, event) {
-      console.log(this.activeName);
-      console.log(tab, event);
     },
     /**
      * 打开账单链接
@@ -482,11 +487,11 @@ export default {
 </script>
 <style scoped lang="less">
 .container {
-  max-width: 1080px;
-  padding: 24px 32px;
-  min-width: 600px;
-  min-height: 600px;
+  width: 600px;
+  height: 600px;
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.3);
   border-radius: 4px;
+}
+.tab-container {
 }
 </style>

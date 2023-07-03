@@ -5,7 +5,7 @@
       width="100"
       trigger="hover">
       <div @click="webLoginOut" style="cursor: pointer">
-        login out
+        {{$t('Logout')}}
       </div>
       <div slot="reference" style="display: flex;align-items: center;cursor: pointer">
         <el-image v-if="userInfo.icon" style="width: 32px; height: 32px;border-radius: 50%;" :src="userInfo.icon" fit="fill"></el-image>
@@ -44,10 +44,11 @@ export default {
         "product_mark": 70,
         "userinfo": {
           // "user_id": 12345678,
-          "user_id":2870346,
-          // "user_id":2912918,
+          // "user_id":2870346,
+          // "user_id":2840846,
+          "user_id":"2843847",
           // "user_id":"2840846",
-          "email": "ligoogel1918@gmail.com",
+          "email": "ligoogel1918@npgmail.com",
           "username": "李谷歌",
           "created_at": "2023-05-29 20:27:01",
           "phone_number": ""
@@ -70,7 +71,6 @@ export default {
       res = res.data;
       // let res = this.testData();
       if (parseInt(res.code) === 100000) {
-        console.log(res);
         if (!res.userinfo) {
           this.$message.error('error: please login again');
           window.location.href = 'https://kodepay.io/user/login'
@@ -86,8 +86,14 @@ export default {
         };
         let vm = this;
         postUserInfo(vm.userInfo).then(function(res) {
-          localStorage.setItem(vm.$mode + 'userInfo', JSON.stringify(vm.userInfo));
-          vm.$store.commit('setLoginStatus', true); // 修改这一行
+          if (res.data && res.data.code && parseInt(res.data.code) === 100000) {
+            localStorage.setItem(vm.$mode + 'userInfo', JSON.stringify(vm.userInfo));
+            vm.$store.commit('setLoginStatus', true); // 修改这一行
+          } else {
+            if (res && res.data && res.data.message) {
+              vm.$message.warning(res.data.message)
+            }
+          }
         }).catch(function(err) {
           console.log(err);
         });
@@ -97,15 +103,26 @@ export default {
       }
     },
     webLoginOut() {
+      let vm = this;
       loginOut().then(res => {
-        // 清除本地存储的用户信息
-        localStorage.removeItem(this.MODECONFIG.PRODUCTION.mode + 'applicationKey');
-        localStorage.removeItem(this.MODECONFIG.PRODUCTION.mode + 'userInfo');
-        localStorage.removeItem(this.MODECONFIG.PRODUCTION.mode + 'token');
-        localStorage.removeItem(this.MODECONFIG.SANDBOX.mode + 'applicationKey');
-        localStorage.removeItem(this.MODECONFIG.SANDBOX.mode + 'userInfo');
-        localStorage.removeItem(this.MODECONFIG.SANDBOX.mode + 'token');
-        window.location.href = `${this.URL}/user/login`;
+        if (!res.data) {
+          vm.$message.error('error')
+          return;
+        }
+        if (parseInt(res.data.code) === 100000) {
+          // 清除本地存储的用户信息
+          localStorage.removeItem(this.MODECONFIG.PRODUCTION.mode + 'applicationKey');
+          localStorage.removeItem(this.MODECONFIG.PRODUCTION.mode + 'userInfo');
+          localStorage.removeItem(this.MODECONFIG.PRODUCTION.mode + 'token');
+          localStorage.removeItem(this.MODECONFIG.SANDBOX.mode + 'applicationKey');
+          localStorage.removeItem(this.MODECONFIG.SANDBOX.mode + 'userInfo');
+          localStorage.removeItem(this.MODECONFIG.SANDBOX.mode + 'token');
+          window.location.href = `${this.URL}/user/login`;
+        } else {
+          if (res && res.data && res.data.message) {
+            vm.$message.warning(res.data.message)
+          }
+        }
         // 最好把cookie 也清理了
       }).catch(err => {
         console.log(err)

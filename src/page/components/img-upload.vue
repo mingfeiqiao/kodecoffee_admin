@@ -1,9 +1,9 @@
 <template>
   <div>
     <el-upload action="" class="avatar-uploader" :show-file-list="false" :before-upload="handleBeforeUpload" :on-success="handleUploadSuccess">
-      <img v-if="imageUrl" :src="imageUrl" class="avatar" alt="">
+      <img v-if="image_url" :src="image_url" class="avatar" alt="">
       <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-      <i v-if="imageUrl" class="el-icon-error" @click.stop="delImg()"></i>
+      <i v-if="image_url" class="el-icon-error" @click.stop="delImg()"></i>
     </el-upload>
   </div>
 </template>
@@ -12,16 +12,17 @@
 export default {
   data() {
     return {
-      imageUrl: null, // 本地预览图片的地址
+      image_url: null, // 本地预览图片的地址
       file: null, // 上传的文件对象
     };
   },
   watch: {
     icon_url(newValue) {
-      this.imageUrl = newValue;
+      this.image_url = newValue;
     }
   },
   mounted() {
+    this.image_url = this.icon_url;
   },
   props: {
     iconUpSourceChange: {
@@ -37,14 +38,14 @@ export default {
     handleBeforeUpload(file) {
       // 上传前的钩子函数
       this.file = file; // 保存文件对象
-      this.imageUrl = URL.createObjectURL(file); // 使用本地预览图片
+      this.image_url = URL.createObjectURL(file); // 使用本地预览图片
       this.$emit('iconUpSourceChange', file);
       return false; // 阻止上传动作
     },
     handleUploadSuccess(response) {
     },
     delImg() {
-      this.imageUrl = '';
+      this.image_url = '';
       this.file = null;
       this.$emit('iconUpSourceChange', null);
     }

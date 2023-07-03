@@ -5,17 +5,9 @@
         <div>
           <div>
             <div style="display: flex;margin:9px 0 24px 0">
-              <div class="order-btn">
-                <div style="padding-right: 12px">
-                  {{$t('payment email') + ":"}}
-                </div>
-                <div>
-                  <el-input size="mini" :placeholder="$t('input placeholder')" v-model="condition.q"></el-input>
-                </div>
-              </div>
               <div class="order-btn" v-if="active_order_type === 'all order'">
                 <div style="padding-right: 12px">{{$t('status') + ":"}}</div><div>
-                <el-select size="mini" v-model="condition.pay_status" :placeholder="$t('select placeholder')">
+                <el-select size="small" v-model="condition.pay_status" :placeholder="$t('select placeholder')" clearable @change="search" filterable>
                   <el-option
                       v-for="item in order_status_options"
                       :key="item.value"
@@ -27,7 +19,7 @@
               </div>
               <div class="order-btn">
                 <div style="padding-right: 12px">{{$t('Type') + ':'}}</div><div>
-                <el-select size="mini" v-model="condition.plan_type" :placeholder="$t('select placeholder')">
+                <el-select size="small" v-model="condition.plan_type" :placeholder="$t('select placeholder')" clearable @change="search" filterable>
                   <el-option
                       v-for="item in order_type_options"
                       :key="item.value"
@@ -37,8 +29,12 @@
                 </el-select></div>
               </div>
               <div class="order-btn">
-                <el-button type="primary" size="mini" @click="search">{{$t('Search')}}</el-button>
-                <el-button size="mini" @click="reset">{{$t('Reset')}}</el-button>
+                <div style="padding-right: 12px">
+                  {{$t('payment email') + ":"}}
+                </div>
+                <div>
+                  <el-input size="small" :placeholder="$t('input placeholder')" v-model="condition.q" clearable  @keyup.enter.native="search" @clear="search"></el-input>
+                </div>
               </div>
             </div>
           </div>
@@ -48,9 +44,6 @@
                       :header-cell-style="{'background-color': 'var(--header-cell-background-color)','color': 'var(--header-cell-color)','font-weight': 'var(--header-cell-font-weight)'}"
             >
               <el-table-column prop="prod_name" :label="$t('Plan')"  width="auto">
-                <template slot-scope="scope">
-                  <span class="link" @click="openOrderDetail(scope.row.order_id)">{{scope.row.prod_name}}</span>
-                </template>
               </el-table-column>
               <el-table-column prop="order_amount_format" :label="$t('Amount')" width="auto" >
               </el-table-column>
@@ -72,6 +65,11 @@
               </el-table-column>
               <el-table-column prop="pay_email" width="auto" :label="$t('payment email')">
               </el-table-column>
+              <el-table-column width="100" :label="$t('Operation')" align="center">
+                <template slot-scope="scope">
+                  <span class="link" @click="openOrderDetail(scope.row.order_id)">{{ $t('detail') }}</span>
+                </template>
+              </el-table-column>
             </el-table>
             <div style="padding-top:12px;display: flex;align-items: center;justify-content: center;">
               <el-pagination
@@ -81,7 +79,7 @@
                 :current-page.sync="page"
                 :page-sizes="[10,20]"
                 :page-size="page_size"
-                layout="prev, pager, next"
+                layout="total, sizes, prev, pager, next, jumper"
                 :total="total">
               </el-pagination>
             </div>
@@ -160,48 +158,76 @@ export default {
   },
   created() {
     this.table_data = this.getTableData();
-    console.log(this.table_data);
-    // this.getTestData();
   },
   methods: {
+    resetPageParams () {
+      this.page = 1;
+      this.page_size = 10;
+      this.total = 0;
+    },
     /**
      * tab切换
      */
     handleClick() {
-      console.log(this.active_order_type)
       this.condition = {};
+      this.resetPageParams();
       if (this.active_order_type === 'disputed') {
         this.condition = {order_status: 'disputed'};
       }
       this.getTableData();
     },
     openOrderDetail (order_id) {
-      this.$router.push({path: "/pay-all-order/detail/" + order_id});
+      this.$router.push({path: "/orders/detail/" + order_id});
     },
     /**
      * 改变每页显示条数
      */
     reset() {
       this.condition = {};
+      this.resetPageParams();
       this.getTableData();
     },
     /**
      * 搜索
      */
     search() {
+      this.resetPageParams();
       this.getTableData();
+    },
+    /**
+     * 获取api参数
+     * @param condition
+     * @param orders
+     * @param page
+     * @param page_size
+     * @returns {{condition: {}, page, page_size, order: {}}}
+     */
+    getApiArgs (condition, orders, page, page_size) {
+      let condition_temp = {};
+      for (let key in condition) {
+        if (condition[key]) {
+          condition_temp[key] = condition[key];
+        }
+      }
+      let orders_temp = {};
+      for (let key in orders) {
+        if (orders[key]) {
+          orders_temp[key] = orders[key];
+        }
+      }
+      return {
+        'page': page,
+        'page_size': page_size,
+        'condition': condition_temp,
+        'order': orders_temp
+      }
     },
     /**
      * 获取表格数据
      * @returns {*}
      */
     getTableData () {
-      let args = {
-        'page': this.page,
-        'page_size': this.page_size,
-        'condition': this.condition,
-        'order':this.order
-      };
+      let args = this.getApiArgs(this.condition, this.order, this.page, this.page_size);
       let vm = this;
       vm.table_loading = true;
       this.table_data = [];
@@ -213,6 +239,10 @@ export default {
         if (parseInt(res.data.code) === 100000) {
           vm.table_data = vm.formatTableData(res.data.data);
           vm.total = res.data.totalCount;
+        } else {
+          if (res && res.data && res.data.message) {
+            vm.$message.warning(res.data.message)
+          }
         }
       }).catch(err => {
         vm.table_loading = false;
@@ -248,7 +278,9 @@ export default {
     /**
      * 分页
      */
-    handleSizeChange() {
+    handleSizeChange(size) {
+      this.resetPageParams();
+      this.page_size = size;
       this.getTableData();
     },
     formatPrice (currency, price) {
@@ -264,7 +296,8 @@ export default {
     /**
      * 分页
      */
-    handleCurrentChange() {
+    handleCurrentChange(val) {
+      this.page = val;
       this.getTableData();
     },
   },
