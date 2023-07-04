@@ -9,5 +9,6 @@ export const gotoDocCenter = function (language) {
   }
 }
 export const OpenCrispChat = function () {
-  Vue.prototype.$Crisp.chat.open();
+  Vue.prototype.$Crisp.chat.show();
+  // Vue.prototype.$Crisp.chat.open();
 }
