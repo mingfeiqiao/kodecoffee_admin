@@ -154,4 +154,6 @@ export const extensionPayRecord = () => instance.get('/extension/pay-record');
 export const extensionPayStatus = () => instance.get('/extension/pay-status');
 export const getUserInfo = () => instance.get('/user/info');
 
+export const attributeApi = data => instance.post('/api/attribute', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
+
 export default instance;

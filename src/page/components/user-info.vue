@@ -46,7 +46,7 @@ export default {
           // "user_id": 12345678,
           // "user_id":2870346,
           // "user_id":2840846,
-          "user_id":"2843847",
+          "user_id":"2857824",
           // "user_id":"2840846",
           "email": "ligoogel1918@npgmail.com",
           "username": "李谷歌",
@@ -67,9 +67,9 @@ export default {
       };
     },
     async loginOrRegisterUser() {
-      let res = await zbUserInfo();
-      res = res.data;
-      // let res = this.testData();
+      // let res = await zbUserInfo();
+      // res = res.data;
+      let res = this.testData();
       if (parseInt(res.code) === 100000) {
         if (!res.userinfo) {
           this.$message.error('error: please login again');
