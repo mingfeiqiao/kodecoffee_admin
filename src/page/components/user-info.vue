@@ -18,8 +18,8 @@
   </div>
 </template>
 <script>
-import {loginOut, postUserInfo, zbUserInfo} from "../../api/interface";
-
+import {loginOut, postUserInfo,zbUserInfo} from "../../api/interface";
+import Cookies from 'js-cookie'
 export default {
   data () {
     return {
@@ -45,8 +45,7 @@ export default {
      */
     isZbaseUserChange() {
       const last_identity = localStorage.getItem('last_identity') || "";
-      const parseCookie = this.parseCookie();
-      const current_identity = parseCookie['_identity'];
+      const current_identity = Cookies.get('_identity');
       return last_identity !== current_identity;
     },
     /**
@@ -66,26 +65,7 @@ export default {
      * @returns {boolean}
      */
     isZbaseUserLogin () {
-      const parseCookie = this.parseCookie();
-      return !!(parseCookie && parseCookie['_identity']);
-    },
-    /**
-     * 将cookie 解析成object对象
-     * @returns {{}}
-     */
-    parseCookie () {
-      return document.cookie.split(';').reduce((cookies, cookie) => {
-        const [name, value] = cookie.split('=');
-        cookies[name.trim()] = decodeURIComponent(value.trim());
-        return cookies;
-      }, {});
-    },
-    /**
-     * 删除cookie的某个键值(使某个键值失效)
-     * @param name
-     */
-    deleteCookie(name) {
-      document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;";
+      return !!Cookies.get('_identity');
     },
     testData() {
       return {
@@ -144,7 +124,7 @@ export default {
           if (res.data && res.data.code && parseInt(res.data.code) === 100000) {
             localStorage.setItem(vm.$mode + 'userInfo', JSON.stringify(vm.userInfo));
             // 登录成功之后就把当前的cookie存储下来，用于判断用户是否切换了zbase user
-            localStorage.setItem('last_identity', vm.parseCookie()['_identity']);
+            localStorage.setItem('last_identity', Cookies.get('_identity'));
             vm.$store.commit('setLoginStatus', true); // 修改这一行
           } else {
             if (res && res.data && res.data.message) {
@@ -171,7 +151,7 @@ export default {
         }
         if (parseInt(res.data.code) === 100000) {
           // 清除本地存储的用户信息
-          vm.deleteCookie('_identity');
+          Cookies.remove('_identity');
           vm.deleteLocalStorageUserInfo();
         } else {
           if (res && res.data && res.data.message) {
