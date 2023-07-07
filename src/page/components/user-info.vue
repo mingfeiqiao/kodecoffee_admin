@@ -30,7 +30,7 @@ export default {
     if (this.isZbaseUserLogin) { // 用户是否在zbase user登录
       // 确定当前环境，如果是测试环境，那么就需要确实测试环境是否有用户信息，如果没有，那么需要接口调用获取用户信息
       let lUserInfo = localStorage.getItem(this.$mode + 'userInfo')
-      if (lUserInfo) { // 本地如果已经存储了用户信息，那么就不需要再次调用接口获取用户信息
+      if (lUserInfo && !this.isZbaseUserChange()) { // 本地如果已经存储了用户信息，那么就不需要再次调用接口获取用户信息
         this.userInfo = JSON.parse(lUserInfo);
       } else {
         this.loginOrRegisterUser();
@@ -40,6 +40,18 @@ export default {
     }
   },
   methods: {
+    /**
+     * 记录下上次使用的_identity，与当前的cookie对比，用于判断用户是否切换了zbase user，如果切换了那么需要重新调用kodepay登录接口
+     */
+    isZbaseUserChange() {
+      const last_identity = localStorage.getItem('last_identity') || "";
+      const parseCookie = this.parseCookie();
+      const current_identity = parseCookie['_identity'];
+      return last_identity !== current_identity;
+    },
+    /**
+     * 清除信息
+     */
     deleteLocalStorageUserInfo () {
       localStorage.removeItem(this.MODECONFIG.PRODUCTION.mode + 'applicationKey');
       localStorage.removeItem(this.MODECONFIG.PRODUCTION.mode + 'userInfo');
@@ -131,6 +143,8 @@ export default {
         postUserInfo(vm.userInfo).then(function(res) {
           if (res.data && res.data.code && parseInt(res.data.code) === 100000) {
             localStorage.setItem(vm.$mode + 'userInfo', JSON.stringify(vm.userInfo));
+            // 登录成功之后就把当前的cookie存储下来，用于判断用户是否切换了zbase user
+            localStorage.setItem('last_identity', vm.parseCookie()['_identity']);
             vm.$store.commit('setLoginStatus', true); // 修改这一行
           } else {
             if (res && res.data && res.data.message) {
