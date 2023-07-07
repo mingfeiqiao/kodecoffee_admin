@@ -30,6 +30,7 @@
     "eslint-loader": "^4.0.2",
     "goeasy": "^2.6.6",
     "jquery": "^3.6.4",
+    "js-cookie": "^3.0.5",
     "prismjs": "^1.29.0",
     "qs": "^6.11.2",
     "recaptcha-v3": "^1.4.0",
