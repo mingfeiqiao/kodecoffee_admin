@@ -27,15 +27,54 @@ export default {
     }
   },
   created() {
-    // 确定当前环境，如果是测试环境，那么就需要确实测试环境是否有用户信息，如果没有，那么需要接口调用获取用户信息
-    let lUserInfo = localStorage.getItem(this.$mode + 'userInfo')
-    if (lUserInfo) { // 本地如果已经存储了用户信息，那么就不需要再次调用接口获取用户信息
-      this.userInfo = JSON.parse(lUserInfo);
+    if (this.isZbaseUserLogin) { // 用户是否在zbase user登录
+      // 确定当前环境，如果是测试环境，那么就需要确实测试环境是否有用户信息，如果没有，那么需要接口调用获取用户信息
+      let lUserInfo = localStorage.getItem(this.$mode + 'userInfo')
+      if (lUserInfo) { // 本地如果已经存储了用户信息，那么就不需要再次调用接口获取用户信息
+        this.userInfo = JSON.parse(lUserInfo);
+      } else {
+        this.loginOrRegisterUser();
+      }
     } else {
-      this.loginOrRegisterUser();
+      this.deleteLocalStorageUserInfo();
     }
   },
   methods: {
+    deleteLocalStorageUserInfo () {
+      localStorage.removeItem(this.MODECONFIG.PRODUCTION.mode + 'applicationKey');
+      localStorage.removeItem(this.MODECONFIG.PRODUCTION.mode + 'userInfo');
+      localStorage.removeItem(this.MODECONFIG.PRODUCTION.mode + 'token');
+      localStorage.removeItem(this.MODECONFIG.SANDBOX.mode + 'applicationKey');
+      localStorage.removeItem(this.MODECONFIG.SANDBOX.mode + 'userInfo');
+      localStorage.removeItem(this.MODECONFIG.SANDBOX.mode + 'token');
+      window.location.href = `${this.URL}/user/login`;
+    },
+    /**
+     * 用户是否在zbase登录
+     * @returns {boolean}
+     */
+    isZbaseUserLogin () {
+      const parseCookie = this.parseCookie();
+      return !!(parseCookie && parseCookie['_identity']);
+    },
+    /**
+     * 将cookie 解析成object对象
+     * @returns {{}}
+     */
+    parseCookie () {
+      return document.cookie.split(';').reduce((cookies, cookie) => {
+        const [name, value] = cookie.split('=');
+        cookies[name.trim()] = decodeURIComponent(value.trim());
+        return cookies;
+      }, {});
+    },
+    /**
+     * 删除cookie的某个键值(使某个键值失效)
+     * @param name
+     */
+    deleteCookie(name) {
+      document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;";
+    },
     testData() {
       return {
         "code": 100000,
@@ -66,6 +105,10 @@ export default {
         }
       };
     },
+    /**
+     * 退出登录
+     * @returns {Promise<void>}
+     */
     async loginOrRegisterUser() {
       let res = await zbUserInfo();
       res = res.data;
@@ -102,6 +145,9 @@ export default {
         window.location.href = 'https://kodepay.io/user/login'
       }
     },
+    /**
+     * 登出
+     */
     webLoginOut() {
       let vm = this;
       loginOut().then(res => {
@@ -111,19 +157,13 @@ export default {
         }
         if (parseInt(res.data.code) === 100000) {
           // 清除本地存储的用户信息
-          localStorage.removeItem(this.MODECONFIG.PRODUCTION.mode + 'applicationKey');
-          localStorage.removeItem(this.MODECONFIG.PRODUCTION.mode + 'userInfo');
-          localStorage.removeItem(this.MODECONFIG.PRODUCTION.mode + 'token');
-          localStorage.removeItem(this.MODECONFIG.SANDBOX.mode + 'applicationKey');
-          localStorage.removeItem(this.MODECONFIG.SANDBOX.mode + 'userInfo');
-          localStorage.removeItem(this.MODECONFIG.SANDBOX.mode + 'token');
-          window.location.href = `${this.URL}/user/login`;
+          vm.deleteCookie('_identity');
+          vm.deleteLocalStorageUserInfo();
         } else {
           if (res && res.data && res.data.message) {
             vm.$message.warning(res.data.message)
           }
         }
-        // 最好把cookie 也清理了
       }).catch(err => {
         console.log(err)
       })
@@ -131,6 +171,3 @@ export default {
   }
 }
 </script>
-<style scoped lang="less">
-
-</style>
