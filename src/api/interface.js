@@ -155,5 +155,7 @@ export const extensionPayStatus = () => instance.get('/extension/pay-status');
 export const getUserInfo = () => instance.get('/user/info');
 
 export const attributeApi = data => instance.post('/api/attribute', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
+export const addExtensionShareApi = data => instance.post('/extension-share/add', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
+export const extensionShareListApi = data => instance.post('/extension-share/list', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 
 export default instance;
