@@ -264,9 +264,11 @@
     "Payout amount refers to the balance that can be withdrawn after 14 days from the completion of the order": "Payout amount refers to the balance that can be withdrawn after 14 days from the completion of the order",
     "5s to login": "Redirecting to the login page in 5 seconds.",
     "Sandbox": "Sandbox",
-    "Production": "Production"
+    "Production": "Production",
+    "Login failed. Please try logging in again": "Login failed. Please try logging in again"
   },
   "zh-CN": {
+    "Login failed. Please try logging in again": "登录失败，请重新登录",
     "Sandbox": "沙盒模式",
     "Production": "正式模式",
     "5s to login": "5s后自动跳转到登录页面",
