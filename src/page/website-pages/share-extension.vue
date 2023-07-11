@@ -22,6 +22,7 @@
         </div>
       </div>
       <div style="display: flex;align-items: center;flex-direction: column">
+
         <el-table v-loading="table_loading" :data="table_data" style="width: 100%"
                   :empty-text="$t('no data')"
                   @sort-change="handleSortChange"
@@ -30,17 +31,17 @@
         >
           <el-table-column prop="name" :label="$t('name')"  width="auto">
           </el-table-column>
-          <el-table-column prop="click_count" :label="$t('点击数')" width="auto" sortable="customer">
+          <el-table-column prop="click_count" :label="$t('Click Count')" width="auto" sortable="customer">
           </el-table-column>
-          <el-table-column prop="install_count" width="auto" :label="$t('安装数')" sortable="customer">
+          <el-table-column prop="install_count" width="auto" :label="$t('Install Count')" sortable="customer">
           </el-table-column>
-          <el-table-column width="auto" prop="customer_count" :label="$t('客户数量')" sortable="customer">
+          <el-table-column width="auto" prop="customer_count" :label="$t('Customer Count')" sortable="customer">
           </el-table-column>
           <el-table-column prop="created_time" width="auto" :label="$t('create time')">
           </el-table-column>
           <el-table-column width="100" :label="$t('Operation')" align="center">
             <template slot-scope="scope">
-              <span class="link" @click="openShareDetail">{{ $t('detail') }}</span>
+              <span class="link" @click="openShareDetail(scope.row)">{{ $t('detail') }}</span>
             </template>
           </el-table-column>
         </el-table>
@@ -91,7 +92,7 @@
               </el-form-item>
               <el-form-item :label="$t('Share Link')" prop="share_code">
               <span>
-                <span>{{`https://kodepay.io/${$mode}/#/ext-share/` + (share_data.client_key ? `${share_data.client_key}/` : "")}}</span>
+                <span>{{`https://share.kodepay.io/${$mode}/` + (share_data.client_key ? `${share_data.client_key}/` : "")}}</span>
                  <span>
                    <el-input v-model="share_data.share_code" :placeholder="$t('Note Content')" style="max-width: 200px" size="small"></el-input>
                  </span>
@@ -112,34 +113,37 @@
     <div class="share-detail-dialog" v-if="show_share_detail_dialog">
       <el-dialog
         :visible.sync="show_share_detail_dialog"
-        :show-close="false"
         width="50%"
       >
+        <div style="padding: 16px 24px;border-bottom: 1px solid rgba(232, 232, 232, 1)">
+          <div class="title-16">{{$t('分享者详情')}}</div>
+        </div>
         <div style="padding: 16px 24px">
-          <el-descriptions>
-            <el-descriptions-item :label="$t('client_name')"  :span="12">{{choose_share_data.client_name}}</el-descriptions-item>
-          </el-descriptions>
-          <el-descriptions>
-            <el-descriptions-item label="name" :span="12">{{choose_share_data.name}}</el-descriptions-item>
-          </el-descriptions>
-          <el-descriptions>
-            <el-descriptions-item label="desc" :span="12">{{choose_share_data.desc}}</el-descriptions-item>
-          </el-descriptions>
-          <el-descriptions>
-            <el-descriptions-item label="插件url" :span="12">{{choose_share_data.redirect_url}}</el-descriptions-item>
-          </el-descriptions>
-          <el-descriptions>
-            <el-descriptions-item label="分享链接" :span="12">
-              <div>
-                <span> {{ `https://kodepay.io/${$mode}/#/${choose_share_data.client_key}/${choose_share_data.share_code}` }}</span>
-                <span><svg width="16" height="16" @click="copy(data.client_key)" style="cursor: pointer;padding-left: 8px" id="copy_text">
+          <div style="padding-bottom: 56px">
+            <el-descriptions>
+              <el-descriptions-item :label="$t('Belongs to Extension')"  :span="12">{{choose_share_data.client_name}}</el-descriptions-item>
+            </el-descriptions>
+            <el-descriptions>
+              <el-descriptions-item :label="$t('name')" :span="12">{{choose_share_data.name}}</el-descriptions-item>
+            </el-descriptions>
+            <el-descriptions>
+              <el-descriptions-item :label="$t('Note')" :span="12">{{choose_share_data.desc}}</el-descriptions-item>
+            </el-descriptions>
+            <el-descriptions>
+              <el-descriptions-item :label="$t('Extension URL')" :span="12">{{choose_share_data.redirect_url}}</el-descriptions-item>
+            </el-descriptions>
+            <el-descriptions>
+              <el-descriptions-item :label="$t('Share Link')" :span="12">
+                <div style="display: flex;align-items: center;">
+                  <span> {{ `https://share.kodepay.io/${api_prefix}/${choose_share_data.client_key}/${choose_share_data.share_code}` }}</span>
+                  <span style="display: flex;align-items: center;justify-content: center"><svg width="16" height="16" @click="copy(`https://share.kodepay.io/${api_prefix}/${choose_share_data.client_key}/${choose_share_data.share_code}`)" style="cursor: pointer;padding-left: 8px" id="copy_text">
                   <use xlink:href="#copy">
                   </use>
                 </svg></span>
-              </div>
-
-            </el-descriptions-item>
-          </el-descriptions>
+                </div>
+              </el-descriptions-item>
+            </el-descriptions>
+          </div>
         </div>
       </el-dialog>
     </div>
@@ -149,6 +153,7 @@
 <script>
 import {pluginList, addExtensionShareApi, extensionShareListApi} from "../../api/interface";
 import Clipboard from "clipboard";
+import {timestampToDateString} from "../../utils/dateUtils";
 export default {
   data() {
     return {
@@ -156,6 +161,7 @@ export default {
         "descending": "desc",
         "ascending": "asc"
       },
+      api_prefix:"",
       page: 1,
       page_size: 10,
       total: 0,
@@ -180,8 +186,9 @@ export default {
     };
   },
   created() {
+    this.api_prefix = this.$mode === this.MODECONFIG.SANDBOX.mode ? 'sandbox': 'production';
     this.getExtensionList();
-    this.table_data = this.getTableData();
+    this.getTableData();
   },
   computed:{
     rules () {
@@ -437,20 +444,37 @@ export default {
      * @returns {*}
      */
     getTableData () {
-      this.table_data = [];
-      let args = this.getApiArgs(this.condition, this.formatSortParams(this.sort), this.page, this.page_size);
-      // this.table_loading = true;
-      let vm = this;
+      // this.table_data = [];
+      // let args = this.getApiArgs(this.condition, this.formatSortParams(this.sort), this.page, this.page_size);
+      // // this.table_loading = true;
+      // let vm = this;
       // extensionShareListApi(args).then(res => {
       //   if (res.data.code === 100000) {
-      //     vm.table_data = this.formatTableData(res.data.data.list);
-      //     vm.total = res.data.data.total;
+      //     vm.table_data = this.formatTableData(res.data.data);
+      //     vm.total = res.data.total;
       //   }
       //   vm.table_loading = false;
       // }).catch(err => {
       //   vm.table_loading = false;
       //   console.log(err);
       // });
+      this.table_data = [
+        {
+          name:"xxx",
+          desc:"xxxx",
+          client_name:"xxxx",// 插件的名称
+          client_key:"xxxx-xxxx-xxxx-xxx",// client_key
+          redirect_url:"https://chrome/xxxxx?lang=ZH-CN",
+          click_count:10,
+          share_code:"xxxx",
+          install_count:10,
+          customer_count:10,
+          status:1,
+          created_time:13232234234
+        }
+      ];
+      console.log(this.table_data);
+      this.total = 1;
     },
     //排序方法
     handleHeaderCellClass({column}){
@@ -466,7 +490,21 @@ export default {
      * @returns {*}
      */
     formatTableData (data) {
+      data.map(item => {
+        item.created_time = this.formatCreatedTime(item.created_time);
+      })
       return data;
+    },
+    /**
+     * 格式化创建时间
+     * @param created_time
+     * @returns {string}
+     */
+    formatCreatedTime (created_time) {
+      if (created_time) {
+        return timestampToDateString(created_time, 'yyyy-MM-dd HH:II:SS');
+      }
+      return "-";
     },
     /**
      * 分页
