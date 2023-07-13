@@ -277,9 +277,11 @@
     "Belongs to Extension": "Belongs to Extension",
     "Click Count": "Click Count",
     "Install Count": "Install Count",
-    "Customer Count": "Customer Count"
+    "Customer Count": "Customer Count",
+    "Login failed. Please try logging in again": "Login failed. Please try logging in again"
   },
   "zh-CN": {
+    "Login failed. Please try logging in again": "登录失败，请重新登录",
     "Customer Count": "客户数",
     "Install Count": "安装次数",
     "Click Count": "点击次数",

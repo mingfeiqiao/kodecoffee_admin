@@ -41,11 +41,11 @@ export default {
           install_time: share_ext_ids[extension_id].install_time || ""
         }
       };
-      // attributeApi(args).then(res => {
-      //   if (target) {
-      //     window.location.href = target;
-      //   }
-      // });
+      attributeApi(args).then(res => {
+        if (target) {
+          window.location.href = target;
+        }
+      });
     }
   }
 }

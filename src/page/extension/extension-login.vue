@@ -168,9 +168,9 @@ export default {
               click_time: share_ext_ids[extension_id].click_time || "",
               install_time: share_ext_ids[extension_id].install_time || "",
             }
-            // attributeApi(args).then(res => {
-            //   console.log('report success');
-            // })
+            attributeApi(args).then(res => {
+              console.log('report success');
+            })
           }
         }
       }

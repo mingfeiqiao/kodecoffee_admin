@@ -15,7 +15,7 @@
           </div>
           <div class="order-btn">
             <div>
-              <el-input size="small" :placeholder="$t('name')" v-model="condition.q" clearable  @keyup.enter.native="search" @clear="search"></el-input>
+              <el-input size="small" :placeholder="$t('name')" v-model="condition.name" clearable  @keyup.enter.native="search" @clear="search"></el-input>
             </div>
           </div>
           <el-button type="primary" size="small" @click="createShare">{{$t('create plan')}}</el-button>
@@ -85,7 +85,7 @@
                 <el-input v-model="share_data.name" :placeholder="$t('Please enter a name for self-identification')" style="max-width:300px" size="small"></el-input>
               </el-form-item>
               <el-form-item :label="$t('description')" prop="description">
-                <el-input v-model="share_data.description" :placeholder="$t('Note Content')" style="max-width:300px" size="small"  type="textarea"></el-input>
+                <el-input v-model="share_data.desc" :placeholder="$t('Note Content')" style="max-width:300px" size="small"  type="textarea"></el-input>
               </el-form-item>
               <el-form-item :label="$t('Extension URL')" prop="redirect_url">
                 <el-input v-model="share_data.redirect_url" :placeholder="$t('Marketplace URL for Publishing the Extension on Webstore')" style="max-width:300px" size="small"></el-input>
@@ -176,7 +176,7 @@ export default {
       share_data:{
         client_key:"",
         name:"",
-        description:"",
+        desc:"",
         redirect_url:"",
         share_code:"",
       },
@@ -200,7 +200,7 @@ export default {
           { required: true, message: this.$t('1-100 characters required'), trigger: 'blur'},
           { validator: this.validateTrimmedField, trigger: 'blur'}
         ],
-        description: [
+        desc: [
           { required: true, message: this.$t('1-100 characters required'), trigger: 'blur'},
           { validator: this.validateTrimmedField, trigger: 'blur'}
         ],
@@ -226,6 +226,9 @@ export default {
       sort.forEach(item => {
         sort_params[item.prop] = this.ORDER_TYPE_REF[item.order];
       })
+      if (Object.keys(sort_params).length > 1){
+        delete sort_params['created_time'];
+      }
       return sort_params;
     },
     /**
@@ -299,27 +302,27 @@ export default {
       this.$refs['share_form'].validate((valid) => {
         if (valid) {
           let vm = this;
-          console.log(this.share_data);
-          // addExtensionShareApi(this.share_data).then(res => {
-          //   if (res.data && parseInt(res.data.code) === 100000) {
-          //     vm.$message({
-          //       message: this.$t('add success'),
-          //       type: 'success'
-          //     })
-          //     vm.share_dialog_visible = false;
-          //     vm.share_data = {};
-          //     vm.getExtensionList();
-          //   } else {
-          //     if (res && res.data && res.data.message) {
-          //       vm.$message.warning(res.data.message);
-          //     }
-          //   }
-          // }).catch(err => {
-          //   vm.$message({
-          //     message: err,
-          //     type: 'error'
-          //   })
-          // })
+          addExtensionShareApi(this.share_data).then(res => {
+            if (res.data && parseInt(res.data.code) === 100000) {
+              vm.$message({
+                message: this.$t('add success'),
+                type: 'success'
+              })
+              vm.share_dialog_visible = false;
+              vm.share_data = {};
+              vm.getExtensionList();
+              vm.getTableData();
+            } else {
+              if (res && res.data && res.data.message) {
+                vm.$message.warning(res.data.message);
+              }
+            }
+          }).catch(err => {
+            vm.$message({
+              message: err,
+              type: 'error'
+            })
+          })
         } else {
           return false;
         }
@@ -444,20 +447,20 @@ export default {
      * @returns {*}
      */
     getTableData () {
-      // this.table_data = [];
-      // let args = this.getApiArgs(this.condition, this.formatSortParams(this.sort), this.page, this.page_size);
-      // // this.table_loading = true;
-      // let vm = this;
-      // extensionShareListApi(args).then(res => {
-      //   if (res.data.code === 100000) {
-      //     vm.table_data = this.formatTableData(res.data.data);
-      //     vm.total = res.data.total;
-      //   }
-      //   vm.table_loading = false;
-      // }).catch(err => {
-      //   vm.table_loading = false;
-      //   console.log(err);
-      // });
+      this.table_data = [];
+      let args = this.getApiArgs(this.condition, this.formatSortParams(this.sort), this.page, this.page_size);
+      this.table_loading = true;
+      let vm = this;
+      extensionShareListApi(args).then(res => {
+        if (res.data.code === 100000) {
+          vm.table_data = this.formatTableData(res.data.data);
+          vm.total = res.data.total;
+        }
+        vm.table_loading = false;
+      }).catch(err => {
+        vm.table_loading = false;
+        console.log(err);
+      });
       this.table_data = [
         {
           name:"xxx",

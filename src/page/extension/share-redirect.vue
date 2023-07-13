@@ -25,7 +25,7 @@ export default {
         && share_ext_ids[extension_id].u_id
         && share_ext_ids[extension_id].click_time
       ) { // localstorage中已经记录了当前插件的完整的信息，此时什么都不需要做
-        console.log('all ready')
+        console.log('all ready have')
       } else { // localstorage中没有记录当前插件的完整信息，此时需要记录
         console.log(share_id)
         share_ext_ids[extension_id] = {};
@@ -44,9 +44,9 @@ export default {
           click_time: share_ext_ids[extension_id].click_time
         }
       };
-      // attributeApi(args).then(res => {
-      //   window.location.href = redirect_url;
-      // })
+      attributeApi(args).then(res => {
+        window.location.href = redirect_url;
+      })
     }
   },
   methods: {

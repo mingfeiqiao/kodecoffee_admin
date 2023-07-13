@@ -161,7 +161,7 @@ const routes = [
     component: ShareRedirect
   },
   {
-    path:'/extension/welcome',
+    path:'/ext-welcome',
     component: extensionWelcome
   }
 ];
