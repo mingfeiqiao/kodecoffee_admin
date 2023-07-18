@@ -30,7 +30,7 @@
       "icon": "plugin-list-icon",
       "children": [
         {
-          "title": "Extensions",
+          "title": "Extension List",
           "url": "/extensions"
         },
         {

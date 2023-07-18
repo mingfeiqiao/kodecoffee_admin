@@ -158,7 +158,7 @@ export default {
         let share_ext_ids = localStorage.getItem(key);
         if (share_ext_ids) { // 只有存在share_ext_ids才回去归因，否则没必要归因
           share_ext_ids = JSON.parse(share_ext_ids);
-          if (share_ext_ids[extension_id]) { // 代表存在该插件的归因信息，不存在的不进行上报
+          if (share_ext_ids[extension_id] && share_ext_ids[extension_id].share_id) { // 代表存在该插件的归因信息，不存在的不进行上报
             let args = {
               step: "login",
               api_key: api_key,

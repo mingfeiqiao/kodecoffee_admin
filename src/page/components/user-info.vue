@@ -36,6 +36,8 @@ export default {
      */
     loginOrRegisterUser () {
       let vm = this;
+      // zbUserInfo().then(function(res) { // 先请求zbase的用户信息
+      // axios.get('http://127.0.0.1:3000/user/v2/userinfo')
       zbUserInfo().then(function(res) { // 先请求zbase的用户信息
         if (res.data && res.data.code && parseInt(res.data.code) === 100000) {
           if (!res.data.userinfo) { // 如果没有用户信息，就跳转到登录页面(这里可能是zbase出了问题)
@@ -56,6 +58,8 @@ export default {
             last_user_info = JSON.parse(last_user_info);
             if (last_user_info.zbase_user_id !== vm.k_user_info.zbase_user_id) { // 如果上次登录的用户和这次登录的用户不一致，那么需要重新登录
               vm.userLogin(vm.k_user_info);
+            } else {
+              vm.$store.commit('setLoginStatus', true); // 修改这一行
             }
             // 如果上次登录的用户和这次登录的用户一致，那么就不需要重新登录
           } else { // 如果没有上次登录的信息，那么基本可以认为用户第一次登录，需要注册

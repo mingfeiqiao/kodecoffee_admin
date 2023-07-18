@@ -67,7 +67,7 @@
       >
         <div style="padding: 16px 24px">
           <div class="title-16">
-            添加分享链接
+            {{$t('Add Share Link')}}
           </div>
           <div style="padding-top: 24px">
             <el-form :model="share_data" ref="share_form" label-suffix=":" :rules="rules" label-width="125px">

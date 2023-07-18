@@ -34,19 +34,21 @@ export default {
         share_ext_ids[extension_id].click_time = Math.floor(Date.now() / 1000);
       }
       localStorage.setItem(key, JSON.stringify(share_ext_ids));
-      let args = {
-        step:"click",
-        api_key:"",
-        attribution: {
-          extension_id: extension_id,
-          u_id: share_ext_ids[extension_id].u_id,
-          share_id: share_ext_ids[extension_id].share_id,
-          click_time: share_ext_ids[extension_id].click_time
-        }
-      };
-      attributeApi(args).then(res => {
-        window.location.href = redirect_url;
-      })
+      if (share_ext_ids[extension_id] && share_ext_ids[extension_id].share_id) {
+        let args = {
+          step:"click",
+          api_key:"",
+          attribution: {
+            extension_id: extension_id,
+            u_id: share_ext_ids[extension_id].u_id,
+            share_id: share_ext_ids[extension_id].share_id,
+            click_time: share_ext_ids[extension_id].click_time
+          }
+        };
+        attributeApi(args).then(res => {
+          window.location.href = redirect_url;
+        });
+      }
     }
   },
   methods: {

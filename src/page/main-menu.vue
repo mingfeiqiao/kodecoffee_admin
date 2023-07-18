@@ -127,7 +127,6 @@ export default {
     },
   },
   created() {
-    this.isLoginIn =  !!localStorage.getItem(this.$mode + 'userInfo');
     this.initOptions();
     this.currentMenu = this.$route.path; // 初始化当前路由路径
   },
