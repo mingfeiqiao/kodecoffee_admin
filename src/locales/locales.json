@@ -278,9 +278,11 @@
     "Click Count": "Click Count",
     "Install Count": "Install Count",
     "Customer Count": "Customer Count",
-    "Login failed. Please try logging in again": "Login failed. Please try logging in again"
+    "Login failed. Please try logging in again": "Login failed. Please try logging in again",
+    "Extensions Share": "Extension Share"
   },
   "zh-CN": {
+    "Extensions Share": "插件裂变",
     "Login failed. Please try logging in again": "登录失败，请重新登录",
     "Customer Count": "客户数",
     "Install Count": "安装次数",

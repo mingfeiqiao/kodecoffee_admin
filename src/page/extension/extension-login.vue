@@ -162,11 +162,14 @@ export default {
             let args = {
               step: "login",
               api_key: api_key,
-              extension_id: extension_id,
-              u_id : share_ext_ids[extension_id].u_id || "",
-              share_id: share_ext_ids[extension_id].share_id || "",
-              click_time: share_ext_ids[extension_id].click_time || "",
-              install_time: share_ext_ids[extension_id].install_time || "",
+              attribution: {
+                email: this.input,
+                extension_id: extension_id,
+                u_id : share_ext_ids[extension_id].u_id || "",
+                share_id: share_ext_ids[extension_id].share_id || "",
+                click_time: share_ext_ids[extension_id].click_time || "",
+                install_time: share_ext_ids[extension_id].install_time || "",
+              }
             }
             attributeApi(args).then(res => {
               console.log('report success');

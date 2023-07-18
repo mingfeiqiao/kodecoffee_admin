@@ -389,8 +389,10 @@ export default {
         is_trial: this.plan_trial_obj.is_trial ? 1 : 0,
         trial_days: this.plan_trial_obj.trial_days,
       }
+      if (!args.desc) {
+        delete args.desc;
+      }
       // 确定用户设置了价格
-
       if (this.main_price_obj && this.main_price_obj.price) {
         let currency_options = [];
         // 将multiple_selection中的selected去掉，并且将multiple_selection中的currency和amount 与 main_price_obj中的currency和price进行对比，如果相同则去除
