@@ -28,6 +28,16 @@
     {
       "title": "Extensions",
       "icon": "plugin-list-icon",
+      "children": [
+        {
+          "title": "Extensions",
+          "url": "/extensions"
+        },
+        {
+          "title": "Extensions Share",
+          "url": "/share-extensions"
+        }
+      ],
       "url": "/extensions"
     },
     {

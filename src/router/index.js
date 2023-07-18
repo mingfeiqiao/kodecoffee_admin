@@ -23,6 +23,9 @@ import userDetail from "../page/website-pages/user-detail.vue";
 
 import guide from "../page/website-pages/guide.vue";
 import extensionValidateEmail from "../page/extension/extension-validate-email.vue";
+import ShareRedirect from "../page/extension/share-redirect.vue";
+import extensionWelcome from "../page/extension/extension-welcome.vue";
+import shareExtension from "../page/website-pages/share-extension.vue";
 Vue.use(Router);
 const routes = [
   {
@@ -106,6 +109,12 @@ const routes = [
         meta: { breadcrumbLabel: 'Extensions' }
       },
       {
+        path:'share-extensions',
+        component: shareExtension,
+        name: 'share-extensions',
+        meta: { breadcrumbLabel: 'Share Extensions' }
+      },
+      {
         path: 'plans',
         component: productList,
         name: 'plans',
@@ -146,6 +155,14 @@ const routes = [
   {
     path: '/extension/pay-status',
     component: extensionPayStatus
+  },
+  {
+    path:'/share-redirect',
+    component: ShareRedirect
+  },
+  {
+    path:'/ext-welcome',
+    component: extensionWelcome
   }
 ];
 
