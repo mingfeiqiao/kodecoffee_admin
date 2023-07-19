@@ -30,12 +30,12 @@
       "icon": "plugin-list-icon",
       "children": [
         {
-          "title": "Extensions",
+          "title": "Extension List",
           "url": "/extensions"
         },
         {
-          "title": "Extensions Share",
-          "url": "/share-extensions"
+          "title": "Extension Virality",
+          "url": "/extension-virality"
         }
       ],
       "url": "/extensions"

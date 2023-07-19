@@ -109,10 +109,10 @@ const routes = [
         meta: { breadcrumbLabel: 'Extensions' }
       },
       {
-        path:'share-extensions',
+        path:'extension-virality',
         component: shareExtension,
-        name: 'share-extensions',
-        meta: { breadcrumbLabel: 'Share Extensions' }
+        name: 'extension-virality',
+        meta: { breadcrumbLabel: 'Extension Virality' }
       },
       {
         path: 'plans',
