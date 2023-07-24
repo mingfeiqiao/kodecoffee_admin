@@ -146,12 +146,18 @@ export const extensionLogin = (headers, data) => {
   data = JSON.stringify(data);
   return instance.post('/api/extension/login', data, {headers ,method: 'POST'});
 }
+export const extensionGetSupportPaymentsApi = (headers, data) => {
+  headers['Content-Type'] = 'application/json';
+  data = JSON.stringify(data);
+  return instance.post('/api/extension/get-support-payments', data, {headers ,method: 'POST'});
+}
 
-export const extensionLoginIn = () => instance.get('/extension/login');
-export const extensionUpdateEmail = data => instance.post('/extension/update-email', data);
-export const extensionPayRecord = () => instance.get('/extension/pay-record');
+export const extensionGetPaymentLinkApi = (headers, data) => {
+  headers['Content-Type'] = 'application/json';
+  data = JSON.stringify(data);
+  return instance.post('/api/extension/get-payment-link', data, {headers ,method: 'POST'});
+}
 // 取消订阅接口
-export const extensionPayStatus = () => instance.get('/extension/pay-status');
 export const getUserInfo = () => instance.get('/user/info');
 
 export const attributeApi = data => instance.post('/api/attribute', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});

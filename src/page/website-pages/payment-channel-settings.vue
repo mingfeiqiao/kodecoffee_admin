@@ -8,13 +8,13 @@
         <li v-for="(setting, index) in payChannelSettings" :key="index">
           <div style="display: flex;align-items: center;">
               <div>
-               <svg width="80" height="80">
+               <svg width="43" height="43">
                   <use :xlink:href="'#'+setting.icon"></use>
                </svg>
               </div>
               <div style="padding-left: 24px">
                 <div>{{setting.label}}</div>
-                <div>{{"支付宝支付"}}</div>
+                <div style="color: #929292">{{setting.desc}}</div>
               </div>
             </div>
           <div style="padding-right: 20px">
@@ -32,33 +32,28 @@ export default {
     return {
       payChannelSettings:[
         {
-          name: 'cardPay',
-          label: '银行卡支付',
-          require: true,
-          isDisable: true,
-          icon: 'credit-card',
+          name: 'paypal',
+          label: 'paypal',
+          desc: 'paypal',
+          require: false,
+          isDisable: false,
+          icon: 'paypal',
         },
         {
-          name: 'alipay',
-          label: '支付宝支付',
+          name: 'paypal',
+          label: 'paypal',
+          desc: 'paypal',
           require: true,
           isDisable: false,
-          icon: 'alipay',
-        },
-        {
-          name: 'wechatPay',
-          label: '微信支付',
-          require: true,
-          isDisable: false,
-          icon: 'wechat-pay',
-        },
+          icon: 'paypal',
+        }
       ]
     }
   },
   methods: {
     settingChange(setting) {
       if(setting.require) {
-        this.$confirm('是否开启支付渠道？', '提示', {
+        this.$confirm(`是否开启${setting.name}支付渠道？`, '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
         }).then(() => {
@@ -75,7 +70,7 @@ export default {
           });
         });
       } else {
-        this.$confirm('是否关闭支付渠道？', '提示', {
+        this.$confirm(`是否关闭${setting.name}支付渠道？`, '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
@@ -102,5 +97,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  border-bottom: 1px solid #E9E9E9;
+  padding: 12px 0;
 }
 </style>
