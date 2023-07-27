@@ -41,7 +41,7 @@ export default {
           attribution: {
             extension_id: extension_id,
             u_id: share_ext_ids[extension_id].u_id,
-            share_id: share_ext_ids[extension_id].share_id,
+            share_id: share_id,
             click_time: share_ext_ids[extension_id].click_time
           }
         };

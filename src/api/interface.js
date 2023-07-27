@@ -126,6 +126,12 @@ export const applyWithdrawApi = data => instance.post('/withdraw/apply_withdraw'
 
 export const checkWithdrawApi = data => instance.post('/withdraw/search_allow_withdraw', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 
+export const setPaymentChannelApi = data => instance.post('/settings/set-payment-channel', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}})
+
+export const getPaymentChannelApi = data => instance.post('/settings/get-payment-channel-setting', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}})
+
+export const makeOrderApi = (headers, data) => instance.post('/api/extension/make-order', JSON.stringify(data),{headers ,method: 'POST'})
+
 export const extensionCancelSubscription = (headers, data) => {
   headers['Content-Type'] = 'application/json';
   data = JSON.stringify(data);

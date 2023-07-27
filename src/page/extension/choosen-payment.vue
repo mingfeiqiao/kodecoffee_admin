@@ -35,82 +35,68 @@
 </template>
 <script>
 import languageChange from "../components/language-change.vue";
-import {extensionGetPaymentLinkApi, extensionGetSupportPaymentsApi} from "../../api/interface";
-
+import {extensionGetPaymentLinkApi, extensionGetSupportPaymentsApi, makeOrderApi} from "../../api/interface";
 export default {
   components: {languageChange},
   data() {
     return {
-      payment_methods : [
-        {
-          'payment_channel': 'stripe',
-          'payment_method':'card'
-        },
-        {
-          'payment_channel': 'stripe',
-          'payment_method':'alipay',
-        },
-        {
-          'payment_channel': 'stripe',
-          'payment_method': 'wechat',
-        },
-        {
-          'payment_channel': 'paypal'
-        }
-      ],
+      payment_methods : [],
       payment_channel: '',
       payment_method: '',
     };
   },
   created() {
+    this.init();
   },
   methods: {
     init () {
       const headers = this.getHeaders();
       const data = {
-        prod_id : this.$route.query.prod_id,
+        price_id : this.$route.query.prod_id,
       }
-      // extensionGetSupportPaymentsApi(headers, data).then(res => {
-      //   if(res.data.code === 200) {
-      //     let payment_methods = res.data.data.payment_methods;
-      //        if (Array.isArray(payment_methods) && Array.length > 0 ) {
-      //         if (payment_methods.length === 1) {
-      //            // 直接帮他下单
-      //         } else {
-      //           直接赋值给payment_methods用于展示
-      //         }
-      //        }
-      //     let payment_method = payment_methods.find(payment_method => payment_method.payment_channel === item.payment_channel && payment_method.payment_method === item.payment_method);
-      //     if(payment_method) {
-      //       this.$router.push({path: '/extension/pay', query: {payment_method_id: payment_method.id}});
-      //     } else {
-      //       this.$message.error(this.$t('Payment method is not supported'));
-      //     }
-      //   } else {
-      //     this.$message.error(res.data.message);
-      //   }
-      // }).catch(err => {
-      //   this.$message.error(err);
-      // });
+      extensionGetSupportPaymentsApi(headers, data).then(res => {
+        if(parseInt(res.data.code )=== 100000) {
+          let payment_methods = res.data.data;
+             if (Array.isArray(payment_methods) && Array.length > 0 ) {
+              if (payment_methods.length === 1) {
+                 // 直接帮他下单
+                this.pay(payment_methods[0]);
+              } else {
+                this.payment_methods = payment_methods;
+              }
+             } else {
+               this.$message.warning('No payment method');
+             }
+        } else {
+          this.$message.warning(res.data.message);
+        }
+      }).catch(err => {
+        this.$message.error(err);
+      });
     },
 
     pay(item) {
       console.log('item',item);
-      const headers = this.getHeaders();
       const data = {
-        prod_id : this.$route.query.prod_id,
+        price_id : this.$route.query.prod_id,
         payment_channel: item.payment_channel,
         payment_method: item.payment_method
       }
-      // extensionGetPaymentLinkApi(this.getHeaders()).then(res => {
-      //   if(res.data.code === 200) {
-      //     this.payment_methods = res.data.data.payment_methods;
-      //   } else {
-      //     this.$message.error(res.data.message);
-      //   }
-      // }).catch(err => {
-      //   this.$message.error(err);
-      // });
+      makeOrderApi(this.getHeaders(), data).then(res => {
+        if(parseInt(res.data.code) === 100000) {
+          let post_params = this.$route.query;
+          post_params.transaction_id = res.data.data.transaction_id;
+          window.postMessage({
+            type: 'transaction',
+            data:  Object.assign({}, data, post_params)
+          });
+          window.location.href = res.data.data.url;
+        } else {
+          this.$message.error(res.data.message);
+        }
+      }).catch(err => {
+        this.$message.error(err);
+      });
     },
     getHeaders () {
       let headers = {};
