@@ -130,7 +130,7 @@ export const setPaymentChannelApi = data => instance.post('/settings/set-payment
 
 export const getPaymentChannelApi = data => instance.post('/settings/get-payment-channel-setting', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}})
 
-export const makeOrderApi = (headers, data) => instance.post('/api/extension/make-order', JSON.stringify(data),{headers ,method: 'POST'})
+export const makeOrderApi = (headers, data) => instance.post('/api/extension/make-order',data,{headers})
 
 export const extensionCancelSubscription = (headers, data) => {
   headers['Content-Type'] = 'application/json';
