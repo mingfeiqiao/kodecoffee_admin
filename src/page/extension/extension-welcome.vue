@@ -12,6 +12,7 @@ export default {
     const target = query.target || "";
     const extension_id = query.extension_id || "";
     if (extension_id) {
+      console.log("extension_id", extension_id);
       let share_ext_ids = localStorage.getItem(key);
       if (share_ext_ids) {
         share_ext_ids = JSON.parse(share_ext_ids);
