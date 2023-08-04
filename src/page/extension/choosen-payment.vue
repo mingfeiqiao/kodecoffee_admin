@@ -22,7 +22,7 @@
               </div>
               <div>
 <!--                {{ $t(item.payment_channel==='stripe'? item.payment_method : item.payment_channel) }}-->
-                 {{ $t(item) }}
+                 {{ $t(item === 'stripe' ? 'card' : item) }}
               </div>
             </div>
           </el-card >
@@ -44,7 +44,6 @@ export default {
   data() {
     return {
       payment_channels :[],
-      payment_methods : [],
       payment_channel: '',
       payment_method: '',
     };
@@ -57,24 +56,22 @@ export default {
       const headers = this.getHeaders();
       const data = {
         price_id : this.$route.query.prod_id,
+        currency: this.$route.query.currency || ""
       }
       extensionGetSupportPaymentsApi(headers, data).then(res => {
         if(parseInt(res.data.code )=== 100000) {
-          let payment_methods = res.data.data;
-             if (Array.isArray(payment_methods) && Array.length > 0 ) {
-              if (payment_methods.length === 1) {
+          let payment_channels = res.data.data;
+             if (Array.isArray(payment_channels) && Array.length > 0 ) {
+              if (payment_channels.length === 1) {
                  // 直接帮他下单
-                this.pay(payment_methods[0]);
+                this.pay(payment_channels[0].payment_channel);
               } else {
                 // 获取所有的payment_channel, 注意将重复的去掉
-                let payment_channel = [];
-                payment_methods.forEach(item => {
-                  if (!payment_channel.includes(item.payment_channel)) {
-                    payment_channel.push(item.payment_channel);
+                payment_channels.forEach(item => {
+                  if (!this.payment_channels.includes(item.payment_channel)) {
+                    this.payment_channels.push(item.payment_channel);
                   }
                 });
-                this.payment_channels = payment_channel;
-                this.payment_methods = payment_methods;
               }
              } else {
                this.$message.warning('No payment method');
@@ -90,9 +87,10 @@ export default {
     pay(item) {
       const data = {
         price_id : this.$route.query.prod_id,
-        currency: this.$route.query.currency || "",
-        payment_channel: item.payment_channel,
-        payment_method: item.payment_method
+        payment_channel: item
+      }
+      if (this.$route.query.currency && this.$route.query.currency !== "" ) {
+        data.currency = this.$route.query.currency;
       }
       makeOrderApi(this.getHeaders(), data).then(res => {
         if(parseInt(res.data.code) === 100000) {
@@ -102,6 +100,7 @@ export default {
             type: 'transaction',
             data:  Object.assign({}, data, post_params)
           });
+          console.log('发送成功:', 'transaction',Object.assign({}, data, post_params));
           window.location.href = res.data.data.url;
         } else {
           this.$message.error(res.data.message);

@@ -92,7 +92,7 @@
                         </el-table-column>
                         <el-table-column :label="$t('receipt')" align="center" width="100">
                           <template slot-scope="scope">
-                      <span v-if="scope.row.order_operation" :style="{'color': scope.row.order_operation.color, 'cursor':'pointer'}"
+                      <span v-if="scope.row.order_operation && scope.row.invoice_pdf_url" :style="{'color': scope.row.order_operation.color, 'cursor':'pointer'}"
                             @click="scope.row.order_operation.function(scope.row.invoice_pdf_url)">
                         {{$t(scope.row.order_operation.message)}}
                       </span>
@@ -166,7 +166,6 @@ export default {
     this.SUBSCRIPTION_TYPE_OPTIONS = SUBSCRIPTION_OPTIONS.SUBSCRIPTION_TYPE_OPTIONS;
     this.ORDER_STATUS = ORDER_OPTIONS.ORDER_STATUS_OPTIONS;
     this.ORDER_STATUS_REF = ORDER_OPTIONS.ORDER_STATUS_REF_OPTIONS;
-    // this.testUserInfo();
     this.getUserInfo();
   },
   methods: {
@@ -181,168 +180,6 @@ export default {
         headers[newKey] = this.$route.query[key];
       }
       return headers;
-    },
-    testUserInfo () {
-      let resData = {
-        "code": 100000,
-        "message": "success",
-        "userinfo": {
-          "application_id": "519a73da-0f6e-4bd4-ae2a-add09b26ba01",
-          "extension_id": "008b09de-28f1-377d-b6aa-0cce36c50fc4",
-          "user_id": "c765a5c4-0041-11ee-bb5d-0242ac120003",
-          "email": "kh@zingfront.com",
-          "created_at": "2023-06-01 06:01:41.680654+00:00",
-          "last_login_time": null
-        },
-        "payinfo": [
-          {
-            "transaction_id": "5ff57734-0041-11ee-9e17-0242ac120003",
-            "plan_type": "recurring",//套餐类型:'one_time':"一次性支付",'recurring':"订阅"
-            "order_status": "created", //订阅状态:null：无订阅,created：首次订阅,updated：续订,canceling：取消中,canceled：取消成功,pastdue：已过期，invalid：已失效
-            "pay_status": "succeed", //支付状态,created:支付创建;succeed:支付成功;failed:支付失败;refunded:退款
-            "plan_end": '',  //套餐权限结束时间，时间戳
-            "plan_id": 1,  //套餐id
-            "plan_name": "产品测试", //套餐名称
-            "pay_time": 1234567890,//支付时时间戳
-          },
-          {
-            "transaction_id": "5ff57734-0041-11ee-9e17-0242ac120003",
-            "plan_type": "recurring",//套餐类型:'one_time':"一次性支付",'recurring':"订阅"
-            "order_status": "updated", //订阅状态:null：无订阅,created：首次订阅,updated：续订,canceling：取消中,canceled：取消成功,pastdue：已过期，invalid：已失效
-            "pay_status": "succeed", //支付状态,created:支付创建;succeed:支付成功;failed:支付失败;refunded:退款
-            "plan_end": '',  //套餐权限结束时间，时间戳
-            "plan_id": 1,  //套餐id
-            "plan_name": "产品测试", //套餐名称
-            "pay_time": 1234567890,//支付时时间戳
-          },
-          {
-            "transaction_id": "5ff57734-0041-11ee-9e17-0242ac120003",
-            "plan_type": "recurring",//套餐类型:'one_time':"一次性支付",'recurring':"订阅"
-            "order_status": "canceling", //订阅状态:null：无订阅,created：首次订阅,updated：续订,canceling：取消中,canceled：取消成功,pastdue：已过期，invalid：已失效
-            "pay_status": "succeed", //支付状态,created:支付创建;succeed:支付成功;failed:支付失败;refunded:退款
-            "plan_end": '',  //套餐权限结束时间，时间戳
-            "plan_id": 1,  //套餐id
-            "plan_name": "产品测试", //套餐名称
-            "pay_time": 1234567890,//支付时时间戳
-          },
-          {
-            "transaction_id": "5ff57734-0041-11ee-9e17-0242ac120003",
-            "plan_type": "recurring",//套餐类型:'one_time':"一次性支付",'recurring':"订阅"
-            "order_status": "canceled", //订阅状态:null：无订阅,created：首次订阅,updated：续订,canceling：取消中,canceled：取消成功,pastdue：已过期，invalid：已失效
-            "pay_status": "succeed", //支付状态,created:支付创建;succeed:支付成功;failed:支付失败;refunded:退款
-            "plan_end": null,  //套餐权限结束时间，时间戳
-            "plan_id": 1,  //套餐id
-            "plan_name": "产品测试", //套餐名称
-            "pay_time": 1234567890,//支付时时间戳
-          },
-          {
-            "transaction_id": "5ff57734-0041-11ee-9e17-0242ac120003",
-            "plan_type": "recurring",//套餐类型:'one_time':"一次性支付",'recurring':"订阅"
-            "order_status": "pastdue", //订阅状态:null：无订阅,created：首次订阅,updated：续订,canceling：取消中,canceled：取消成功,pastdue：已过期，invalid：已失效
-            "pay_status": "succeed", //支付状态,created:支付创建;succeed:支付成功;failed:支付失败;refunded:退款
-            "plan_end": 456,  //套餐权限结束时间，时间戳
-            "plan_id": 1,  //套餐id
-            "plan_name": "产品测试", //套餐名称
-            "pay_time": 1234567890,//支付时时间戳
-          },
-          {
-            "transaction_id": "5ff57734-0041-11ee-9e17-0242ac120003",
-            "plan_type": "recurring",//套餐类型:'one_time':"一次性支付",'recurring':"订阅"
-            "order_status": "invalid", //订阅状态:null：无订阅,created：首次订阅,updated：续订,canceling：取消中,canceled：取消成功,pastdue：已过期，invalid：已失效
-            "pay_status": "succeed", //支付状态,created:支付创建;succeed:支付成功;failed:支付失败;refunded:退款
-            "plan_end": 456,  //套餐权限结束时间，时间戳
-            "plan_id": 1,  //套餐id
-            "plan_name": "产品测试", //套餐名称
-            "pay_time": 1234567890,//支付时时间戳
-          }
-        ],
-        "invoice_list": [
-          {
-            "pay_type": "stripe",
-            "plan_type": "one_time", //一次性支付
-            "currency": "usd",
-            "pay_amount": 199,  //单位分
-            "pay_time": 1686195875, //付款时间戳
-            "plan_start_time": null,
-            "plan_end_time": null,
-            "order_status": "created",
-            "pay_status": "succeed",
-            "created_at": "2023-06-08 05:52:47",
-            "updated_at": "2023-06-08 13:52:47",
-            "plan_name": "mfei02",
-            "transaction_id": "c3380844-05ae-11ee-b72a-0242ac150002" //订单key
-          },
-          {
-            "pay_type": "stripe",
-            "plan_type": "recurring", //订阅
-            "currency": "usd",
-            "pay_amount": 399, //单位分
-            "pay_time": 1686195453, //付款时间戳
-            "plan_start_time": 1686195453,
-            "plan_end_time": 1686281853,
-            "created_time": 1686195453,
-            "order_status": "created",
-            "pay_status": "failed",
-            "created_at": "2023-06-08 03:37:46",
-            "updated_at": "2023-06-08 11:37:46",
-            "plan_name": "kodepay-mfei",
-            "transaction_id": "c0d145ee-05ad-11ee-9d68-0242ac150002" //订单key
-          },
-          {
-            "pay_type": "stripe",
-            "plan_type": "recurring", //订阅
-            "currency": "usd",
-            "pay_amount": 399, //单位分
-            "pay_time": 1686195453, //付款时间戳
-            "plan_start_time": 1686195453,
-            "plan_end_time": 1686281853,
-            "created_time": 1686195453,
-            "order_status": "created",
-            "pay_status": "created",
-            "created_at": "2023-06-08 03:37:46",
-            "updated_at": "2023-06-08 11:37:46",
-            "plan_name": "kodepay-mfei",
-            "transaction_id": "c0d145ee-05ad-11ee-9d68-0242ac150002" //订单key
-          },
-          {
-            "pay_type": "stripe",
-            "plan_type": "recurring", //订阅
-            "currency": "usd",
-            "pay_amount": 399, //单位分
-            "pay_time": 1686195453, //付款时间戳
-            "plan_start_time": 1686195453,
-            "plan_end_time": 1686281853,
-            "created_time": 1686195453,
-            "order_status": "created",
-            "pay_status": "refunded",
-            "created_at": "2023-06-08 03:37:46",
-            "updated_at": "2023-06-08 11:37:46",
-            "plan_name": "kodepay-mfei",
-            "transaction_id": "c0d145ee-05ad-11ee-9d68-0242ac150002" //订单key
-          },
-          {
-            "pay_type": "stripe",
-            "plan_type": "recurring", //订阅
-            "currency": "usd",
-            "pay_amount": 399, //单位分
-            "pay_time": 1686195453, //付款时间戳
-            "plan_start_time": 1686195453,
-            "plan_end_time": 1686281853,
-            "created_time": 1686195453,
-            "order_status": "created",
-            "pay_status": "dispute",
-            "created_at": "2023-06-08 03:37:46",
-            "updated_at": "2023-06-08 11:37:46",
-            "plan_name": "kodepay-mfei",
-            "transaction_id": "c0d145ee-05ad-11ee-9d68-0242ac150002" //订单key
-          }
-        ]
-      };
-      if (parseInt(resData.code) === 100000) {
-        this.user_info = resData.userinfo;
-        this.subscription_list = this.formatSubscriptionListFromRes(resData.payinfo);
-        this.order_list = this.formatOrderListFromRes(resData.invoice_list);
-      }
     },
     /**
      * 获取用户信息
@@ -480,7 +317,9 @@ export default {
      * @param url
      */
     openBillUrl (url) {
-      window.open(url);
+      if (url) {
+        window.open(url);
+      }
     }
   }
 };
