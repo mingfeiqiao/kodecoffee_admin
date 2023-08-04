@@ -126,6 +126,12 @@ export const applyWithdrawApi = data => instance.post('/withdraw/apply_withdraw'
 
 export const checkWithdrawApi = data => instance.post('/withdraw/search_allow_withdraw', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 
+export const setPaymentChannelApi = data => instance.post('/settings/set-payment-channel', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}})
+
+export const getPaymentChannelApi = data => instance.post('/settings/get-payment-channel-setting', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}})
+
+export const makeOrderApi = (headers, data) => instance.post('/api/extension/make-order',data,{headers})
+
 export const extensionCancelSubscription = (headers, data) => {
   headers['Content-Type'] = 'application/json';
   data = JSON.stringify(data);
@@ -146,12 +152,18 @@ export const extensionLogin = (headers, data) => {
   data = JSON.stringify(data);
   return instance.post('/api/extension/login', data, {headers ,method: 'POST'});
 }
+export const extensionGetSupportPaymentsApi = (headers, data) => {
+  headers['Content-Type'] = 'application/json';
+  data = JSON.stringify(data);
+  return instance.post('/api/extension/get-support-payments', data, {headers ,method: 'POST'});
+}
 
-export const extensionLoginIn = () => instance.get('/extension/login');
-export const extensionUpdateEmail = data => instance.post('/extension/update-email', data);
-export const extensionPayRecord = () => instance.get('/extension/pay-record');
+export const extensionGetPaymentLinkApi = (headers, data) => {
+  headers['Content-Type'] = 'application/json';
+  data = JSON.stringify(data);
+  return instance.post('/api/extension/get-payment-link', data, {headers ,method: 'POST'});
+}
 // 取消订阅接口
-export const extensionPayStatus = () => instance.get('/extension/pay-status');
 export const getUserInfo = () => instance.get('/user/info');
 
 export const attributeApi = data => instance.post('/api/attribute', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});

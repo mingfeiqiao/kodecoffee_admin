@@ -57,6 +57,10 @@
         {
           "title": "Event Callback Settings",
           "url": "/event-callback-settings"
+        },
+        {
+          "title": "Payment Channel Settings",
+          "url": "/payment-channel-settings"
         }
       ]
     }

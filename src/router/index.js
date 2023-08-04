@@ -20,12 +20,12 @@ import extensionPayManage from "../page/extension/extension-pay-manage.vue";
 import extensionPayStatus from "../page/extension/extension-pay-status.vue";
 import userLayout from "../page/website-pages/user-layout.vue";
 import userDetail from "../page/website-pages/user-detail.vue";
-
 import guide from "../page/website-pages/guide.vue";
 import extensionValidateEmail from "../page/extension/extension-validate-email.vue";
 import ShareRedirect from "../page/extension/share-redirect.vue";
 import extensionWelcome from "../page/extension/extension-welcome.vue";
 import shareExtension from "../page/website-pages/share-extension.vue";
+import choosenPayment from "../page/extension/choosen-payment.vue";
 Vue.use(Router);
 const routes = [
   {
@@ -132,12 +132,12 @@ const routes = [
         name: 'event-callback-settings',
         meta: { breadcrumbLabel: 'Event Callback Settings' }
       },
-      // {
-      //   path: 'payment-channel-settings',
-      //   component: paymentChannelSettings,
-      //   name: 'payment-channel-settings',
-      //   meta: { breadcrumbLabel: 'Payment Channel Settings' }
-      // }
+      {
+        path: 'payment-channel-settings',
+        component: paymentChannelSettings,
+        name: 'payment-channel-settings',
+        meta: { breadcrumbLabel: 'Payment Channel Settings' }
+      }
     ]
   },
   {
@@ -161,8 +161,12 @@ const routes = [
     component: ShareRedirect
   },
   {
-    path:'/ext-welcome',
+    path: '/ext-welcome',
     component: extensionWelcome
+  },
+  {
+    path: '/extension/payment-choose',
+    component: choosenPayment
   }
 ];
 
