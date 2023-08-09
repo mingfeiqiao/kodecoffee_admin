@@ -72,7 +72,6 @@ export const postUserInfo = data => {
   return instance.post('/account/login', formData);
 };
 export const loginOut = () => instance.post('/account/login-out');
-
 export const uploadFile = data => {
   const formData = new FormData();
   // 使用for循环，将对象中的每个属性都添加到formData中
@@ -83,18 +82,14 @@ export const uploadFile = data => {
 };
 // plugin 相关
 export const addPlugin = data =>  instance.post('/plugin/add-plugin', data);
-
 export const updatePlugin = data => instance.post('/plugin/update-plugin', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
-
 export const pluginList = () => instance.post('/plugin/plugin-list');
 // plan 相关
-
 export const addPlan = data => instance.post('/product/save', data);
 export const planList = data => {
   data = JSON.stringify(data);
   return instance.post('/product/list', data, {headers: {'Content-Type' : 'application/json'}});
 }
-
 export const updatePlan = (id, data) => instance.post(`/product/save/${id}`, JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 // 订单相关
 export const orderList = (data) => instance.post('/app/bill/list', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
@@ -112,26 +107,22 @@ export const customerDetailApi = (id,data) => instance.post(`/app/customers/deta
 
 export const dashBoardApi = (data) => instance.post('/dashboard/dashboard', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 // 插件端相关
-
 export const addWithdrawInfoApi = data => instance.post('/withdraw/add_withdraw_info', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
-
 export const accountWithdrawInfoApi = data => instance.post('/withdraw/account_withdraw_info', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 export const updateWithdrawInfoApi = data => instance.post('/withdraw/update_withdraw_info', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 export const accountWithdrawInfoListApi = data => instance.post('/withdraw/account_withdraw_info_apply_list', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 export const withdrawRateApi = data => instance.post('/withdraw/search_withdraw_exchange_rate', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
-
 export const searchWithdrawAmountApi = data => instance.post('/withdraw/search_real_amount_withdraw', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
-
 export const applyWithdrawApi = data => instance.post('/withdraw/apply_withdraw', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
-
 export const checkWithdrawApi = data => instance.post('/withdraw/search_allow_withdraw', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
-
 export const setPaymentChannelApi = data => instance.post('/settings/set-payment-channel', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}})
-
 export const getPaymentChannelApi = data => instance.post('/settings/get-payment-channel-setting', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}})
-
+export const addCommissionApi = data => instance.post('/extension-commission/commission-add', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}})
+export const getCommissionListApi = data => instance.post('/extension-commission/commission-list', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}})
+export const getCommissionExtensionListApi = data => instance.post('/extension-commission/commission-extension-list', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}})
+export const getAllCommissionListApi = data => instance.post('/extension-commission/all-commission-list', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}})
+export const getPromoterListApi = data => instance.post('/extension-commission/promoter-list', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}})
 export const makeOrderApi = (headers, data) => instance.post('/api/extension/make-order',data,{headers})
-
 export const extensionCancelSubscription = (headers, data) => {
   headers['Content-Type'] = 'application/json';
   data = JSON.stringify(data);
@@ -157,7 +148,6 @@ export const extensionGetSupportPaymentsApi = (headers, data) => {
   data = JSON.stringify(data);
   return instance.post('/api/extension/get-support-payments', data, {headers ,method: 'POST'});
 }
-
 export const extensionGetPaymentLinkApi = (headers, data) => {
   headers['Content-Type'] = 'application/json';
   data = JSON.stringify(data);
@@ -165,8 +155,8 @@ export const extensionGetPaymentLinkApi = (headers, data) => {
 }
 // 取消订阅接口
 export const getUserInfo = () => instance.get('/user/info');
-
 export const attributeApi = data => instance.post('/api/attribute', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
+export const attributeFprApi = data => instance.post('/api/attribute-fpr', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 export const addExtensionShareApi = data => instance.post('/extension-share/add', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 export const extensionShareListApi = data => instance.post('/extension-share/list', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 
