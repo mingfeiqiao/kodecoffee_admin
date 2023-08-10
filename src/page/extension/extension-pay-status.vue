@@ -96,9 +96,18 @@ export default {
             install_time: ext_ids[extension_id].install_time || ""
           }
         }
-        attributeApi(args).then(res => {
-          console.log('report success');
-        })
+        if (type === 'share') {
+          attributeApi(args).then(res => {
+            console.log('report success');
+          })
+        } else if (type === 'commission') {
+          args.attribution.fpr_code = args.attribution.share_id;
+          delete args.attribution.share_id;
+          attributeFprApi(args).then(res => {
+            console.log('report success');
+          })
+        }
+
       }
     }
   }

@@ -52,6 +52,7 @@ export default {
       if (share_ext_ids
         && share_ext_ids[extension_id]
         && share_ext_ids[extension_id].share_id
+        && share_ext_ids[extension_id].share_id === id
         && share_ext_ids[extension_id].u_id
         && share_ext_ids[extension_id].click_time
       ) { // localstorage中已经记录了当前插件的完整的信息，此时什么都不需要做
@@ -80,6 +81,8 @@ export default {
             window.location.href = redirect_url;
           });
         } else if (type === 'commission') {
+          args.attribution.fpr_code = args.attribution.share_id;
+          delete args.attribution.share_id;
           attributeFprApi(args).then(res => {
             window.location.href = redirect_url;
           });

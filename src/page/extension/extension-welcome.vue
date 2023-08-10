@@ -1,5 +1,8 @@
 <template>
-  <div>
+  <div class="title-28" style="height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;">
     Welcome
   </div>
 </template>
@@ -65,6 +68,8 @@ export default {
           }
         };
         if (type === 'commission') {
+          args.attribution.fpr_code = args.attribution.share_id;
+          delete args.attribution.share_id;
           attributeFprApi(args).then(res => {
             if (target) {
               window.location.href = target;

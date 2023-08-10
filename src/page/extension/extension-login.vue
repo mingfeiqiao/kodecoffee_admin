@@ -195,7 +195,9 @@ export default {
             console.log('report share success');
           })
         } else if (type === 'commission') {
-          attributeApi(args).then(res => {
+          args.attribution.fpr_code = args.attribution.share_id;
+          delete args.attribution.share_id;
+          attributeFprApi(args).then(res => {
             console.log('report commission success');
           })
         }
