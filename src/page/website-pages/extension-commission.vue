@@ -2,7 +2,7 @@
   <div class="ko-mo">
     <div class="el-tab-cus">
       <el-tabs v-model="active_name" @tab-click="handleClick">
-        <el-tab-pane label="分佣活动" name="commission">
+        <el-tab-pane :label="$t('Commission Campaigns')" name="commission">
           <div>
             <div style="display: flex;margin:12px 0 12px 0;flex-direction: row-reverse;">
               <el-button type="primary" size="small" @click="createShare">{{$t('create plan')}}</el-button>
@@ -45,7 +45,7 @@
             </div>
           </div>
         </el-tab-pane>
-        <el-tab-pane label="推广员" name="promoter">
+        <el-tab-pane :label="$t('Promoters')" name="promoter">
           <div>
             <div style="display: flex;margin:12px 0 12px 0;">
               <el-select style="max-width: 400px" size="small" @reset="commissionChange" @change="commissionChange" v-model="promoter_data.condition.client_fpr_id" :placeholder="$t('Select Plugin for Share Link')" clearable filterable v-loading="commission_list_loading" >
@@ -65,7 +65,7 @@
                       :header-cell-class-name="handlePromoterHeaderCellClass"
                       :header-cell-style="{'background-color': 'var(--header-cell-background-color)','color': 'var(--header-cell-color)','font-weight': 'var(--header-cell-font-weight)'}"
             >
-              <el-table-column prop="name" :label="$t('name')"  width="auto">
+              <el-table-column prop="fpr_code" :label="$t('FP ID')"  width="auto">
               </el-table-column>
               <el-table-column prop="click_count" :label="$t('Click Count')" width="auto" sortable="customer">
               </el-table-column>
@@ -100,7 +100,7 @@
       >
         <div style="padding: 16px 24px">
           <div class="title-16">
-            {{$t('添加分佣活动')}}
+            {{$t('Create Commission Campaign')}}
           </div>
           <div style="padding-top: 24px">
             <el-form :model="commission" ref="commission_form" label-suffix=":" :rules="rules" label-width="125px">
@@ -144,7 +144,7 @@
         width="50%"
       >
         <div style="padding: 16px 24px;border-bottom: 1px solid rgba(232, 232, 232, 1)">
-          <div class="title-16">{{$t('分佣活动详情')}}</div>
+          <div class="title-16">{{$t('Commission Campaigns Details')}}</div>
         </div>
         <div style="padding: 16px 24px">
           <div style="padding-bottom: 56px">

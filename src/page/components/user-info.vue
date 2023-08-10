@@ -37,7 +37,7 @@ export default {
       let vm = this;
       // zbUserInfo().then(function(res) { // 先请求zbase的用户信息
       // axios.get('http://127.0.0.1:3000/user/v2/userinfo')
-      zbUserInfo().then(function(res) { // 先请求zbase的用户信息
+      axios.get('http://127.0.0.1:3000/user/v2/userinfo').then(function(res) { // 先请求zbase的用户信息
         if (res.data && res.data.code && parseInt(res.data.code) === 100000) {
           if (!res.data.userinfo) { // 如果没有用户信息，就跳转到登录页面(这里可能是zbase出了问题)
             vm.$message.error(vm.$t('Login failed. Please try logging in again'));
