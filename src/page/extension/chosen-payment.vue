@@ -8,21 +8,19 @@
           </div>
         </div>
         <div style="display: flex;align-items: center;width: 100%;justify-content: center;height: 33%">
-          <el-card class="card" v-for="(item, key) in payment_channels" :key="key">
+          <el-card class="card" v-for="(item, key) in payment_methods" :key="key">
             <div style="padding: 12px 8px;display: flex;flex-direction: column;align-items: flex-start;" @click="pay(item)">
               <div>
                 <svg width="30" height="30">
-                  <use v-if="item ==='stripe'" xlink:href="#bank-card"></use>
-<!--                  <use v-if="item.payment_channel==='stripe' && item.payment_method==='card'" xlink:href="#bank-card"></use>-->
-<!--                  <use v-if="item.payment_channel==='stripe' && item.payment_method==='alipay'" xlink:href="#alipay"></use>-->
-<!--                  <use v-if="item.payment_channel==='stripe' && item.payment_method==='wechat'" xlink:href="#wechat-pay"></use>-->
-<!--                  <use v-if="item.payment_channel==='paypal'" xlink:href="#paypal"></use>-->
+                  <use v-if="item.payment_channel==='stripe' && item.payment_method==='card'" xlink:href="#bank-card"></use>
+                  <use v-if="item.payment_channel==='stripe' && item.payment_method==='alipay'" xlink:href="#alipay"></use>
+                  <use v-if="item.payment_channel==='stripe' && item.payment_method==='wechat'" xlink:href="#wechat-pay"></use>
+                  <use v-if="item.payment_channel==='paypal'" xlink:href="#paypal"></use>
                   <use v-if="item==='paypal'" xlink:href="#paypal"></use>-->
                 </svg>
               </div>
               <div>
-<!--                {{ $t(item.payment_channel==='stripe'? item.payment_method : item.payment_channel) }}-->
-                 {{ $t(item === 'stripe' ? 'card' : item) }}
+                {{ $t(item.payment_channel==='stripe'? item.payment_method : item.payment_channel) }}
               </div>
             </div>
           </el-card >
@@ -43,9 +41,7 @@ export default {
   components: {languageChange},
   data() {
     return {
-      payment_channels :[],
-      payment_channel: '',
-      payment_method: '',
+      payment_methods:[],
     };
   },
   created() {
@@ -60,18 +56,13 @@ export default {
       }
       extensionGetSupportPaymentsApi(headers, data).then(res => {
         if(parseInt(res.data.code )=== 100000) {
-          let payment_channels = res.data.data;
-             if (Array.isArray(payment_channels) && Array.length > 0 ) {
-              if (payment_channels.length === 1) {
+          let payment_methods = res.data.data;
+             if (Array.isArray(payment_methods) && Array.length > 0 ) {
+              if (payment_methods.length === 1) {
                  // 直接帮他下单
-                this.pay(payment_channels[0].payment_channel);
+                this.pay(payment_methods[0]);
               } else {
-                // 获取所有的payment_channel, 注意将重复的去掉
-                payment_channels.forEach(item => {
-                  if (!this.payment_channels.includes(item.payment_channel)) {
-                    this.payment_channels.push(item.payment_channel);
-                  }
-                });
+                this.payment_methods = payment_methods;
               }
              } else {
                this.$message.warning('No payment method');
@@ -87,7 +78,8 @@ export default {
     pay(item) {
       const data = {
         price_id : this.$route.query.prod_id,
-        payment_channel: item
+        payment_channel: item.payment_channel,
+        payment_method: item.payment_method
       }
       if (this.$route.query.currency && this.$route.query.currency !== "" ) {
         data.currency = this.$route.query.currency;
