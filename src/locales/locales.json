@@ -288,9 +288,21 @@
     "close failed": "Close Failed",
     "close succeed": "Close Succeed",
     "open channel tip": "Whether to open {value} payment channel?",
-    "close channel tip": "Whether to close {value} payment channel?"
+    "close channel tip": "Whether to close {value} payment channel?",
+    "Extension Commission": "Extension Commission",
+    "Create Commission Campaign": "Create Commission Campaign",
+    "Commission Campaigns": "Commission Campaigns",
+    "Promoters": "Promoters",
+    "Commission Campaigns Details": "Commission Campaigns Details",
+    "FP API Key Content": "FP X-API-KEY"
   },
   "zh-CN": {
+    "FP API Key Content": "FP X-API-KEY",
+    "Create Commission Campaign": "添加分佣活动",
+    "Commission Campaigns": "分佣活动",
+    "Promoters": "推广员",
+    "Commission Campaigns Details": "分佣活动详情",
+    "Extension Commission": "插件分佣",
     "close channel tip": "是否关闭{value}支付渠道？",
     "open channel tip": "是否开启{value}支付渠道？",
     "close succeed": "关闭成功",

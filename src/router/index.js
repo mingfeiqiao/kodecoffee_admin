@@ -25,7 +25,8 @@ import extensionValidateEmail from "../page/extension/extension-validate-email.v
 import ShareRedirect from "../page/extension/share-redirect.vue";
 import extensionWelcome from "../page/extension/extension-welcome.vue";
 import shareExtension from "../page/website-pages/share-extension.vue";
-import choosenPayment from "../page/extension/choosen-payment.vue";
+import chosenPayment from "../page/extension/chosen-payment.vue";
+import extensionCommission from "../page/website-pages/extension-commission.vue";
 Vue.use(Router);
 const routes = [
   {
@@ -109,6 +110,12 @@ const routes = [
         meta: { breadcrumbLabel: 'Extensions' }
       },
       {
+        path:'extension-commission',
+        component: extensionCommission,
+        name: 'extension-commission',
+        meta: { breadcrumbLabel: 'Extension Commission' }
+      },
+      {
         path:'extension-virality',
         component: shareExtension,
         name: 'extension-virality',
@@ -166,7 +173,7 @@ const routes = [
   },
   {
     path: '/extension/payment-choose',
-    component: choosenPayment
+    component: chosenPayment
   }
 ];
 

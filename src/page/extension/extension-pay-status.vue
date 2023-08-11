@@ -37,7 +37,7 @@
 </template>
 <script>
 import languageChange from "../components/language-change.vue";
-import {attributeApi} from "../../api/interface";
+import {attributeApi, attributeFprApi} from "../../api/interface";
 export default {
   components: {languageChange},
   data() {
@@ -67,30 +67,49 @@ export default {
     attribute () {
       const api_key = this.$route.query.api_key || "";
       const extension_id = this.$route.query.client_id || "";
-      let key = this.$mode + '-share-ext-ids';
       if (api_key && extension_id) { // 这里代表正常参数，只处理正常参数的内容
-        let share_ext_ids = localStorage.getItem(key);
-        if (share_ext_ids) { // 只有存在share_ext_ids才归因，否则没必要归因
-          share_ext_ids = JSON.parse(share_ext_ids);
-          if (share_ext_ids[extension_id] && share_ext_ids[extension_id].share_id) { // 代表存在该插件的归因信息，不存在的不进行上报
-            let args = {
-              step: "pay",
-              api_key: api_key,
-              attribution: {
-                extension_id: extension_id,
-                u_id : share_ext_ids[extension_id].u_id || "",
-                share_id: share_ext_ids[extension_id].share_id || "",
-                click_time: share_ext_ids[extension_id].click_time || "",
-                install_time: share_ext_ids[extension_id].install_time || ""
-              }
-            }
-            attributeApi(args).then(res => {
-              console.log('report success');
-            })
+        let commission_key = this.$mode + '-commission-ext-ids';
+        let vitality_key = this.$mode + '-share-ext-ids';
+        let commission_ext_ids = localStorage.getItem(commission_key);
+        if (commission_ext_ids) {
+          commission_ext_ids = JSON.parse(commission_ext_ids);
+          this.attributePay('commission', commission_ext_ids, extension_id, api_key)
+        } else {
+          let share_ext_ids = localStorage.getItem(vitality_key);
+          if (share_ext_ids) {
+            share_ext_ids = JSON.parse(share_ext_ids);
+            this.attributePay('share', share_ext_ids, extension_id, api_key)
           }
         }
       }
     },
+    attributePay (type, ext_ids, extension_id, api_key) {
+      if (ext_ids[extension_id] && ext_ids[extension_id].share_id) { // 代表存在该插件的归因信息，不存在的不进行上报
+        let args = {
+          step: "pay",
+          api_key: api_key,
+          attribution: {
+            extension_id: extension_id,
+            u_id : ext_ids[extension_id].u_id || "",
+            share_id: ext_ids[extension_id].share_id || "",
+            click_time: ext_ids[extension_id].click_time || "",
+            install_time: ext_ids[extension_id].install_time || ""
+          }
+        }
+        if (type === 'share') {
+          attributeApi(args).then(res => {
+            console.log('report success');
+          })
+        } else if (type === 'commission') {
+          args.attribution.fpr_code = args.attribution.share_id;
+          delete args.attribution.share_id;
+          attributeFprApi(args).then(res => {
+            console.log('report success');
+          })
+        }
+
+      }
+    }
   }
 };
 </script>

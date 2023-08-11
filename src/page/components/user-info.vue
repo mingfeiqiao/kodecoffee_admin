@@ -19,7 +19,6 @@
 </template>
 <script>
 import {loginOut, postUserInfo,zbUserInfo} from "../../api/interface";
-import Cookies from 'js-cookie'
 import axios from "axios";
 export default {
   data () {
