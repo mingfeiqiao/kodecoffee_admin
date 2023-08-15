@@ -511,7 +511,6 @@ export default {
               );
             }
           } else { // 不能提现
-            console.log(res.data.message);
             vm.$alert(res.data.message, res.data.title, {
               confirmButtonText: vm.$t('OK')
             });

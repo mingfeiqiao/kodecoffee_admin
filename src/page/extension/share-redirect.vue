@@ -5,7 +5,6 @@ import {attributeApi, attributeFprApi} from "../../api/interface";
 
 export default {
   created() {
-    console.log(this.$route.query);
     const query = this.$route.query;
     const redirect_url = query.redirect_url || "";
     const share_id = query.share_id || "";

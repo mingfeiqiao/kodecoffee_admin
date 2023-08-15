@@ -1,59 +1,39 @@
 <template>
-  <div>
-    <div style="display: flex;align-items: center">
-      <span class="title-14">
-        application_id:
-      </span>
-      <span>
-          {{application_id}}
-      </span>
-      <span style="padding-left: 8px;display: flex;align-items: center;cursor: pointer" @click="copy(application_id)" id="copy_text">
-        <svg width="16" height="16">
-          <use xlink:href="#copy"></use>
-        </svg>
-      </span>
-
-    </div>
+  <div class="ko-mo">
+    <el-tabs v-model="active_table_name" @tab-click="handleClick">
+      <el-tab-pane label="基础信息" name="base-config">
+        <router-view></router-view>
+      </el-tab-pane>
+      <el-tab-pane label="配置管理" name="webhook-config">
+        <router-view></router-view>
+      </el-tab-pane>
+      <el-tab-pane label="日志" name="webhook-logs">
+        <router-view></router-view>
+      </el-tab-pane>
+    </el-tabs>
   </div>
 </template>
 <script>
-import Clipboard from "clipboard";
-
 export default {
-    data() {
-      return {
-        application_id: ''
+  data() {
+    return {
+      active_table_name: 'base-config'
+    };
+  },
+  methods: {
+    async handleClick(tab) {
+      this.$router.push({ path: '/' + tab.name });
+      await this.$nextTick(); // 等待路由完成导航
+      this.scrollToAnchor(tab.name);
+    },
+    scrollToAnchor(anchor) {
+      const element = document.getElementById(anchor);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
       }
     },
-    methods: {
-      copy (text){
-        let clipboard = new Clipboard('#copy_text', {
-          text: () => {
-            return text;
-          }
-        })
-        clipboard.on('success', e => {
-          this.$message({
-            message: this.$t('copy success'),
-            type: 'success'
-          })
-          clipboard.destroy() // 释放内存
-        })
-        clipboard.on('error', e => {
-          // 不支持复制
-          this.$message({
-            message:  this.$t('browser not support copy'),
-            type: 'warning'
-          })
-          clipboard.destroy()
-        })
-      },
-    },
-    mounted() {
-      this.application_id = localStorage.getItem(this.$mode + 'applicationKey')
-    }
-  }
+  },
+};
 </script>
 <style scoped lang="less">
-
 </style>

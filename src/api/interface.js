@@ -122,6 +122,11 @@ export const getCommissionListApi = data => instance.post('/extension-commission
 export const getCommissionExtensionListApi = data => instance.post('/extension-commission/commission-extension-list', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}})
 export const getAllCommissionListApi = data => instance.post('/extension-commission/all-commission-list', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}})
 export const getPromoterListApi = data => instance.post('/extension-commission/promoter-list', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}})
+export const getWebHookEventTypesApi = () => instance.get('/notifications/webhooks-event-types')
+export const getWebHookEventListApi = () => instance.get('/notifications/webhooks')
+export const addWebHookEventApi = data => instance.post('/notifications/webhooks', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}})
+export const updateWebHookEventApi = (id,data) => instance.post(`/notifications/webhooks/${id}`, JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}})
+export const getWebHookEventLogsApi = data => instance.post('/notifications/webhooks-logs', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}})
 export const makeOrderApi = (headers, data) => instance.post('/api/extension/make-order',data,{headers})
 export const extensionCancelSubscription = (headers, data) => {
   headers['Content-Type'] = 'application/json';

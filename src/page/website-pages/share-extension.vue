@@ -476,7 +476,6 @@ export default {
           created_time:13232234234
         }
       ];
-      console.log(this.table_data);
       this.total = 1;
     },
     //排序方法

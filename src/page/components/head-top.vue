@@ -61,6 +61,11 @@ export default {
     }
   },
   created() {
+    // 获取到lastMode 并且接口请求是否完成引导，
+    // 1. 如果是测试模式，并且已经完成引导，那么什么都不做，把guide_step 设置为4即可
+    // 2. 如果是测试模式，并且没有完成引导，那么什么都不做，把guide_step 设置为返回值即可
+    // 3. 如果是正式模式，并且已经完成引导，那么什么都不做，把guide_step 设置为4即可
+    // 4. 如果是正式模式，并且没有完成引导，那么把guide_step 设置为返回值即可
     this.guide_step = localStorage.getItem('guideStep') || 0;
     this.$store.commit('setGuideStep', this.guide_step);
     this.isCollapse = this.collapse;
