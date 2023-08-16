@@ -117,6 +117,9 @@ export const applyWithdrawApi = data => instance.post('/withdraw/apply_withdraw'
 export const checkWithdrawApi = data => instance.post('/withdraw/search_allow_withdraw', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 export const setPaymentChannelApi = data => instance.post('/settings/set-payment-channel', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}})
 export const getPaymentChannelApi = data => instance.post('/settings/get-payment-channel-setting', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}})
+export const getSymmetricListApi = data => instance.post('/settings/get-symmetric-list', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}})
+export const addSymmetricKeyApi = data => instance.post('/settings/create-symmetric-key', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}})
+export const getSupportSymClientsApi = data => instance.post('/settings/sym-support-clients',JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}})
 export const addCommissionApi = data => instance.post('/extension-commission/commission-add', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}})
 export const getCommissionListApi = data => instance.post('/extension-commission/commission-list', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}})
 export const getCommissionExtensionListApi = data => instance.post('/extension-commission/commission-extension-list', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}})

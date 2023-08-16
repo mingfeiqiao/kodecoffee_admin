@@ -114,12 +114,21 @@ export default {
   computed: {
     rules: {}
   },
+  created() {
+    this.getWebHookEventsList();
+  },
   methods: {
+    /**
+     *
+     */
     openWebHookEventDialog() {
       this.show_add_webhook_config = true;
-      this.getWebHookEventList();
+      this.getWebHookEventTypes();
     },
-    getWebHookEventList() {
+    /**
+     *
+     */
+    getWebHookEventTypes() {
       this.event_types_loading = true;
       this.event_types = [];
       getWebHookEventTypesApi().then(res => {
@@ -135,19 +144,45 @@ export default {
         this.event_types_loading = false;
       })
     },
+    /**
+     *
+     */
     addWebHookEvent() {
-      addWebHookEventApi().then(res => {
-        if (res.data.code === 100000) {
+      addWebHookEventApi(this.web_hook_event_data).then(res => {
+        if (res.data && res.data.code && parseInt(res.data.code) === 100000) {
           this.show_add_webhook_config = false;
-          this.getWebHookEventList();
+        } else {
+          if (res.data.message) {
+            this.$message.error(res.data.msg);
+          }
         }
       }).catch(err => {
         console.log(err);
       })
     },
-    updateWebHookEvent() {
-
+    /**
+     *
+     */
+    getWebHookEventsList () {
+      this.web_hook_event_table_loading =  true;
+      getWebHookEventListApi().then(res => {
+        if (res.data && res.data.code && parseInt(res.data.code) === 100000) {
+          this.web_hook_table_data = res.data.data.webhooks;
+        } else {
+          if (res.data && res.data.message) {
+            this.$message.error(res.data.message);
+          }
+        }
+        this.web_hook_event_table_loading = false;
+      }).catch(err => {
+        this.web_hook_event_table_loading = false;
+        console.log(err)
+      })
     },
+    /**
+     *
+     * @param val
+     */
     handleSizeChange(val) {
       this.page_size = val;
     },

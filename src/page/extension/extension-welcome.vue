@@ -25,6 +25,10 @@ export default {
         if (share_ext_ids) {
           share_ext_ids = JSON.parse(share_ext_ids);
           this.attribute('share', share_ext_ids, extension_id, target)
+        } else {
+          if (target) {
+            window.location.href = target;
+          }
         }
       }
     }
@@ -81,6 +85,10 @@ export default {
               window.location.href = target;
             }
           });
+        }
+      } else {
+        if (target) {
+          window.location.href = target;
         }
       }
     }
