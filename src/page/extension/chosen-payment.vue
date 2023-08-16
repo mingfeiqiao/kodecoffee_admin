@@ -81,6 +81,15 @@ export default {
         payment_channel: item.payment_channel,
         payment_method: item.payment_method
       }
+      let origin_data = this.$route.query.origin_data || "";
+      if (origin_data) {
+        try {
+          let decoded_string = atob(origin_data); // 解码
+          data.origin_data = JSON.parse(decoded_string);
+        } catch (error) {
+          console.error("Error decoding or parsing:", error);
+        }
+      }
       if (this.$route.query.currency && this.$route.query.currency !== "" ) {
         data.currency = this.$route.query.currency;
       }
@@ -104,6 +113,9 @@ export default {
     getHeaders () {
       let headers = {};
       for (let key in this.$route.query) {
+        if (key === 'origin_data') {
+          continue
+        }
         let newKey = key.replace(/_/g, "-");
         headers[newKey] = this.$route.query[key];
       }
