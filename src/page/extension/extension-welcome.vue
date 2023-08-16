@@ -82,6 +82,10 @@ export default {
             }
           });
         }
+      } else {
+        if (target) {
+          window.location.href = target;
+        }
       }
     }
   }
