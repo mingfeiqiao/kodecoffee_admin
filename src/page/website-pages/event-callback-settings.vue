@@ -2,16 +2,16 @@
   <div class="ko-mo">
     <el-tabs v-model="active_name" @tab-click="handleClick">
       <el-tab-pane :label="$t('Basic Information')" name="base-config">
-        <base-config></base-config>
+        <base-config v-if="active_name === 'base-config'"></base-config>
       </el-tab-pane>
       <el-tab-pane :label="$t('External User Information Synchronization')" name="sym-key">
-        <external-user-sync></external-user-sync>
+        <external-user-sync v-if="active_name === 'sym-key'"></external-user-sync>
       </el-tab-pane>
-      <el-tab-pane :label="$t('webhook 回调设置')" name="web-hook-config">
-        <web-hook-config></web-hook-config>
+      <el-tab-pane :label="$t('Callback Event Configuration')" name="web-hook-config">
+        <web-hook-config v-if="active_name ==='web-hook-config'"></web-hook-config>
       </el-tab-pane>
-      <el-tab-pane :label="$t('回调日志')" name="web-hook-logs">
-        <web-hook-logs></web-hook-logs>
+      <el-tab-pane :label="$t('Callback Logs')" name="web-hook-logs">
+        <web-hook-logs v-if="active_name ==='web-hook-logs'"></web-hook-logs>
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -21,10 +21,11 @@ import BaseConfig from "./event-callback/base-config.vue";
 import ExternalUserSync from "./event-callback/external-user-sync.vue";
 import WebHookConfig from "./event-callback/web-hook-config.vue";
 import WebHookLogs from "./event-callback/web-hook-logs.vue";
+import {getWebHookEventTypesApi} from "../../api/interface";
 export default {
   data() {
     return {
-      active_name: 'base-config',
+      active_name: 'base-config'
     }
   },
   components: {
