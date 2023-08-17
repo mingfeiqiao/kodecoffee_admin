@@ -492,7 +492,6 @@ export default {
      */
     getCommissionTableData () {
       this.commission_data.table_data =[];
-      console.log(this.commission_data);
       let args = this.getApiArgs(this.commission_data.condition, this.commission_data.sort, this.commission_data.page, this.commission_data.page_size);
       this.commission_data.loading = true;
       console.log(args);

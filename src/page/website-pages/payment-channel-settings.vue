@@ -90,7 +90,6 @@ export default {
     },
     getPaymentChannelSettings() {
       getPaymentChannelApi().then(res => {
-        console.log(res)
         if (parseInt(res.data.code) === 100000) {
           let data = res.data.data;
           data.forEach(item => {
