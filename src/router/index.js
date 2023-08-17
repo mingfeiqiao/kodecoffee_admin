@@ -27,9 +27,6 @@ import extensionWelcome from "../page/extension/extension-welcome.vue";
 import shareExtension from "../page/website-pages/share-extension.vue";
 import chosenPayment from "../page/extension/chosen-payment.vue";
 import extensionCommission from "../page/website-pages/extension-commission.vue";
-import baseConfig from "../page/website-pages/event-callback/base-config.vue";
-import webHookConfig from "../page/website-pages/event-callback/web-hook-config.vue";
-import webHookLogs from "../page/website-pages/event-callback/web-hook-logs.vue";
 Vue.use(Router);
 const routes = [
   {
