@@ -203,10 +203,8 @@ export default {
       getWebHookEventTypesApi().then(res => {
         if (parseInt(res.data.code)=== 100000) {
           this.event_types = res.data.data.event_types;
-          this.event_types_loading = false;
-        } else {
-          this.event_types_loading = false;
         }
+        this.event_types_loading = false;
       }).catch(err => {
         console.log(err);
         this.event_types_loading = false;
@@ -259,6 +257,7 @@ export default {
             type: 'success'
           })
           this.show_add_webhook_config = false;
+          this.getWebHookEventsList();
         } else {
           if (res.data.message) {
             this.$message.error(res.data.msg);
