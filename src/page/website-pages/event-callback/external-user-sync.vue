@@ -122,18 +122,15 @@ export default {
       getSymmetricListApi().then(res => {
         if (res.data && res.data.code && parseInt(res.data.code) === 100000) {
           this.table_data = res.data.data;
-          this.table_loading = false;
         } else {
           if (res && res.data && res.data.message) {
             this.$message.warning(res.data.message);
           }
         }
+        this.table_loading = false;
       }).catch(err => {
         this.table_loading = false;
-        this.$message({
-          message:err,
-          type:'error'
-        })
+        console.log(err)
       })
     },
     getSupportClients() {
