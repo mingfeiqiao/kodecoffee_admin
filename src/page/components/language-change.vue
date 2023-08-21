@@ -40,7 +40,10 @@ export default {
     },
   },
   created() {
-    this.selected_language = this.$i18n.locale;
+    const support_languages = ['en-US', 'zh-CN'];
+    if (support_languages.includes(this.$i18n.locale)) {
+      this.selected_language = this.$i18n.locale;
+    }
   },
   methods: {
     changeLanguage(lang) {
