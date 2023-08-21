@@ -26,13 +26,7 @@ if (window.location.pathname.startsWith(Vue.prototype.MODECONFIG.SANDBOX.basePat
   Vue.prototype.$mode = Vue.prototype.MODECONFIG.PRODUCTION.mode;
 }
 Vue.use(VueI18n);
-// 获取当前浏览器的语言, 只支持中文和英文，如果是其他语言，默认为英文
-let localLang = localStorage.getItem('selected_language');
-if (!localLang) {
-  const navLang = navigator.language;
-  localLang = navLang === 'zh-CN' || navLang === 'en-US' ? navLang : false;
-  localStorage.setItem('selected_language', localLang);
-}
+const localLang = getLanguage();
 // 将全局方法挂载到Vue原型上
 Object.keys(globalMethods).forEach(methodName => {
   Vue.prototype[methodName] = globalMethods[methodName];
@@ -57,3 +51,19 @@ new Vue({
   template: '<App/>',
   components: { App }
 })
+function getLanguage() {
+  const support_language = ['en-US', 'zh-CN'];
+// 获取当前浏览器的语言, 只支持中文和英文，如果是其他语言，默认为英文
+  let localLang = localStorage.getItem('selected_language');
+  if (!support_language.includes(localLang)) {
+    const navLang = navigator.language;
+    // 取前两位判断是否为zh或者en
+    if (navLang.startsWith('zh')) {
+      localLang = 'zh-CN';
+    } else {
+      localLang = 'en-US';
+    }
+    localStorage.setItem('selected_language', localLang);
+  }
+  return localLang;
+}
