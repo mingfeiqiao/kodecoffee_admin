@@ -97,6 +97,12 @@ export default {
         if(parseInt(res.data.code) === 100000) {
           let post_params = this.$route.query;
           post_params.transaction_id = res.data.data.transaction_id;
+          if (window.opener) {
+            window.opener.postMessage({
+              type: 'transaction',
+              data:  Object.assign({}, data, post_params)
+            },"*");
+          }
           window.postMessage({
             type: 'transaction',
             data:  Object.assign({}, data, post_params)
