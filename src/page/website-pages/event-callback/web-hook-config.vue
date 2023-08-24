@@ -69,7 +69,7 @@
             </el-descriptions>
             <el-descriptions>
               <el-descriptions-item :label="$t('Event')" :span="12" v-loading="event_types_loading">
-                {{getEventNames(chosen_web_hook_event_data.event_types)}}
+                {{  chosen_web_hook_event_data.event_type === 'all' ? getEventNames(event_types.map(obj => obj['value'])) : getEventNames(chosen_web_hook_event_data.event_types)}}
               </el-descriptions-item>
             </el-descriptions>
             <el-descriptions>

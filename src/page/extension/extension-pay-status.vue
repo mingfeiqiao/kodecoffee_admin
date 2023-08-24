@@ -46,6 +46,12 @@ export default {
     };
   },
   created() {
+    if (window.opener) {
+      window.opener.postMessage({
+        type: 'transaction',
+        data:  Object.assign({}, data, this.params)
+      }, "*");
+    }
     window.postMessage({
       type: 'pay',
       data: this.params
@@ -107,7 +113,6 @@ export default {
             console.log('report success');
           })
         }
-
       }
     }
   }
