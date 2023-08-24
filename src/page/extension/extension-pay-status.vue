@@ -46,16 +46,16 @@ export default {
     };
   },
   created() {
-    if (window.opener) {
-      window.opener.postMessage({
-        type: 'transaction',
-        data:  Object.assign({}, data, this.params)
-      }, "*");
-    }
     window.postMessage({
       type: 'pay',
       data: this.params
     });
+    if (window.opener) {
+      window.opener.postMessage({
+        type: 'pay',
+        data: this.params
+      }, "*");
+    }
     if (parseInt(this.params.status) === 1) {
       this.attribute();
     }
