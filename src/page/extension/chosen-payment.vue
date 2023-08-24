@@ -97,16 +97,16 @@ export default {
         if(parseInt(res.data.code) === 100000) {
           let post_params = this.$route.query;
           post_params.transaction_id = res.data.data.transaction_id;
+          window.postMessage({
+            type: 'transaction',
+            data:  Object.assign({}, data, post_params)
+          });
           if (window.opener) {
             window.opener.postMessage({
               type: 'transaction',
               data:  Object.assign({}, data, post_params)
             },"*");
           }
-          window.postMessage({
-            type: 'transaction',
-            data:  Object.assign({}, data, post_params)
-          });
           console.log('发送成功:', 'transaction',Object.assign({}, data, post_params));
           window.location.href = res.data.data.url;
         } else {
