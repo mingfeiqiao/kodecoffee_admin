@@ -314,9 +314,11 @@
     "Event Details": "Event Details",
     "Up to endpoint URLs": "Up to {numb} endpoint URLs",
     "Callback Logs": "Callback Logs",
-    "Add EndPoint": "Add EndPoint"
+    "Add EndPoint": "Add EndPoint",
+    "Detecting payment environment, please wait.": "Detecting payment environment, please wait."
   },
   "zh-CN": {
+    "Detecting payment environment, please wait.":  "正在检测支付环境，请稍后...",
     "Add EndPoint": "新增端点",
     "Callback Logs": "回调日志",
     "Up to endpoint URLs": "最多{num}个回调事件配置",

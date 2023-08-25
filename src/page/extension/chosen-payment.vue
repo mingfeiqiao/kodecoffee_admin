@@ -1,13 +1,13 @@
 <template>
   <div style="display: flex;align-items: center;justify-content: center;width: 100%;height: 100%">
     <main>
-      <div class="container" v-loading="loading" :element-loading-text="$t('正在检测支付环境，请稍候')" element-loading-spinner="el-icon-loading" element-loading-background="#F0F5FF">
+      <div class="container" v-loading="loading" :element-loading-text="$t('Detecting payment environment, please wait.')" element-loading-spinner="el-icon-loading" >
         <div style="height: 33%;display: flex;align-items: center">
           <div class="title-28">
             {{ $t('Choose Payment Method') }}
           </div>
         </div>
-        <div style="display: flex;align-items: center;width: 100%;justify-content: center;height: 33%">
+        <div v-if="!loading" style="display: flex;align-items: center;width: 100%;justify-content: center;height: 33%">
           <el-card class="card" v-for="(item, key) in payment_methods" :key="key">
             <div style="padding: 12px 8px;display: flex;flex-direction: column;align-items: flex-start;" @click="pay(item)">
               <div>
@@ -24,6 +24,9 @@
               </div>
             </div>
           </el-card >
+        </div>
+        <div v-else>
+          <img src="../../assets/pay-loading.png" alt="pay-loading" width="300" height="120">
         </div>
         <div style="height: 34%">
         </div>
@@ -58,7 +61,7 @@ export default {
       this.loading = true;
       extensionGetSupportPaymentsApi(headers, data).then(res => {
         this.loading = false;
-        if(parseInt(res.data.code )=== 100000) {
+        if(parseInt(res.data.code) === 100000) {
           let payment_methods = res.data.data;
              if (Array.isArray(payment_methods) && Array.length > 0 ) {
               if (payment_methods.length === 1) {
@@ -145,6 +148,9 @@ export default {
   align-items: center;
   justify-content: center;
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.3);
+}
+.container /deep/ .el-loading-text {
+  color: #101010
 }
 .card {
   width: 100px;
