@@ -22,7 +22,7 @@
       </div>
       <div v-if="$store.state.guide_step < 4" style="background-color: #B7EB8F;margin-left: 24px;padding:3px 12px; border-radius: 4px;cursor: pointer" @click="toGuide">
         <span>{{$t('Setup Guide')}}</span>
-        <span>{{  `${$store.state.guide_step}/4`}}</span>
+        <span>{{`${$store.state.guide_step}/4`}}</span>
       </div>
     </div>
     <div style="display: flex;align-items: center">
@@ -61,18 +61,7 @@ export default {
     }
   },
   created() {
-    // 获取到lastMode 并且接口请求是否完成引导，
-    // 1. 如果是测试模式，并且已经完成引导，那么什么都不做，把guide_step 设置为4即可
-    // 2. 如果是测试模式，并且没有完成引导，那么什么都不做，把guide_step 设置为返回值即可
-    // 3. 如果是正式模式，并且已经完成引导，那么什么都不做，把guide_step 设置为4即可
-    // 4. 如果是正式模式，并且没有完成引导，那么把guide_step 设置为返回值即可
-    this.guide_step = localStorage.getItem('guideStep') || 0;
-    this.$store.commit('setGuideStep', this.guide_step);
-    this.isCollapse = this.collapse;
-    this.isTestMode = this.$mode === this.MODECONFIG.SANDBOX.mode;
-    if (this.guide_step < 4 && !this.isTestMode) {
-      window.location.href = this.MODECONFIG.SANDBOX.baseURL;
-    }
+    this.init()
   },
   methods: {
     toGuide() {
@@ -101,7 +90,16 @@ export default {
         localStorage.setItem('lastMode', this.MODECONFIG.SANDBOX.mode);
         window.location.href = this.MODECONFIG.SANDBOX.baseURL;
       }
-    }
+    },
+    init () {
+      this.is_finish_guide = this.$store.state.guide_step >= 4;
+      this.isCollapse = this.collapse;
+      this.isTestMode = this.$mode === this.MODECONFIG.SANDBOX.mode;
+      if (!this.is_finish_guide && !this.isTestMode) {
+        localStorage.setItem('lastMode', this.MODECONFIG.SANDBOX.mode);
+        window.location.href = this.MODECONFIG.SANDBOX.baseURL;
+      }
+    },
   }
 }
 </script>

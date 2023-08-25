@@ -1,7 +1,7 @@
 <template>
   <div style="display: flex;align-items: center;justify-content: center;width: 100%;height: 100%">
     <main>
-      <div class="container">
+      <div class="container" v-loading="loading" :element-loading-text="$t('正在检测支付环境，请稍候')" element-loading-spinner="el-icon-loading" element-loading-background="#F0F5FF">
         <div style="height: 33%;display: flex;align-items: center">
           <div class="title-28">
             {{ $t('Choose Payment Method') }}
@@ -42,6 +42,7 @@ export default {
   data() {
     return {
       payment_methods:[],
+      loading:false
     };
   },
   created() {
@@ -54,7 +55,9 @@ export default {
         price_id : this.$route.query.prod_id,
         currency: this.$route.query.currency || ""
       }
+      this.loading = true;
       extensionGetSupportPaymentsApi(headers, data).then(res => {
+        this.loading = false;
         if(parseInt(res.data.code )=== 100000) {
           let payment_methods = res.data.data;
              if (Array.isArray(payment_methods) && Array.length > 0 ) {
@@ -71,6 +74,7 @@ export default {
           this.$message.warning(res.data.message);
         }
       }).catch(err => {
+        this.loading = false;
         this.$message.error(err);
       });
     },

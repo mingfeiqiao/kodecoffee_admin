@@ -116,21 +116,23 @@ export default {
   },
   created() {
     if (this.$route.params && this.$route.params.id) {
-      let vm = this;
-      vm.table_loading = true;
-      subscriptionDetailApi(this.$route.params.id).then((res) => {
-        vm.table_loading = false;
-        if (res.data && parseInt(res.data.code) === 100000) {
-          vm.subscription = this.formatSubscription(res.data.data);
-          vm.order_list = this.formatOrderList(res.data.data.transaction_invoice);
+      this.table_loading = true;
+      subscriptionDetailApi(this.$route.params.id).then(res => {
+        this.table_loading = false;
+        const { data } = res || {};
+        const { code = 0} = data || {};
+        const { message } = data || {};
+        if ( parseInt(code) === 100000) {
+          this.subscription = this.formatSubscription(res.data.data);
+          this.order_list = this.formatOrderList(res.data.data.transaction_invoice);
         } else {
-          if (res && res.data && res.data.message) {
-            vm.$message.warning(res.data.message)
+          if (message) {
+            this.$message.warning(res.data.message)
           }
         }
       }).catch((err) => {
-        vm.table_loading = false;
-        console.log(err);
+        this.table_loading = false;
+        console.error(err);
       });
     }
   },
@@ -164,7 +166,7 @@ export default {
         user_email: data.user_email || "",
         subscription_status_obj: this.formatSubscriptionObj(data.order_status) || "",
         plan_end_time: this.formatTime(data.plan_end_time) || "",
-        canceled_time: this.formatTime(data.updated_time) || "",
+        canceled_time: this.formatTime(data.canceld_time) || "",
         created_time: this.formatTime(data.created_time) || "",
         subscription_id: data.transaction_key || "",
       }
