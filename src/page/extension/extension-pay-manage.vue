@@ -58,7 +58,7 @@
                       </span>
                           </template>
                         </el-table-column>
-                        <el-table-column :label="$t('Operation')" width="80px" align="center">
+                        <el-table-column :label="$t('Operation')" width="100px" align="center">
                           <template slot-scope="scope">
                       <span :style="{'color': scope.row.operation ? scope.row.operation.color : '', 'cursor': 'pointer'}"
                             @click="scope.row.operation ? scope.row.operation.function(scope.row) : ''"
@@ -88,9 +88,9 @@
                       </span>
                           </template>
                         </el-table-column>
-                        <el-table-column :label="$t('create time')" prop="created_time" align="center">
+                        <el-table-column :label="$t('create time')" prop="created_time" width="160" align="center">
                         </el-table-column>
-                        <el-table-column :label="$t('receipt')" align="center" width="100">
+                        <el-table-column :label="$t('receipt')" align="center" width="90">
                           <template slot-scope="scope">
                       <span v-if="scope.row.order_operation && scope.row.invoice_pdf_url" :style="{'color': scope.row.order_operation.color, 'cursor':'pointer'}"
                             @click="scope.row.order_operation.function(scope.row.invoice_pdf_url)">

@@ -1,13 +1,13 @@
 <template>
   <div style="display: flex;align-items: center;justify-content: center;width: 100%;height: 100%">
     <main>
-      <div class="container">
+      <div class="container" v-loading="loading" :element-loading-text="$t('Detecting payment environment, please wait.')" element-loading-spinner="el-icon-loading" >
         <div style="height: 33%;display: flex;align-items: center">
           <div class="title-28">
             {{ $t('Choose Payment Method') }}
           </div>
         </div>
-        <div style="display: flex;align-items: center;width: 100%;justify-content: center;height: 33%">
+        <div v-if="!loading" style="display: flex;align-items: center;width: 100%;justify-content: center;height: 33%">
           <el-card class="card" v-for="(item, key) in payment_methods" :key="key">
             <div style="padding: 12px 8px;display: flex;flex-direction: column;align-items: flex-start;" @click="pay(item)">
               <div>
@@ -24,6 +24,9 @@
               </div>
             </div>
           </el-card >
+        </div>
+        <div v-else>
+          <img src="../../assets/pay-loading.png" alt="pay-loading" width="300" height="120">
         </div>
         <div style="height: 34%">
         </div>
@@ -42,6 +45,7 @@ export default {
   data() {
     return {
       payment_methods:[],
+      loading:false
     };
   },
   created() {
@@ -54,8 +58,10 @@ export default {
         price_id : this.$route.query.prod_id,
         currency: this.$route.query.currency || ""
       }
+      this.loading = true;
       extensionGetSupportPaymentsApi(headers, data).then(res => {
-        if(parseInt(res.data.code )=== 100000) {
+        this.loading = false;
+        if(parseInt(res.data.code) === 100000) {
           let payment_methods = res.data.data;
              if (Array.isArray(payment_methods) && Array.length > 0 ) {
               if (payment_methods.length === 1) {
@@ -71,6 +77,7 @@ export default {
           this.$message.warning(res.data.message);
         }
       }).catch(err => {
+        this.loading = false;
         this.$message.error(err);
       });
     },
@@ -141,6 +148,9 @@ export default {
   align-items: center;
   justify-content: center;
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.3);
+}
+.container /deep/ .el-loading-text {
+  color: #101010
 }
 .card {
   width: 100px;

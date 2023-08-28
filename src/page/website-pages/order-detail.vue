@@ -21,23 +21,39 @@
           <span class="link" @click="openUserDetail(order_detail.user_id)">{{order_detail.user_email}}</span>
         </el-descriptions-item>
         <el-descriptions-item :label="$t('payment method')">
-          <span v-if="order_detail.payment_type === 'card'" style="display: flex;align-items: center;">
-            <svg width="18" height="18">
-              <use xlink:href="#bank-card"></use>
-            </svg>
-            <span style="padding-left: 8px">
-              {{payment_detail.card_number}}
-            </span>
+          <span v-if="order_detail.payment_channel === 'stripe'">
+            <span v-if="order_detail.payment_type === 'card'" style="display: flex;align-items: center;">
+              <svg width="18" height="18">
+                <use xlink:href="#bank-card"></use>
+              </svg>
+              <span style="padding-left: 8px">
+                {{payment_detail.card_number}}
+              </span>
           </span>
-          <span v-else-if="order_detail.payment_type === 'alipay'">
-            <svg width="18" height="18">
+            <span v-else-if="order_detail.payment_type === 'alipay'" style="display: flex;align-items: center;">
+              <svg width="18" height="18">
                 <use xlink:href="#alipay"></use>
-            </svg>
+              </svg>
+              <span style="padding-left: 8px">
+                {{$t('alipay')}}
+              </span>
           </span>
-          <span v-else-if="order_detail.payment_type === 'wechat'">
+            <span v-else-if="order_detail.payment_type === 'wechat'" style="display: flex;align-items: center;">
+              <svg width="18" height="18">
+                <use xlink:href="#wechat-pay"></use>
+              </svg>
+              <span style="padding-left: 8px">
+                {{$t('wechat')}}
+              </span>
+          </span>
+          </span>
+          <span v-else-if="order_detail.payment_channel === 'paypal'" style="display: flex;align-items: center;">
             <svg width="18" height="18">
-              <use xlink:href="#wechat-pay"></use>
+              <use xlink:href="#paypal"></use>
             </svg>
+            <span>
+              paypal
+            </span>
           </span>
         </el-descriptions-item>
         <el-descriptions-item :label="$t('create time')">{{ order_detail.created_time }}</el-descriptions-item>
@@ -122,6 +138,7 @@ export default {
         prod_name: "",
         client_name: "",
         user_id:"",
+        payment_channel:"",
         user_email:"",
         plan_type: "",
         country: "",
@@ -174,6 +191,7 @@ export default {
         client_name: data.client_name || "",
         user_email: data.user_email || "",
         plan_type: data.plan_type || "",
+        payment_channel:data.pay_type ||"",
         country: data.country || "",
         currency: data.currency || "",
         price: data.pay_amount || "",
@@ -203,7 +221,14 @@ export default {
       return "";
     },
     getPaymentType (data) {
-      return data && data.charge_info && data.charge_info.payment_method_details && data.charge_info.payment_method_details.type || "";
+      if (data) { // stripe 支付渠道，有charge info
+        if (data.charge_info) {
+          return data.charge_info.payment_method_details && data.charge_info.payment_method_details.type || "";
+        } else {
+          return data.pay_type || "";
+        }
+      }
+      return  "";
     },
     getCardNumber (data) {
       let number = data && data.charge_info && data.charge_info.payment_method_details && data.charge_info.payment_method_details.card && data.charge_info.payment_method_details.card.last4 || "";

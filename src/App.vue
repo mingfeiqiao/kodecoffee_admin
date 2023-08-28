@@ -8,7 +8,13 @@
 import NewIcon from "./page/components/new-icon.vue";
 export default {
   components: {NewIcon},
+  data () {
+    return {
+    }
+  },
   created() {
+  },
+  methods: {
   }
 }
 </script>

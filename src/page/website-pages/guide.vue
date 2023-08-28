@@ -128,12 +128,11 @@ kodepay_client.open_payment_page('${plan_key}');`
   </div>
 </template>
 <script>
-import {addPlan, addPlugin} from "../../api/interface";
+import {addPlan, addPlugin, setGuideStepApi} from "../../api/interface";
 import Prism from 'prismjs';
 import 'prismjs/themes/prism.css';
 import Clipboard from "clipboard";
 import {gotoDocCenter} from "../../configs/common";
-
 export default {
   data() {
     return {
@@ -292,16 +291,26 @@ export default {
             type: 'warning'
           });
         } else {
-          let vm = this;
-          addPlugin({name: this.plugin_name}).then(res => {
-            if (res.data && res.data.code && parseInt(res.data.code) === 100000) {
-              vm.current_step++;
-              vm.extension_key = res.data.data.extension_id;
-              localStorage.setItem('extensionKey', vm.extension_key);
-              vm.setLocalStorageGuideStep(vm.current_step);
-              vm.$message({
-                message: vm.$t('create success'),
-                type: 'success'
+          addPlugin({name: this.plugin_name}).then(plugin_res => {
+            const { data } = plugin_res || {};
+            const { code = 0 } = data || {};
+            if (parseInt(code) === 100000) {
+              setGuideStepApi({step: this.current_step + 1, status:1}).then(res => {
+                if (res.data && res.data.code && parseInt(res.data.code) === 100000) {
+                  this.current_step++;
+                  this.extension_key = plugin_res.data.data.extension_id;
+                  localStorage.setItem('extensionKey', this.extension_key);
+                  this.setLocalStorageGuideStep(this.current_step);
+                  this.$message({
+                    message: this.$t('create success'),
+                    type: 'success'
+                  })
+                } else {
+                  this.$message({message: res.data.message, type: 'warning'
+                  });
+                }
+              }).catch(err => {
+                console.error(err)
               });
             } else {
               this.$message({
@@ -321,33 +330,78 @@ export default {
           // 添加套餐
           let args = this.plans[this.plan_name];
           args.name = this.plan_options[this.plan_name][this.$i18n.locale];
-          let vm = this;
-          addPlan(args).then(res => {
-            if (res.data && res.data.code && parseInt(res.data.code) === 100000) {
-              vm.plan_key = res.data.data.product_key;
-              localStorage.setItem('planKey', vm.plan_key);
-              vm.$message({
-                message: vm.$t('create success'),
-                type: 'success'
+          addPlan(args).then(plan_res => {
+            const { data } = plan_res || {};
+            const { code = 0 } = data || {};
+            const { message } = data || {};
+            if (parseInt(code) === 100000) {
+              setGuideStepApi({step: this.current_step + 1, status:1}).then(res => {
+                const { data } = res || {};
+                const { code = 0 } = data || {};
+                const { message } = data || {};
+                if (parseInt(code) === 100000) {
+                  this.current_step++;
+                  this.plan_key = plan_res.data.data.product_key;
+                  localStorage.setItem('planKey', this.plan_key);
+                  this.setLocalStorageGuideStep(this.current_step);
+                  this.$message({
+                    message: this.$t('create success'),
+                    type: 'success'
+                  })
+                  // window.location.reload();
+                } else {
+                  if (message) {
+                    this.$message({message: res.data.message, type: 'warning'});
+                  }
+                }
+              }).catch(err => {
+                console.error(err)
               });
-              vm.current_step++;
-              vm.setLocalStorageGuideStep(vm.current_step);
-              window.location.reload();
             } else {
-              if (res && res.data && res.data.message) {
-                vm.$message.warning(res.data.message)
+              if (message) {
+                this.$message.warning(res.data.message)
               }
             }
+          }).catch(err => {
+            console.error(err);
           });
         }
       } else if (this.current_step === 2) { // 导入JS
-        this.current_step++;
-        this.setLocalStorageGuideStep(this.current_step);
+        setGuideStepApi({step: this.current_step + 1, status:1}).then(res => {
+          const { data } = res || {};
+          const { code = 0 } = data || {};
+          const { message } = data || {};
+          if (parseInt(code) === 100000) {
+            this.current_step++;
+            this.setLocalStorageGuideStep(this.current_step);
+          }
+          if (!(code && parseInt(code) === 100000)) {
+            if (message) {
+              this.$message({message: res.data.message, type: 'warning'});
+            }
+          }
+        }).catch(err => {
+          console.error(err)
+        });
       } else if (this.current_step === 3) { // 页面
-        this.current_step++;
-        localStorage.removeItem('extensionKey');
-        localStorage.removeItem('planKey');
-        this.setLocalStorageGuideStep(this.current_step);
+        setGuideStepApi({step: this.current_step + 1, status:1}).then(res => {
+          const { data } = res || {};
+          const { code = 0 } = data || {};
+          const { message } = data || {}
+          if (parseInt(code) === 100000) {
+            this.current_step++;
+            localStorage.removeItem('extensionKey');
+            localStorage.removeItem('planKey');
+            this.setLocalStorageGuideStep(this.current_step);
+          }
+          if (!(code && parseInt(code) === 100000)) {
+            if (message) {
+              this.$message({message: res.data.message, type: 'warning'});
+            }
+          }
+        }).catch(err => {
+          console.error(err)
+        });
       }
     },
     copy (){
@@ -361,16 +415,13 @@ export default {
         this.$message({
           message: this.$t('copy success'),
           type: 'success'
-        })
-        clipboard.destroy() // 释放内存
+        });
+        clipboard.destroy(); // 释放内存
       })
       clipboard.on('error', e => {
         // 不支持复制
-        this.$message({
-          message:  this.$t('browser not support copy'),
-          type: 'warning'
-        })
-        clipboard.destroy()
+        this.$message({message: this.$t('browser not support copy'), type: 'warning'})
+        clipboard.destroy();
       })
     },
     goToStep(index) {
@@ -379,7 +430,6 @@ export default {
   }
 };
 </script>
-
 <style scoped lang="less">
 .code-container {
   padding-bottom: 12px;
