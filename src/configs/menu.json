@@ -59,8 +59,8 @@
           "url": "/balance-settings"
         },
         {
-          "title": "Event Callback Settings",
-          "url": "/event-callback-settings"
+          "title": "Developer Settings",
+          "url": "/developer-settings"
         },
         {
           "title": "Payment Channel Settings",

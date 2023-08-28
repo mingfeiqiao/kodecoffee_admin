@@ -70,7 +70,7 @@ KodepayContent.kodepay_content_start_listener();</code>
 {{`// service_worker
 import {Kodepay} from "kodepay";
 // example: const kodepay_client = Kodepay.kodepay(application_id, extension_id, 'mode')
-//You can find the application_id in the event callback settings page
+//You can find the application_id in the Developer Settings page
 //You can find the extension_id in the extension page
 const kodepay_client = Kodepay.kodepay('${application_key}', '${extension_key}', 'development');
 // get user info

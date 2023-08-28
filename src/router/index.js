@@ -10,7 +10,7 @@ import mainMenu from "../page/main-menu.vue";
 import subscriptionDetail from "../page/website-pages/subscription-detail.vue";
 import OrderDetail from "../page/website-pages/order-detail.vue";
 import balanceSettings from "../page/website-pages/balance-settings.vue";
-import eventCallbackSettings from "../page/website-pages/event-callback-settings.vue";
+import DeveloperSettings from "../page/website-pages/developer-settings.vue";
 import paymentChannelSettings from "../page/website-pages/payment-channel-settings.vue";
 import paySubscriptionLayout from "../page/website-pages/pay-subscription-layout.vue";
 import payAllOrderLayout from "../page/website-pages/pay-all-order-layout.vue";
@@ -134,10 +134,10 @@ const routes = [
         meta: { breadcrumbLabel: 'Balance Settings' }
       },
       {
-        path: 'event-callback-settings',
-        component: eventCallbackSettings,
-        name: 'event-callback-settings',
-        meta: { breadcrumbLabel: 'Event Callback Settings' }
+        path: 'developer-settings',
+        component: DeveloperSettings,
+        name: 'developer-settings',
+        meta: { breadcrumbLabel: 'Developer Settings' }
       },
       {
         path: 'payment-channel-settings',
