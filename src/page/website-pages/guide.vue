@@ -291,17 +291,16 @@ export default {
             type: 'warning'
           });
         } else {
-          addPlugin({name: this.plugin_name}).then(res => {
-            const { data } = res || {};
+          addPlugin({name: this.plugin_name}).then(plugin_res => {
+            const { data } = plugin_res || {};
             const { code = 0 } = data || {};
             if (parseInt(code) === 100000) {
-              this.extension_key = res.data.data.extension_id;
-              this.setLocalStorageGuideStep(this.current_step);
-              setGuideStepApi({step: this.current_step, status:1}).then(res => {
+              setGuideStepApi({step: this.current_step + 1, status:1}).then(res => {
                 if (res.data && res.data.code && parseInt(res.data.code) === 100000) {
                   this.current_step++;
-                  this.extension_key = res.data.data.extension_id;
+                  this.extension_key = plugin_res.data.data.extension_id;
                   localStorage.setItem('extensionKey', this.extension_key);
+                  this.setLocalStorageGuideStep(this.current_step);
                   this.$message({
                     message: this.$t('create success'),
                     type: 'success'
@@ -331,24 +330,25 @@ export default {
           // 添加套餐
           let args = this.plans[this.plan_name];
           args.name = this.plan_options[this.plan_name][this.$i18n.locale];
-          addPlan(args).then(res => {
-            const { data } = res || {};
+          addPlan(args).then(plan_res => {
+            const { data } = plan_res || {};
             const { code = 0 } = data || {};
             const { message } = data || {};
             if (parseInt(code) === 100000) {
-              setGuideStepApi({step: this.current_step, status:1}).then(res => {
+              setGuideStepApi({step: this.current_step + 1, status:1}).then(res => {
                 const { data } = res || {};
                 const { code = 0 } = data || {};
                 const { message } = data || {};
                 if (parseInt(code) === 100000) {
                   this.current_step++;
-                  this.plan_key = res.data.data.product_key;
+                  this.plan_key = plan_res.data.data.product_key;
                   localStorage.setItem('planKey', this.plan_key);
                   this.setLocalStorageGuideStep(this.current_step);
                   this.$message({
                     message: this.$t('create success'),
                     type: 'success'
                   })
+                  // window.location.reload();
                 } else {
                   if (message) {
                     this.$message({message: res.data.message, type: 'warning'});
@@ -357,10 +357,6 @@ export default {
               }).catch(err => {
                 console.error(err)
               });
-              this.$message({message: this.$t('create success'),type: 'success'});
-              this.current_step++;
-              this.setLocalStorageGuideStep(this.current_step);
-              window.location.reload();
             } else {
               if (message) {
                 this.$message.warning(res.data.message)
@@ -371,12 +367,14 @@ export default {
           });
         }
       } else if (this.current_step === 2) { // 导入JS
-        this.current_step++;
-        this.setLocalStorageGuideStep(this.current_step);
-        setGuideStepApi({step: this.current_step, status:1}).then(res => {
+        setGuideStepApi({step: this.current_step + 1, status:1}).then(res => {
           const { data } = res || {};
           const { code = 0 } = data || {};
           const { message } = data || {};
+          if (parseInt(code) === 100000) {
+            this.current_step++;
+            this.setLocalStorageGuideStep(this.current_step);
+          }
           if (!(code && parseInt(code) === 100000)) {
             if (message) {
               this.$message({message: res.data.message, type: 'warning'});
@@ -386,13 +384,16 @@ export default {
           console.error(err)
         });
       } else if (this.current_step === 3) { // 页面
-        this.current_step++;
-        localStorage.removeItem('extensionKey');
-        localStorage.removeItem('planKey');
-        setGuideStepApi({step: this.current_step, status:1}).then(res => {
+        setGuideStepApi({step: this.current_step + 1, status:1}).then(res => {
           const { data } = res || {};
           const { code = 0 } = data || {};
           const { message } = data || {}
+          if (parseInt(code) === 100000) {
+            this.current_step++;
+            localStorage.removeItem('extensionKey');
+            localStorage.removeItem('planKey');
+            this.setLocalStorageGuideStep(this.current_step);
+          }
           if (!(code && parseInt(code) === 100000)) {
             if (message) {
               this.$message({message: res.data.message, type: 'warning'});
@@ -401,7 +402,6 @@ export default {
         }).catch(err => {
           console.error(err)
         });
-        this.setLocalStorageGuideStep(this.current_step);
       }
     },
     copy (){
