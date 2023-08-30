@@ -129,6 +129,7 @@ export const getWebHookEventTypesApi = () => instance.get('/notifications/webhoo
 export const getWebHookEventListApi = () => instance.get('/notifications/webhooks')
 export const addWebHookEventApi = data => instance.post('/notifications/webhooks', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}})
 export const updateWebHookEventApi = (id,data) => instance.post(`/notifications/webhooks/${id}`, JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}})
+export const deleteWebHookEventApi = (id) =>  instance.post(`/notifications/delete-webhooks/${id}`, null, {headers: {'Content-Type' : 'application/json'}})
 export const getWebHookEventLogsApi = data => instance.post('/notifications/webhooks-logs', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}})
 export const setGuideStepApi = data => instance.post('/guide-step/update-guide-step', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}})
 export const makeOrderApi = (headers, data) => instance.post('/api/extension/make-order',data,{headers})
