@@ -14,22 +14,24 @@
         </el-table-column>
         <el-table-column prop="created_time_format" :label="$t('create time')" width="auto">
         </el-table-column>
-        <el-table-column :label="$t('Operation')" width="100" align="center">
+        <el-table-column :label="$t('Operation')" width="200" align="center">
           <template slot-scope="scope">
             <span class="link" @click="openWebHookDetailDialog(scope.row)">{{ $t('detail') }}</span>
+            <span class="link" @click="editWebHookDetail(scope.row)">{{ $t('edit') }}</span>
+            <span class="link" @click="deleteWebHookDetail(scope.row)">{{ $t('delete') }}</span>
           </template>
         </el-table-column>
       </el-table>
     </div>
-    <div class="add-web-hook-dialog" v-if="show_add_webhook_config">
+    <div class="add-web-hook-dialog" v-if="show_config_dialog">
       <el-dialog
-        :visible.sync="show_add_webhook_config"
+        :visible.sync="show_config_dialog"
         :show-close="false"
         width="50%"
       >
         <div style="padding: 16px 24px">
           <div class="title-16">
-            {{ $t('Create Event') }}
+            {{ show_add_webhook_config ? $t('Create Event') : $t('Update Event')}}
           </div>
           <div style="padding-top: 24px">
             <el-form :model="web_hook_event_data" ref="add_web_hook_event_form" label-suffix=":" :rules="rules"
@@ -47,7 +49,7 @@
           </div>
           <div style="display: flex;flex-direction: row-reverse;align-items: center;">
             <el-button type="primary" size="small" style="margin-left: 12px" @click="addWebHookEvent">{{ $t('save') }}</el-button>
-            <el-button size="small" @click="show_add_webhook_config = false">{{ $t('cancel') }}</el-button>
+            <el-button size="small" @click="cancelConfigDialog">{{ $t('cancel') }}</el-button>
           </div>
         </div>
       </el-dialog>
@@ -69,7 +71,7 @@
             </el-descriptions>
             <el-descriptions>
               <el-descriptions-item :label="$t('Event')" :span="12" v-loading="event_types_loading">
-                {{  chosen_web_hook_event_data.event_type === 'all' ? getEventNames(event_types.map(obj => obj['value'])) : getEventNames(chosen_web_hook_event_data.event_types)}}
+                {{getEventNames(chosen_web_hook_event_data.event_types)}}
               </el-descriptions-item>
             </el-descriptions>
             <el-descriptions>
@@ -93,7 +95,7 @@
   </div>
 </template>
 <script>
-import {addWebHookEventApi, getWebHookEventTypesApi, getWebHookEventListApi} from "../../../api/interface";
+import {addWebHookEventApi, getWebHookEventTypesApi, getWebHookEventListApi, deleteWebHookEventApi, updateWebHookEventApi} from "../../../api/interface";
 import {timestampToDateString} from "../../../utils/dateUtils";
 import Clipboard from "clipboard";
 export default {
@@ -104,6 +106,7 @@ export default {
       web_hook_event_table_loading: false,
       event_types_loading: false,
       show_add_webhook_config: false,
+      show_update_webhook_config:false,
       show_webhook_detail_dialog: false,
       web_hook_table_data: [],
       web_hook_event_data: {
@@ -114,6 +117,9 @@ export default {
     }
   },
   computed: {
+    show_config_dialog () {
+      return this.show_add_webhook_config || this.show_update_webhook_config;
+    },
     rules () {
       return {
         endpoint:[
@@ -131,6 +137,38 @@ export default {
     this.getWebHookEventTypes();
   },
   methods: {
+    cancelConfigDialog() {
+      this.show_update_webhook_config = false;
+      this.show_add_webhook_config = false;
+    },
+    editWebHookDetail(row) {
+      this.web_hook_event_data = row;
+      this.show_update_webhook_config = true;
+    },
+    deleteWebHookDetail(row) {
+      this.$confirm(this.$t('delete tip'), this.$t('Tips'), {
+        confirmButtonText: this.$t('Ok'),
+        cancelButtonText: this.$t('cancel'),
+        type: 'warning'
+      }).then(() => {
+        deleteWebHookEventApi(row.webhook_id).then(res => {
+          const { data } = res || {};
+          const { code = 0, message } = data;
+          if (parseInt(code) === 100000) {
+            this.$message.success(this.$t('delete success'));
+            this.getWebHookEventsList();
+          } else {
+            if (message) {
+              this.$message.error(message)
+            }
+          }
+        }).catch(err => {
+          console.error(err);
+        })
+      }).catch(() => {
+        console.log('取消删除')
+      });
+    },
     copy(text) {
       let clipboard = new Clipboard('#copy_text', {
         text: () => {
@@ -188,6 +226,7 @@ export default {
      * 打开新增事件窗口
      */
     openAddWebHookEventDialog() {
+      this.web_hook_event_data = {endpoint:'', event_types: []};
       if (this.web_hook_table_data.length >= this.WEB_HOOK_EVENT_LIMIT) {
         this.$message.warning(this.$t('Up to endpoint URLs', {number: this.WEB_HOOK_EVENT_LIMIT}));
       } else {
@@ -250,22 +289,46 @@ export default {
      * 新增一个回调事件地址
      */
     addWebHookEvent() {
-      addWebHookEventApi(this.getAddEventArgs(this.web_hook_event_data.endpoint, this.web_hook_event_data.event_types)).then(res => {
-        if (res.data && res.data.code && parseInt(res.data.code) === 100000) {
-          this.$message({
-            message: this.$t('add success'),
-            type: 'success'
-          })
-          this.show_add_webhook_config = false;
-          this.getWebHookEventsList();
-        } else {
-          if (res.data.message) {
-            this.$message.error(res.data.msg);
+      this.$refs['add_web_hook_event_form'].validate(valid => {
+        if (valid) {
+          if (this.show_add_webhook_config) {
+            addWebHookEventApi(this.getAddEventArgs(this.web_hook_event_data.endpoint, this.web_hook_event_data.event_types)).then(res => {
+              if (res.data && res.data.code && parseInt(res.data.code) === 100000) {
+                this.$message({
+                  message: this.$t('add success'),
+                  type: 'success'
+                })
+                this.cancelConfigDialog();
+                this.getWebHookEventsList();
+              } else {
+                if (res.data.message) {
+                  this.$message.error(res.data.msg);
+                }
+              }
+            }).catch(err => {
+              console.log(err);
+            })
+          } else if (this.show_update_webhook_config) {
+            updateWebHookEventApi(this.web_hook_event_data.webhook_id, this.getAddEventArgs(this.web_hook_event_data.endpoint, this.web_hook_event_data.event_types)).then(res => {
+              const { data } = res || {};
+              const { code = 0, message } =  data || {};
+              if (parseInt(code) === 100000) {
+                this.$message.success(this.$t('update success'))
+                this.cancelConfigDialog();
+                this.getWebHookEventsList();
+              } else {
+                if (message) {
+                  this.$message.error(this.$t('message'))
+                }
+              }
+            }).catch(err => {
+              console.error(err);
+            })
           }
+        } else {
+          return false;
         }
-      }).catch(err => {
-        console.log(err);
-      })
+      });
     },
     /**
      * 获取回调事件列表
@@ -288,9 +351,9 @@ export default {
     },
     formatWebHookTableData (data) {
       data.forEach(item => {
+        item.event_types = item.event_type === 'all' ? this.event_types.map(item => item.value) : item.event_types;
         item.created_time_format = item.created_time ?  timestampToDateString(item.created_time, 'yyyy-MM-dd HH:II:SS') : "-";
       });
-      console.log(data);
       return data;
     }
   }
