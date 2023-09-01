@@ -1,35 +1,39 @@
 <template>
   <div style="display: flex;align-items: center;justify-content: center;width: 100%;height: 100%">
     <main>
-      <div class="container" v-loading="loading" :element-loading-text="$t('Detecting payment environment, please wait.')" element-loading-spinner="el-icon-loading" >
-        <div style="height: 33%;display: flex;align-items: center">
-          <div class="title-28">
-            {{ $t('Choose Payment Method') }}
-          </div>
-        </div>
-        <div v-if="!loading" style="display: flex;align-items: center;width: 100%;justify-content: center;height: 33%">
-          <el-card class="card" v-for="(item, key) in payment_methods" :key="key">
-            <div style="padding: 12px 8px;display: flex;flex-direction: column;align-items: flex-start;" @click="pay(item)">
-              <div>
-                <svg width="30" height="30">
-                  <use v-if="item.payment_channel==='stripe' && item.payment_method==='card'" xlink:href="#bank-card"></use>
-                  <use v-if="item.payment_channel==='stripe' && item.payment_method==='alipay'" xlink:href="#alipay"></use>
-                  <use v-if="item.payment_channel==='stripe' && item.payment_method==='wechat'" xlink:href="#wechat-pay"></use>
-                  <use v-if="item.payment_channel==='paypal'" xlink:href="#paypal"></use>
-                  <use v-if="item==='paypal'" xlink:href="#paypal"></use>-->
-                </svg>
-              </div>
-              <div>
-                {{ $t(item.payment_channel==='stripe'? item.payment_method : item.payment_channel) }}
-              </div>
+      <div class="container" v-if="!loading">
+          <div style="height: 33%;display: flex;align-items: center">
+            <div class="title-28">
+              {{ $t('Choose Payment Method') }}
             </div>
-          </el-card >
+          </div>
+          <div style="display: flex;align-items: center;width: 100%;justify-content: center;height: 33%">
+            <el-card class="card" v-for="(item, key) in payment_methods" :key="key">
+              <div style="padding: 12px 8px;display: flex;flex-direction: column;align-items: flex-start;" @click="pay(item)">
+                <div>
+                  <svg width="30" height="30">
+                    <use v-if="item.payment_channel==='stripe' && item.payment_method==='card'" xlink:href="#bank-card"></use>
+                    <use v-if="item.payment_channel==='stripe' && item.payment_method==='alipay'" xlink:href="#alipay"></use>
+                    <use v-if="item.payment_channel==='stripe' && item.payment_method==='wechat'" xlink:href="#wechat-pay"></use>
+                    <use v-if="item.payment_channel==='paypal'" xlink:href="#paypal"></use>
+                    <use v-if="item==='paypal'" xlink:href="#paypal"></use>-->
+                  </svg>
+                </div>
+                <div>
+                  {{ $t(item.payment_channel==='stripe'? item.payment_method : item.payment_channel) }}
+                </div>
+              </div>
+            </el-card >
+          </div>
+          <div style="height: 34%">
         </div>
-        <div v-else>
-          <img src="../../assets/pay-loading.png" alt="pay-loading" width="300" height="120">
-        </div>
-        <div style="height: 34%">
-        </div>
+      </div>
+      <div class="container" v-else>
+        <img src="../../assets/pay-loading.png" alt="pay-loading" width="200" height="120">
+        <span>
+            <span>{{$t('Detecting payment environment, please wait.')}}</span>
+            <span class="text-loading"></span>
+          </span>
       </div>
       <div>
         <language-change></language-change>
@@ -166,5 +170,20 @@ export default {
 }
 .card /deep/ .el-card__body {
   padding: 0;
+}
+.text-loading:after{
+  content:'...';
+  animation: text-loading 2s infinite;
+}
+@keyframes text-loading {
+  25%{
+    content: ".";
+  }
+  50%{
+    content: "..";
+  }
+  100%{
+    content: "...";
+  }
 }
 </style>
