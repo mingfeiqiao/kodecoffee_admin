@@ -12,7 +12,13 @@
             <div class="title-24">
               {{$t('pay success')}}
             </div>
-            <div style="padding: 24px 80px;">
+            <div v-if="params.redirect_url" style="padding: 24px 80px;">
+              <span>
+                <span>{{$t('seconds to jump', {seconds:this.countdown})}}</span>
+                <span class="text-loading"></span>
+              </span>
+            </div>
+            <div v-else style="padding: 24px 80px;">
               {{$t('pay success tip')}}
               <span style="color: #1090FF;cursor: pointer" @click="openPayManagePage">{{$t('click to billing')}}</span>
             </div>
@@ -42,8 +48,21 @@ export default {
   components: {languageChange},
   data() {
     return {
+      countdown: 5, // 倒计时秒
+      timer:null,// 用于存储计时器的引用
       params: this.$route.query,
     };
+  },
+  mounted() {
+    if (parseInt(this.params.status) === 1 && this.params.redirect_url) {
+      this.startCountDown()
+    }
+  },
+  beforeDestroy() {
+    // 在组件销毁之前清除计时器，以避免内存泄漏
+    if (this.timer) {
+      clearInterval(this.timer);
+    }
   },
   created() {
     window.postMessage({
@@ -61,6 +80,38 @@ export default {
     }
   },
   methods: {
+    navigateToPage(params) {
+     window.location.href = this.getRedirectUrl(params, this.params.redirect_url);
+    },
+    startCountDown() {
+      this.timer = setInterval(() => {
+        if (this.countdown > 1) {
+          this.countdown --;
+        } else {
+          clearInterval(this.timer);
+          const params = {}
+          for (const key in this.params){
+            if (key !== 'redirect_url') {
+              params[key] = this.params[key]
+            }
+          }
+          this.navigateToPage(params);
+        }
+      }, 1000)
+    },
+    getRedirectUrl (params, targetUrl) {
+      // 获取目标URL的参数（如果有的话）
+      const targetParams = new URLSearchParams(new URL(targetUrl).search);
+      // 将源URL的参数添加到目标URL的参数中
+      for (const key in params){
+        if (params.hasOwnProperty(key)) {
+          const value = params[key];
+          targetParams.append(key, value)
+        }
+      }
+      // 构建新的目标URL
+      return targetUrl.split('?')[0] + '?' + targetParams.toString();
+    },
     /**
      * 打开计费管理页面
      */
@@ -129,5 +180,20 @@ export default {
   align-items: center;
   justify-content: center;
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.3);
+}
+.text-loading:after{
+  content:'...';
+  animation: text-loading 2s infinite;
+}
+@keyframes text-loading {
+  25%{
+    content: ".";
+  }
+  50%{
+    content: "..";
+  }
+  100%{
+    content: "...";
+  }
 }
 </style>

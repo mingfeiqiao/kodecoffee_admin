@@ -319,9 +319,11 @@
     "delete": "delete",
     "delete success": "delete success",
     "Update Event": "Update Event",
-    "delete tip": "Irreversible action: Once deleted, it cannot be recovered. If needed, you can re-add it. Are you sure you want to delete it?"
+    "delete tip": "Irreversible action: Once deleted, it cannot be recovered. If needed, you can re-add it. Are you sure you want to delete it?",
+    "seconds to jump": "redirect to the product page in {seconds} seconds"
   },
   "zh-CN": {
+    "seconds to jump": "将在{seconds}秒后跳转到指定页面",
     "delete tip": "删除后不可回复，如需要可重新添加，是否删除？",
     "Update Event": "编辑回调配置",
     "delete success": "删除成功",

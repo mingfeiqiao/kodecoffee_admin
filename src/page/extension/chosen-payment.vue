@@ -33,7 +33,7 @@
         <span>
             <span>{{$t('Detecting payment environment, please wait.')}}</span>
             <span class="text-loading"></span>
-          </span>
+        </span>
       </div>
       <div>
         <language-change></language-change>
@@ -93,6 +93,10 @@ export default {
         payment_method: item.payment_method
       }
       let origin_data = this.$route.query.origin_data || "";
+      let redirect_url = this.$route.query.redirect_url || "";
+      if (redirect_url) {
+        data.redirect_url = redirect_url;
+      }
       if (origin_data) {
         try {
           let decoded_string = atob(origin_data); // 解码
@@ -130,7 +134,7 @@ export default {
     getHeaders () {
       let headers = {};
       for (let key in this.$route.query) {
-        if (key === 'origin_data') {
+        if (key === 'origin_data' || key === 'redirect_url') {
           continue
         }
         let newKey = key.replace(/_/g, "-");
