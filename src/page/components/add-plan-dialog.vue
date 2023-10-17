@@ -28,23 +28,23 @@
              </el-radio>
            </div>
          </el-form-item>
-         <el-form-item v-if="unable_modify && plan_type_obj.type === 'recurring'">
-           <div style="display: flex;align-items: center">
-             <div style="padding-right: 20px">
-               {{$t('Billing cycle')}}
-             </div>
-             <div style="max-width: 150px">
-               <el-select v-model="main_price_obj.interval_count">
-                 <el-option v-for="item in interval_count_options" :key="item.value" :label="$t(item.label)" :value="item.value">
-                 </el-option>
-               </el-select>
-             </div>
-           </div>
-
-<!--           <div style="display: flex;align-items: center;padding-left: 80px">-->
-<!--             {{$t('recurring monthly tip')}}-->
+<!--         <el-form-item v-if="unable_modify && plan_type_obj.type === 'recurring'">-->
+<!--           <div style="display: flex;align-items: center">-->
+<!--             <div style="padding-right: 20px">-->
+<!--               {{$t('Billing cycle')}}-->
+<!--             </div>-->
+<!--             <div style="max-width: 150px">-->
+<!--               <el-select v-model="main_price_obj.interval_count">-->
+<!--                 <el-option v-for="item in interval_count_options" :key="item.value" :label="$t(item.label)" :value="item.value">-->
+<!--                 </el-option>-->
+<!--               </el-select>-->
+<!--             </div>-->
 <!--           </div>-->
-         </el-form-item>
+
+<!--&lt;!&ndash;           <div style="display: flex;align-items: center;padding-left: 80px">&ndash;&gt;-->
+<!--&lt;!&ndash;             {{$t('recurring monthly tip')}}&ndash;&gt;-->
+<!--&lt;!&ndash;           </div>&ndash;&gt;-->
+<!--         </el-form-item>-->
 <!--         <el-form-item>-->
 <!--           <el-switch v-model="plan_trial_obj.is_trial" :inactive-text="$t('free trial')">-->
 <!--           </el-switch>-->
@@ -426,7 +426,7 @@ export default {
             currency: this.main_price_obj.currency,
             type: 'recurring',
             interval: 'month',
-            interval_count: this.main_price_obj.interval_count,
+            interval_count: 1,
             currency_options: currency_options
           }];
         } else {
