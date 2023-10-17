@@ -42,7 +42,7 @@
     "user email": "User Email",
     "subscription id": "Subscription ID",
     "canceled time": "Canceled Time",
-
+    "Export to CSV": "Export to CSV",
     "effective subscription": "Effective",
     "all subscription": "All",
     "ineffective subscription": "Ineffective",
@@ -260,6 +260,8 @@
     "Create kodepayContent.js and paste the code below": "Create kodepayContent.js and paste the code below:",
     "Logout": "Logout",
     "monthly": "monthly",
+    "quarterly": "quarterly",
+    "Billing cycle": "Billing cycle",
     "The balance refers to the amount remaining for developers after deducting fees, refunds, and dispute charges from their order revenue": "The balance refers to the amount remaining for developers after deducting fees, refunds, and dispute charges from their order revenue",
     "Payout amount refers to the balance that can be withdrawn after 14 days from the completion of the order": "Payout amount refers to the balance that can be withdrawn after 14 days from the completion of the order",
     "5s to login": "Redirecting to the login page in 5 seconds.",
@@ -320,9 +322,11 @@
     "delete success": "delete success",
     "Update Event": "Update Event",
     "delete tip": "Irreversible action: Once deleted, it cannot be recovered. If needed, you can re-add it. Are you sure you want to delete it?",
-    "seconds to jump": "redirect to the product page in {seconds} seconds"
+    "seconds to jump": "redirect to the product page in {seconds} seconds",
+    "Loading desperately": "Loading desperately..."
   },
   "zh-CN": {
+    "Loading desperately": "拼命加载中...",
     "seconds to jump": "将在{seconds}秒后跳转到指定页面",
     "delete tip": "删除后不可回复，如需要可重新添加，是否删除？",
     "Update Event": "编辑回调配置",
@@ -385,6 +389,9 @@
     "The balance refers to the amount remaining for developers after deducting fees, refunds, and dispute charges from their order revenue": "开发者的订单收入扣除手续费用、退款、争议费用后剩余的金额",
     "Payout amount refers to the balance that can be withdrawn after 14 days from the completion of the order": "订单完成14天以后余额可提现",
     "monthly": "每月",
+    "quarterly": "每季度",
+    "Billing cycle": "计费周期",
+    "Export to CSV": "导出CSV",
     "Logout": "登出",
     "Import the dependency package": "引入依赖包(npm):",
     "Add the following code to manifest.json": "manifest.json中增加如下代码:",

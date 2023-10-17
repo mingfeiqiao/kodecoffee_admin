@@ -86,6 +86,7 @@
 <script>
 import menuList from '../configs/menu.json'
 import headTop from "./components/head-top.vue";
+import { Crisp } from "crisp-sdk-web";
 import breadCrumb from "./components/bread-crumb.vue";
 import {getOptions, postUserInfo, zbUserInfo} from "../api/interface";
 import Vue from "vue";
@@ -129,6 +130,9 @@ export default {
     },
   },
   created() {
+    Crisp.configure('29c69934-5e71-4ba8-9eff-d80342cdd79e');
+    Crisp.chat.show();
+    Vue.prototype.$Crisp = Crisp;
     let last_mode = localStorage.getItem('lastMode');
     if (last_mode) {
       if (this.$mode !== last_mode) {
@@ -150,7 +154,7 @@ export default {
     loginOrRegisterUser () {
       // zbUserInfo().then(function(res) { // 先请求zbase的用户信息
       // axios.get('http://127.0.0.1:3000/user/v2/userinfo')
-      zbUserInfo().then(res => { // 先请求zbase的用户信息
+      axios.get('http://127.0.0.1:3000/user/v2/userinfo').then(res => { // 先请求zbase的用户信息
         const { data } = res || {};
         const { code = 0 } = data || {};
         const { userinfo = {} } = data || {};

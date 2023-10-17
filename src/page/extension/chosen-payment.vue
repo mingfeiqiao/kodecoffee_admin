@@ -1,7 +1,7 @@
 <template>
   <div style="display: flex;align-items: center;justify-content: center;width: 100%;height: 100%">
     <main>
-      <div class="container" v-if="!loading">
+      <div class="container" v-loading="loading" :element-loading-text="$t('Loading desperately')" >
           <div style="height: 33%;display: flex;align-items: center">
             <div class="title-28">
               {{ $t('Choose Payment Method') }}
@@ -28,13 +28,6 @@
           <div style="height: 34%">
         </div>
       </div>
-      <div class="container" v-else>
-        <img src="../../assets/pay-loading.png" alt="pay-loading" width="200" height="120">
-        <span>
-            <span>{{$t('Detecting payment environment, please wait.')}}</span>
-            <span class="text-loading"></span>
-        </span>
-      </div>
       <div>
         <language-change></language-change>
       </div>
@@ -49,11 +42,17 @@ export default {
   data() {
     return {
       payment_methods:[],
-      loading:false
+      support_payment_loading:false,
+      pay_url_loading:false
     };
   },
   created() {
     this.init();
+  },
+  computed:{
+    loading () {
+      return this.pay_url_loading || this.support_payment_loading
+    }
   },
   methods: {
     init () {
@@ -62,9 +61,9 @@ export default {
         price_id : this.$route.query.prod_id,
         currency: this.$route.query.currency || ""
       }
-      this.loading = true;
+      this.support_payment_loading = true;
       extensionGetSupportPaymentsApi(headers, data).then(res => {
-        this.loading = false;
+        this.support_payment_loading = false;
         if(parseInt(res.data.code) === 100000) {
           let payment_methods = res.data.data;
              if (Array.isArray(payment_methods) && Array.length > 0 ) {
@@ -81,7 +80,7 @@ export default {
           this.$message.warning(res.data.message);
         }
       }).catch(err => {
-        this.loading = false;
+        this.support_payment_loading = false;
         this.$message.error(err);
       });
     },
@@ -108,6 +107,7 @@ export default {
       if (this.$route.query.currency && this.$route.query.currency !== "" ) {
         data.currency = this.$route.query.currency;
       }
+      this.pay_url_loading = true;
       makeOrderApi(this.getHeaders(), data).then(res => {
         if(parseInt(res.data.code) === 100000) {
           let post_params = this.$route.query;
@@ -158,7 +158,7 @@ export default {
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.3);
 }
 .container /deep/ .el-loading-text {
-  color: #101010
+  color: #929292
 }
 .card {
   width: 100px;

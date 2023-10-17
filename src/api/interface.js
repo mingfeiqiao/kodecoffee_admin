@@ -90,6 +90,8 @@ export const planList = data => {
   data = JSON.stringify(data);
   return instance.post('/product/list', data, {headers: {'Content-Type' : 'application/json'}});
 }
+export const exportBillApi = data => instance.post('/app/bill/export-bill', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
+export const planFilterListApi = data =>instance.post('/product/plan-filter-list', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 export const updatePlan = (id, data) => instance.post(`/product/save/${id}`, JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 // 订单相关
 export const orderList = (data) => instance.post('/app/bill/list', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
