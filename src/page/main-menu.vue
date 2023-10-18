@@ -86,6 +86,7 @@
 <script>
 import menuList from '../configs/menu.json'
 import headTop from "./components/head-top.vue";
+import { Crisp } from "crisp-sdk-web";
 import breadCrumb from "./components/bread-crumb.vue";
 import {getOptions, postUserInfo, zbUserInfo} from "../api/interface";
 import Vue from "vue";
@@ -129,6 +130,9 @@ export default {
     },
   },
   created() {
+    Crisp.configure('29c69934-5e71-4ba8-9eff-d80342cdd79e');
+    Crisp.chat.show();
+    Vue.prototype.$Crisp = Crisp;
     let last_mode = localStorage.getItem('lastMode');
     if (last_mode) {
       if (this.$mode !== last_mode) {

@@ -192,7 +192,7 @@ export default {
              picker.$emit('pick', [start, end]);
             }
         }]
-      },
+    },
     /**
      * 跳转到guide页面
      */

@@ -12,10 +12,6 @@ import zhLocale from 'element-ui/lib/locale/lang/zh-CN'
 import ElementLocale from 'element-ui/lib/locale'
 import * as echarts from 'echarts';
 import * as globalMethods from './configs/common';
-import { Crisp } from "crisp-sdk-web";
-Crisp.configure('29c69934-5e71-4ba8-9eff-d80342cdd79e');
-Crisp.chat.hide();
-Vue.prototype.$Crisp = Crisp;
 Vue.prototype.$echarts = echarts
 Vue.prototype.URL = config.URL;
 Vue.prototype.API_URL = config.API_URL;

@@ -28,22 +28,34 @@
              </el-radio>
            </div>
          </el-form-item>
-         <el-form-item v-if="unable_modify && plan_type_obj.type === 'recurring'">
-           <div style="display: flex;align-items: center;padding-left: 80px">
-             {{$t('recurring monthly tip')}}
-           </div>
-         </el-form-item>
-         <el-form-item>
-           <el-switch v-model="plan_trial_obj.is_trial" :inactive-text="$t('free trial')">
-           </el-switch>
-         </el-form-item>
-         <el-form-item v-if="plan_trial_obj.is_trial">
-           <div style="display: flex;padding-left: 60px">
-             <el-radio-group v-model="plan_trial_obj.trial_days">
-               <el-radio v-for="item in trial_days_option" :key="item.index" :label="item.value">{{item.value + ' ' + $t('days')}}</el-radio>
-             </el-radio-group>
-           </div>
-         </el-form-item>
+<!--         <el-form-item v-if="unable_modify && plan_type_obj.type === 'recurring'">-->
+<!--           <div style="display: flex;align-items: center">-->
+<!--             <div style="padding-right: 20px">-->
+<!--               {{$t('Billing cycle')}}-->
+<!--             </div>-->
+<!--             <div style="max-width: 150px">-->
+<!--               <el-select v-model="main_price_obj.interval_count">-->
+<!--                 <el-option v-for="item in interval_count_options" :key="item.value" :label="$t(item.label)" :value="item.value">-->
+<!--                 </el-option>-->
+<!--               </el-select>-->
+<!--             </div>-->
+<!--           </div>-->
+
+<!--&lt;!&ndash;           <div style="display: flex;align-items: center;padding-left: 80px">&ndash;&gt;-->
+<!--&lt;!&ndash;             {{$t('recurring monthly tip')}}&ndash;&gt;-->
+<!--&lt;!&ndash;           </div>&ndash;&gt;-->
+<!--         </el-form-item>-->
+<!--         <el-form-item>-->
+<!--           <el-switch v-model="plan_trial_obj.is_trial" :inactive-text="$t('free trial')">-->
+<!--           </el-switch>-->
+<!--         </el-form-item>-->
+<!--         <el-form-item v-if="plan_trial_obj.is_trial">-->
+<!--           <div style="display: flex;padding-left: 60px">-->
+<!--             <el-radio-group v-model="plan_trial_obj.trial_days">-->
+<!--               <el-radio v-for="item in trial_days_option" :key="item.index" :label="item.value">{{item.value + ' ' + $t('days')}}</el-radio>-->
+<!--             </el-radio-group>-->
+<!--           </div>-->
+<!--         </el-form-item>-->
        </div>
        <div style="height: 1px; background-color: rgba(232, 232, 232, 1);"></div>
        <div v-if="operationType === 'add'">
@@ -135,6 +147,10 @@ export default {
       multiple_selection: [],// 选中的数据
       unable_modify: false, // 是否不可修改
       app_price_options:[],
+      interval_count_options:[
+        {"label":"monthly","value": 1},
+        {"label":"quarterly","value":3}
+      ],
       plan: {
         plan_id: "",
         plan_code : "",
