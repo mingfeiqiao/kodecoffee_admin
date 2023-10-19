@@ -5,7 +5,7 @@
         <div>{{$t('pay')}}:</div>
         <div style="display:flex;align-items: center;padding: 8px 0 24px 0">
           <span class="title-20">{{ order_detail.price_format }}</span>
-          <span v-if="order_detail.currency" style="color: #929292;font-size: 20px;padding-left: 8px" >{{order_detail.currency.toUpperCase()}}</span>
+          <span v-if="order_detail.currency" style="color: #929292;font-size: 20px;padding-left: 8px">{{order_detail.currency.toUpperCase()}}</span>
           <span v-if="order_detail.order_status_obj" :style="{
             'border-radius': '4px',
             'margin-left':'20px',
@@ -14,6 +14,9 @@
             'background-color': order_detail.order_status_obj['background-color'],
             'border': '1px solid ' + order_detail.order_status_obj.color
           }">{{ $t(order_detail.order_status_obj.message) }}</span>
+          <span v-if="order_detail.error_msg" style="padding-left: 24px;color: #929292">
+            {{order_detail.error_msg}}
+          </span>
         </div>
       </div>
       <el-descriptions  class="order-descriptions">
@@ -147,6 +150,7 @@ export default {
         price_format: "",
         order_status_obj: {},
         charge:"",
+        error_msg: '',
         order_id: "",
         created_time: "",
         payment_type:"",
@@ -199,6 +203,7 @@ export default {
         country: data.country || "",
         currency: data.currency || "",
         price: data.pay_amount || "",
+        error_msg:data.error_msg ? data.error_msg.error_message : '',
         price_format: this.formatPrice(data.pay_amount, data.currency),
         order_status_obj: this.formatOrderStatus(data),
         charge: (data.charge_info && data.charge_info.charge) || "",

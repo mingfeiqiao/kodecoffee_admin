@@ -28,23 +28,23 @@
              </el-radio>
            </div>
          </el-form-item>
-<!--         <el-form-item v-if="unable_modify && plan_type_obj.type === 'recurring'">-->
-<!--           <div style="display: flex;align-items: center">-->
-<!--             <div style="padding-right: 20px">-->
-<!--               {{$t('Billing cycle')}}-->
-<!--             </div>-->
-<!--             <div style="max-width: 150px">-->
-<!--               <el-select v-model="main_price_obj.interval_count">-->
-<!--                 <el-option v-for="item in interval_count_options" :key="item.value" :label="$t(item.label)" :value="item.value">-->
-<!--                 </el-option>-->
-<!--               </el-select>-->
-<!--             </div>-->
-<!--           </div>-->
+         <el-form-item v-if="plan_type_obj.type === 'recurring'">
+           <div style="display: flex;align-items: center">
+             <div style="padding-right: 20px">
+               {{$t('Billing cycle')}}
+             </div>
+             <div style="max-width: 150px">
+               <el-select v-model="main_price_obj.interval_count" :disabled="!unable_modify">
+                 <el-option v-for="item in interval_count_options" :key="item.value" :label="$t(item.label)" :value="item.value">
+                 </el-option>
+               </el-select>
+             </div>
+           </div>
 
-<!--&lt;!&ndash;           <div style="display: flex;align-items: center;padding-left: 80px">&ndash;&gt;-->
-<!--&lt;!&ndash;             {{$t('recurring monthly tip')}}&ndash;&gt;-->
-<!--&lt;!&ndash;           </div>&ndash;&gt;-->
-<!--         </el-form-item>-->
+<!--           <div style="display: flex;align-items: center;padding-left: 80px">-->
+<!--             {{$t('recurring monthly tip')}}-->
+<!--           </div>-->
+         </el-form-item>
 <!--         <el-form-item>-->
 <!--           <el-switch v-model="plan_trial_obj.is_trial" :inactive-text="$t('free trial')">-->
 <!--           </el-switch>-->
@@ -172,12 +172,13 @@ export default {
       },
       main_price_obj: {
         price: 1.99,
-        currency: 'usd'
+        currency: 'usd',
+        interval_count:1
       },
       other_price_obj: [],
       type_option: [
         {
-          label: 'recurring monthly',
+          label: 'recurring',
           value: 'recurring'
         },
         {
@@ -272,7 +273,8 @@ export default {
         };
         this.main_price_obj = {
           price: 1.99,
-          currency: 'usd'
+          currency: 'usd',
+          interval_count: 1
         };
         this.other_price_obj = [];
       }
@@ -362,7 +364,7 @@ export default {
         this.main_price_obj.currency = current_app_price_option[0].currency;
         this.main_price_obj.price =  current_app_price_option[0].amount;
         let currency_options = current_app_price_option[0].app_price_currency;
-        if ( this.main_price_obj && this.other_price_obj.length > 0) { //判断app_price
+        if ( this.main_price_obj && Array.isArray(this.other_price_obj) && this.other_price_obj.length > 0) { //判断app_price
           // 对比currency_options和app_price_currency的currency和amount, 如果存在则设置为选中状态
           currency_options.forEach(item => {
             this.other_price_obj.forEach(item2 => {
@@ -426,7 +428,7 @@ export default {
             currency: this.main_price_obj.currency,
             type: 'recurring',
             interval: 'month',
-            interval_count: 1,
+            interval_count: this.main_price_obj.interval_count,
             currency_options: currency_options
           }];
         } else {
@@ -572,6 +574,7 @@ export default {
           { required: false,  trigger: 'blur', type: 'string', min: 0, max: 1000 },
           { validator: this.validateTrimmedField, trigger: 'blur'}
         ],
+
       }
     }
   }

@@ -55,8 +55,13 @@
                   <div>
                     {{$t(scope.row.plan_type_obj.type)}}
                   </div>
-                  <div style="color: #929292">
-                    {{$t('monthly')}}
+                  <div style="color: #929292" v-if="scope.row.plan_type_obj.interval === 'month'">
+                    <span v-if="scope.row.plan_type_obj.interval_count === 1">
+                      {{$t('monthly')}}
+                    </span>
+                    <span v-if="scope.row.plan_type_obj.interval_count === 3">
+                      {{$t('quarterly')}}
+                    </span>
                   </div>
                 </div>
                 <div v-else-if="scope.row.plan_type_obj.type === 'one_time'">
@@ -87,14 +92,14 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column width="100" :label="$t('trial')" >
-            <template slot-scope="scope">
-              <div v-if="scope.row.plan_trial_obj && scope.row.plan_trial_obj.is_trial" >{{scope.row.plan_trial_obj.trial_days + ' ' + $t('days')}}</div>
-              <div v-else>
-                {{ $t('no trial') }}
-              </div>
-            </template>
-          </el-table-column>
+<!--          <el-table-column width="100" :label="$t('trial')" >-->
+<!--            <template slot-scope="scope">-->
+<!--              <div v-if="scope.row.plan_trial_obj && scope.row.plan_trial_obj.is_trial" >{{scope.row.plan_trial_obj.trial_days + ' ' + $t('days')}}</div>-->
+<!--              <div v-else>-->
+<!--                {{ $t('no trial') }}-->
+<!--              </div>-->
+<!--            </template>-->
+<!--          </el-table-column>-->
           <el-table-column prop="plan_code" :label="$t('id')" width="230">
             <template slot-scope="scope">
               <div style="display:flex;align-items: center">
@@ -355,6 +360,8 @@ export default {
         return {
           currency: main_price.currency || "",
           price: main_price.amount || "",
+          interval: main_price.interval || "",
+          interval_count:main_price.interval_count,
           price_format: this.formatPrice(main_price.amount, main_price.currency) || "",
         };
       }
