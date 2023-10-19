@@ -149,7 +149,7 @@ export default {
       app_price_options:[],
       interval_count_options:[
         {"label":"monthly","value": 1},
-        {"label":"quarterly","value":3}
+        {"label":"every 3 months","value":3}
       ],
       plan: {
         plan_id: "",

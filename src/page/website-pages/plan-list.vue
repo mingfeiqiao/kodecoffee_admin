@@ -60,7 +60,7 @@
                       {{$t('monthly')}}
                     </span>
                     <span v-if="scope.row.plan_type_obj.interval_count === 3">
-                      {{$t('quarterly')}}
+                      {{$t('every 3 months')}}
                     </span>
                   </div>
                 </div>
