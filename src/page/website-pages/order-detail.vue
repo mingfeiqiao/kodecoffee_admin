@@ -174,10 +174,6 @@ export default {
           vm.payment_detail = this.formatPaymentDetail(res.data.data);
           vm.billing_detail = this.formatBillingDetail(res.data.data);
           vm.cost_detail = this.formatCostDetail(res.data.data);
-          console.log('order_detail:',vm.order_detail)
-          console.log('payment_detail:',vm.payment_detail)
-          console.log('billing_detail:',vm.billing_detail)
-          console.log('cost_detail',vm.cost_detail)
         } else {
           if (res && res.data && res.data.message) {
             vm.$message.warning(res.data.message)
