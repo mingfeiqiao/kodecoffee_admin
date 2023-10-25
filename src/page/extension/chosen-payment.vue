@@ -9,7 +9,7 @@
           </div>
           <div style="display: flex;align-items: center;width: 100%;justify-content: center;height: 33%">
             <el-card class="card" v-for="(item, key) in payment_methods" :key="key">
-              <div style="padding: 12px 8px;display: flex;flex-direction: column;align-items: flex-start;" @click="pay(item)">
+              <div style="padding: 12px 8px;display: flex;flex-direction: column;align-items: flex-start;" @click="checkTransactions(item)">
                 <div>
                   <svg width="30" height="30">
                     <use v-if="item.payment_channel==='stripe' && item.payment_method==='card'" xlink:href="#bank-card"></use>
@@ -37,13 +37,15 @@
 <script>
 import languageChange from "../components/language-change.vue";
 import {extensionGetSupportPaymentsApi, makeOrderApi} from "../../api/interface";
+import {timestampToDateString} from "../../utils/dateUtils";
 export default {
   components: {languageChange},
   data() {
     return {
       payment_methods:[],
       support_payment_loading:false,
-      pay_url_loading:false
+      pay_url_loading:false,
+      transactions:null,
     };
   },
   created() {
@@ -65,11 +67,12 @@ export default {
       extensionGetSupportPaymentsApi(headers, data).then(res => {
         this.support_payment_loading = false;
         if(parseInt(res.data.code) === 100000) {
-          let payment_methods = res.data.data;
+          let payment_methods = res.data.data.payment;
+          this.transactions = res.data.data.transactions
              if (Array.isArray(payment_methods) && Array.length > 0 ) {
               if (payment_methods.length === 1) {
                  // 直接帮他下单
-                this.pay(payment_methods[0]);
+                this.checkTransactions(payment_methods[0]);
               } else {
                 this.payment_methods = payment_methods;
               }
@@ -84,7 +87,29 @@ export default {
         this.$message.error(err);
       });
     },
-
+    checkTransactions(item) {
+      if (this.transactions && this.transactions.length > 0) {
+        const recently_transaction = this.transactions[0];
+        let message = '';
+        let title = '';
+        if (recently_transaction.plan_type === 'recurring') {
+          message = this.$t('subscription active msg', {date:timestampToDateString(recently_transaction.plan_start_time, 'yyyy-MM-dd HH:II:SS'), prod_name:recently_transaction.prod_name})
+          title = this.$t('subscription active tip',{prod_name:recently_transaction.prod_name})
+        } else {
+          message = this.$t('one time purchased msg', {date:timestampToDateString(recently_transaction.pay_time, 'yyyy-MM-dd HH:II:SS'), prod_name:recently_transaction.prod_name})
+          title = this.$t('one time purchased tip')
+        }
+        const h = this.$createElement;
+        console.log(message)
+        this.$msgbox({title:title, message: h('div', {style:'white-space: pre-line;'}, message), showCancelButton:true, confirmButtonText:this.$t('Continue'), cancelButtonText:this.$t('cancel')}).then(() => {
+          this.pay(item)
+        }).catch(() => {
+          console.log('canceld')
+        });
+      } else {
+        this.pay(item)
+      }
+    },
     pay(item) {
       const data = {
         price_id : this.$route.query.prod_id,
@@ -189,5 +214,11 @@ export default {
   100%{
     content: "...";
   }
+}
+</style>
+<style lang="less">
+.el-message-box__title {
+  font-weight: bold;
+  font-size: 16px;
 }
 </style>

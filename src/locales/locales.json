@@ -323,9 +323,19 @@
     "Update Event": "Update Event",
     "delete tip": "Irreversible action: Once deleted, it cannot be recovered. If needed, you can re-add it. Are you sure you want to delete it?",
     "seconds to jump": "redirect to the product page in {seconds} seconds",
-    "Loading desperately": "Loading desperately..."
+    "Loading desperately": "Loading desperately...",
+    "Subscription Type": "Subscription Type",
+    "one time purchased tip": "You have already purchased this product, do you want to continue?",
+    "one time purchased msg": "You have successfully purchased {prod_name} on {date}, please check and confirm if you want to purchase again.Please contact us if you have any questions.",
+    "subscription active tip": "Your plan {prod_name} is active, do you want to subscribe again?",
+    "subscription active msg": "You have successfully subscribed to plan {prod_name} on {date} and it is in effect, please check if you want to subscribe again.\nPlease contact us if you have any questions."
   },
   "zh-CN": {
+    "one time purchased tip": "您已经购买过此套餐，是否继续购买？",
+    "one time purchased msg": "您已经于 {date} 成功购买套餐 {prod_name} ,请检查并确认是否要继续购买",
+    "subscription active tip": "您的套餐{prod_name}已生效，是否再次订阅？",
+    "subscription active msg": "您已经于 {date} 成功订阅套餐 {prod_name} ，正在生效，请检查是否要再次订阅。\n如有疑问请联系开发者。",
+    "Subscription Type": "订阅类型",
     "Loading desperately": "拼命加载中...",
     "seconds to jump": "将在{seconds}秒后跳转到指定页面",
     "delete tip": "删除后不可回复，如需要可重新添加，是否删除？",
