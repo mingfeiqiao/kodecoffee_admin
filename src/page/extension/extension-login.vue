@@ -21,6 +21,9 @@
                   {{$t('send email to login')}}
                 </div>
               </div>
+              <div style="width: 300px;height: 40px">
+                <div id="google-signin-button"></div>
+              </div>
             </div>
             <div v-else style="display: flex;align-items: center;flex-direction: column;padding:24px;">
               <div style="padding: 30px;">
@@ -57,7 +60,13 @@
 </template>
 
 <script>
-import {attributeApi, extensionLogin, extensionUserInfo, attributeFprApi} from "../../api/interface";
+import {
+  attributeApi,
+  extensionLogin,
+  extensionUserInfo,
+  attributeFprApi,
+  extensionGoogleLoginApi
+} from "../../api/interface";
 import languageChange from "../components/language-change.vue";
 export default {
   data() {
@@ -71,14 +80,39 @@ export default {
         language: '',
       },
       is_send_email: false,
+      google_client_id:'223143976587-tj8tqo961qf53m718cnae6jpp5fpdaps.apps.googleusercontent.com'
     };
   },
+  mounted() {
+    // 在页面加载完成后，创建一个script标签
+    const script = document.createElement('script');
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.async = true;
+    script.defer = true;
+    script.onload = () => {
+      google.accounts.id.initialize({
+        client_id: this.google_client_id,
+        context:'signin',
+        auto_prompt:'false',
+        callback: this.handleCredentialResponse
+      });
+      google.accounts.id.renderButton(
+        document.getElementById('google-signin-button'),
+        {
+          theme: 'outline',
+          size: 'large',
+          type:'standard',
+          shape:'pill',
+          logo_alignment:'left',
+          text: 'login_with'
+        }
+      );
+    };
+    // 将script标签添加到body中
+    document.body.appendChild(script);
+  },
   created() {
-    let headers = {};
-    for (let key in this.$route.query) {
-      let newKey = key.replace(/_/g, "-");
-      headers[newKey] = this.$route.query[key];
-    }
+    let headers = this.getCommonHeaders();
     let vm = this;
     extensionUserInfo(headers).then(res => {
       let resData = res.data;
@@ -94,6 +128,21 @@ export default {
     languageChange
   },
   methods: {
+    getCommonHeaders() {
+      let headers = {};
+      for (let key in this.$route.query) {
+        let newKey = key.replace(/_/g, "-");
+        headers[newKey] = this.$route.query[key];
+      }
+      return headers
+    },
+    handleCredentialResponse(response) {
+      extensionGoogleLoginApi(this.getCommonHeaders(),response).then(res => {
+        console.log(res);
+      }).catch(err => {
+        console.log(err);
+      })
+    },
     /**
      * 验证邮箱格式
      * @param mail

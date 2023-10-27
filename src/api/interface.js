@@ -165,6 +165,11 @@ export const extensionGetPaymentLinkApi = (headers, data) => {
   data = JSON.stringify(data);
   return instance.post('/api/extension/get-payment-link', data, {headers ,method: 'POST'});
 }
+export const extensionGoogleLoginApi = (headers, data) =>  {
+  headers['Content-Type'] = 'application/json';
+  data = JSON.stringify(data);
+  return instance.post('/api/extension/google-login', data, {headers ,method: 'POST'});
+}
 // 取消订阅接口
 export const getUserInfo = () => instance.get('/user/info');
 export const attributeApi = data => instance.post('/api/attribute', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
