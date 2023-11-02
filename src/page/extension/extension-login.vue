@@ -6,42 +6,62 @@
           <div style="padding-bottom: 24px">
             <div class="title-28">{{$t('billing management')}}</div>
           </div>
-          <div style="border: 1px solid rgba(233, 233, 233, 1);border-radius: 4px;height: 100%;">
-            <div v-if="!is_send_email" style="height: 100%;padding:24px;">
-              <div style="padding-bottom: 16px">{{$t('please input email')}}</div>
-              <div style="display: flex;padding-bottom: 16px;">
-                <el-input v-model="input" placeholder="example@mail.com" style="max-width: 350px"></el-input>
-                <el-button size="small" type="primary" style="margin-left: 12px" @click="submitEmail">{{$t('send login')}}</el-button>
-              </div>
-              <div>
-                <div v-if="!is_email_valid" style="color:red">
-                  {{$t('email format error')}}
+          <div style="border: 1px solid rgba(233, 233, 233, 1);border-radius: 4px;height: 100%;" v-loading="google_login_args.is_third_part_loading">
+            <div v-if="google_login_args.is_login_success" style="width: 100%;height: 100%;display: flex;flex-direction: column;justify-content: space-between;">
+              <div style="width: 100%;height: 90%;display: flex;justify-content: center;align-items: center;flex-direction:column">
+                <svg width="100" height="100">
+                  <use xlink:href="#success"></use>
+                </svg>
+                <div style="padding-top: 24px;font-size: 18px">
+                  {{$t('Google login successful!')}}
                 </div>
-                <div>
-                  {{$t('send email to login')}}
+              </div>
+              <div style="width: 100%;height: 10%;display: flex;align-items: center;justify-content: center">
+                <div class="link" style="padding-bottom: 12px" @click="toSubscription()">
+                  {{$t('Go to the bill management page')}}
                 </div>
               </div>
             </div>
-            <div v-else style="display: flex;align-items: center;flex-direction: column;padding:24px;">
-              <div style="padding: 30px;">
-                <div style="display: flex;justify-content: center;text-align: center;padding-top: 50px">
+            <div v-else>
+              <div v-if="!is_send_email" style="height: 100%;padding:24px;">
+                <div style="padding-bottom: 16px">{{$t('please input email')}}</div>
+                <div style="display: flex;padding-bottom: 16px;">
+                  <el-input v-model="input" placeholder="example@mail.com" style="max-width: 350px"></el-input>
+                  <el-button size="small" type="primary" style="margin-left: 12px" @click="submitEmail">{{$t('send login')}}</el-button>
+                </div>
+                <div>
+                  <div v-if="!is_email_valid" style="color:red">
+                    {{$t('email format error')}}
+                  </div>
+                  <div>
+                    {{$t('send email to login')}}
+                  </div>
+                </div>
+                <div style="padding-top: 24px">
+                  <div style="width: 220px;height: 40px" id="google-signin-button"></div>
+                </div>
+              </div>
+              <div v-else style="display: flex;align-items: center;flex-direction: column;padding:24px;">
+                <div style="padding: 30px;">
+                  <div style="display: flex;justify-content: center;text-align: center;padding-top: 50px">
                   <span v-if="$i18n.locale === ZH_CODE">
                     已向<span class="title-16">{{input}}</span>发送邮件，<span class="title-16">请登录该邮箱并点击验证按钮以激活，</span>邮件有效期5分钟
                   </span>
-                  <span v-else>
+                    <span v-else>
                     A verification email has been send to <span class="title-16">{{input}},Please login to your email and click Verify to activate.</span>Valid for 5 minutes
                   </span>
+                  </div>
                 </div>
-              </div>
-              <div style="height: 100%;display: flex;flex-direction: column;justify-content: space-between;width: 100%">
-                <div class="link" style="width: 100%;text-align: center;padding: 30px 0" @click="toSubscription()">
-                  {{$t('email verified')}}
-                </div>
-                <div>
-                  <div style="color: #939393">{{ $t('mail not received') }}</div>
-                  <div style="padding-top: 8px">
-                    <span @click="submitEmail" class="link">{{$t('resend')}}</span>
-                    <span class="link" style="margin-left: 8px" @click="is_send_email = false">{{$t('change email')}}</span>
+                <div style="height: 100%;display: flex;flex-direction: column;justify-content: space-between;width: 100%">
+                  <div class="link" style="width: 100%;text-align: center;padding: 30px 0" @click="toSubscription()">
+                    {{$t('email verified')}}
+                  </div>
+                  <div>
+                    <div style="color: #939393">{{ $t('mail not received') }}</div>
+                    <div style="padding-top: 8px">
+                      <span @click="submitEmail" class="link">{{$t('resend')}}</span>
+                      <span class="link" style="margin-left: 8px" @click="is_send_email = false">{{$t('change email')}}</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -57,7 +77,13 @@
 </template>
 
 <script>
-import {attributeApi, extensionLogin, extensionUserInfo, attributeFprApi} from "../../api/interface";
+import {
+  attributeApi,
+  extensionLogin,
+  extensionUserInfo,
+  attributeFprApi,
+  extensionGoogleLoginApi
+} from "../../api/interface";
 import languageChange from "../components/language-change.vue";
 export default {
   data() {
@@ -71,14 +97,51 @@ export default {
         language: '',
       },
       is_send_email: false,
+      google_login_args: {
+        google_client_id:'223143976587-tj8tqo961qf53m718cnae6jpp5fpdaps.apps.googleusercontent.com',
+        is_third_part_loading:false,
+        is_login_success:false,
+        countdown: 5, // 初始倒计时秒数
+        countdown_interval: null // 用于存储定时器引用的属性
+      }
     };
   },
+  beforeDestroy() {
+    this.google_login_args.countdown_interval = null;
+  },
+  mounted() {
+    // 在页面加载完成后，创建一个script标签
+    // this.google_login_args.is_login_success = false;
+    // this.google_login_args.is_login_success = false;
+    const script = document.createElement('script');
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.async = true;
+    script.defer = true;
+    script.onload = () => {
+      google.accounts.id.initialize({
+        client_id: this.google_login_args.google_client_id,
+        context:'signin',
+        auto_prompt:'false',
+        callback: this.handleCredentialResponse
+      });
+      google.accounts.id.renderButton(
+        document.getElementById('google-signin-button'),
+        {
+          theme: 'outline',
+          size: 'large',
+          type:'standard',
+          shape:'pill',
+          logo_alignment:'left',
+          text: 'login_with',
+          locale: this.$i18n.locale
+        }
+      );
+    };
+    // 将script标签添加到body中
+    document.body.appendChild(script);
+  },
   created() {
-    let headers = {};
-    for (let key in this.$route.query) {
-      let newKey = key.replace(/_/g, "-");
-      headers[newKey] = this.$route.query[key];
-    }
+    let headers = this.getCommonHeaders();
     let vm = this;
     extensionUserInfo(headers).then(res => {
       let resData = res.data;
@@ -94,6 +157,32 @@ export default {
     languageChange
   },
   methods: {
+    getCommonHeaders() {
+      let headers = {};
+      for (let key in this.$route.query) {
+        let newKey = key.replace(/_/g, "-");
+        headers[newKey] = this.$route.query[key];
+      }
+      return headers
+    },
+    handleCredentialResponse(response) {
+      this.google_login_args.is_third_part_loading = true;
+      extensionGoogleLoginApi(this.getCommonHeaders(),response).then(res => {
+        this.google_login_args.is_third_part_loading = false;
+        const { data } = res || {};
+        const { code = 0, message } = data;
+        if (parseInt(code) === 100000) {
+          this.google_login_args.is_login_success = true;
+          console.log(data)
+        } else {
+          if (message) {
+            this.$message.warning(message)
+          }
+        }
+      }).catch(err => {
+        this.$message.error(err)
+      })
+    },
     /**
      * 验证邮箱格式
      * @param mail
@@ -225,5 +314,20 @@ export default {
   align-items: center;
   padding: 0 12px;
   cursor: pointer;
+}
+.text-loading:after{
+  content:'...';
+  animation: text-loading 2s infinite;
+}
+@keyframes text-loading {
+  25%{
+    content: ".";
+  }
+  50%{
+    content: "..";
+  }
+  100%{
+    content: "...";
+  }
 }
 </style>
