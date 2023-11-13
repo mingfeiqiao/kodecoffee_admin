@@ -1,6 +1,6 @@
 <template>
   <el-container style="width: 100%;height: 100%" v-if="is_guide_loading_finish">
-    <el-aside :width="isCollapse ? '64px' : '256px'" ref="sidebar"  class="sidebar">
+    <el-aside :width="isCollapse ? '64px' : '256px'"  ref="sidebar"  class="sidebar">
       <el-menu :default-active="currentMenu" :collapse="isCollapse" router style="height: 100%; bottom: 0;"
                background-color="#001529"
                text-color="#FFF"
@@ -46,7 +46,7 @@
             </el-menu-item>
           </template>
         </template>
-        <el-menu-item :style="{'position': 'fixed', 'bottom': 0, 'width': isCollapse ? '64px' : '238px'}" @click="gotoDocCenter($i18n.locale)" >
+        <el-menu-item @click="gotoDocCenter($i18n.locale)" >
           <svg width="18" height="18" style="padding-right: 8px" fill="#fff">
             <use xlink:href="#help-center"></use>
           </svg>

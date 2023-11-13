@@ -21,6 +21,7 @@ if (window.location.pathname.startsWith(Vue.prototype.MODECONFIG.SANDBOX.basePat
 } else {
   Vue.prototype.$mode = Vue.prototype.MODECONFIG.PRODUCTION.mode;
 }
+check_local_storage()
 Vue.use(VueI18n);
 const localLang = getLanguage();
 // 将全局方法挂载到Vue原型上
@@ -62,4 +63,22 @@ function getLanguage() {
     localStorage.setItem('selected_language', localLang);
   }
   return localLang;
+}
+function check_local_storage() {
+  const userLanguage = navigator.language || navigator.userLanguage;
+  let no_local_tip = '⚠️Warning: Your browser does not support local storage. Please update your browser or switch to a different one.'
+  let local_limit = '⚠️Warning: Your browser has not enabled local storage permissions. Please enable this feature in your browser settings so that we can save some settings for you. After enabling this feature in the browser settings page, refresh the current page to access it normally. '
+  if (userLanguage.startsWith('zh')) {
+    no_local_tip = '️⚠️您的浏览器不支持本地存储，请更新浏览器或者更换浏览器';
+    local_limit = "⚠️警告：您的浏览器未启用本地存储权限。请在浏览器设置中启用该功能，以便我们为您保存一些设置。在在浏览器设置页面开启，刷新当前页面即可正常访问"
+  }
+  try {
+    if (!window.localStorage) {
+      alert(no_local_tip);
+    }
+    window.localStorage.setItem('kp-m-test', 'test');
+    window.localStorage.removeItem('kp-m-test');
+  } catch (e) {
+    alert(local_limit);
+  }
 }
