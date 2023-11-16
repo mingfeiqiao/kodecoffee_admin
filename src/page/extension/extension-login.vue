@@ -173,7 +173,10 @@ export default {
         const { code = 0, message } = data;
         if (parseInt(code) === 100000) {
           this.google_login_args.is_login_success = true;
-          console.log(data)
+          window.postMessage({
+            type: 'login',
+            data: this.$route.query
+          });
         } else {
           if (message) {
             this.$message.warning(message)
