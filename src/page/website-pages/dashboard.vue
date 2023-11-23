@@ -24,6 +24,7 @@
               size="small"
               v-model="date_range"
               type="daterange"
+              :clearable="false"
               format="yyyy-MM-dd"
               popper-class="my-date-picker"
               value-format="yyyy-MM-dd"
