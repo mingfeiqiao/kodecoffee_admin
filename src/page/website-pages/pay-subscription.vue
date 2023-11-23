@@ -8,6 +8,19 @@
               <date-picker :time_filter_range="date_range" @change="dateRangeChange"></date-picker>
             </div>
             <div class="order-btn">
+              <div style="padding-right: 12px">{{$t('extension') + ':'}}</div>
+              <div>
+                <el-select size="small" v-model="condition.client_key" :placeholder="$t('select placeholder')" clearable @change="search" filterable v-loading="client_list_loading">
+                  <el-option
+                    v-for="item in client_list"
+                    :key="item.client_key"
+                    :label="$t(item.name)"
+                    :value="item.client_key">
+                  </el-option>
+                </el-select>
+              </div>
+            </div>
+            <div class="order-btn">
               <div style="padding-right: 12px">{{$t('Plan') + ':'}}</div>
               <div>
                 <el-select size="small" v-model="condition.prod_id" :placeholder="$t('select placeholder')" clearable @change="search" filterable v-loading="plan_list_loading">
@@ -80,7 +93,7 @@
 <script>
 import {timestampToDateString} from "../../utils/dateUtils";
 import SUBSCRIPTION_OPTIONS from "../../options/subscription_options.json";
-import {planFilterListApi, subscriptionList} from "../../api/interface";
+import {planFilterListApi, pluginList, subscriptionList} from "../../api/interface";
 import datePicker from "../components/date-picker.vue";
 export default {
   components: {datePicker},
@@ -94,6 +107,8 @@ export default {
       date_range:[],
       page:1,
       page_size:10,
+      client_list:[],
+      client_list_loading:false,
       plan_list:[],
       plan_list_loading:false,
       total:0,
@@ -121,10 +136,28 @@ export default {
   created() {
     // // 默认选中active subscription, 此时应该请求active subscription的数据
     this.initCondition();
+    this.getPluginList();
     this.getPlanList();
     this.getSubscriptionData();
   },
   methods: {
+    getPluginList() {
+      this.client_list_loading = true;
+      this.client_list = [];
+      pluginList().then(res => {
+        this.client_list_loading = false;
+        if (parseInt(res.data.code) === 100000) {
+          this.client_list = res.data.data;
+        } else {
+          if (res && res.data && res.data.message) {
+            this.$message.warning(res.data.message)
+          }
+        }
+      }).catch(err => {
+        this.client_list_loading = false;
+        console.log(err);
+      });
+    },
     /**
      * 搜索
      */
@@ -255,19 +288,23 @@ export default {
       this.$router.push({path: `/subscriptions/detail/${subscription_id}`});
     },
     transDateRangeTimestamp(date_range) {
-      const created_time_filter = []
-      for (const created_time of date_range) {
-        console.log(created_time)
-        created_time_filter.push(this.convertToUnixTimestamp(created_time))
+      if (date_range) {
+        if (date_range.length === 2) {
+          return [this.convertToUnixTimestamp(date_range[0] + 'T00:00:00Z'), this.convertToUnixTimestamp(date_range[1] + 'T23:59:59Z')];
+        } else {
+          return [this.convertToUnixTimestamp(date_range[0] + 'T00:00:00Z')]
+        }
       }
-      return created_time_filter
     },
     convertToUnixTimestamp(dateString) {
       // 将日期字符串转换为JavaScript的Date对象
       const dateObject = new Date(dateString);
-      // 获取Unix时间戳（毫秒为单位）
-      const unixTimestamp = dateObject.getTime();
-      return unixTimestamp / 1000;
+      // 获取本地时区与 UTC 时间的时间差（以分钟为单位）
+      const timezoneOffset = dateObject.getTimezoneOffset();
+      // 将本地时间转换为 UTC 时间
+      const utcTimestamp = dateObject.getTime() + timezoneOffset * 60 * 1000;
+      // 返回 UTC 时间的 UNIX 时间戳（秒为单位）
+      return Math.floor(utcTimestamp / 1000);
     },
     /**
      *
