@@ -66,7 +66,7 @@
 <script>
 import DashboardCard from "../components/dashboard-card.vue";
 import CURRENCY_OPTIONS from "../../options/currency_options.json";
-import {dashBoardApi, planFilterListApi, pluginList} from "../../api/interface";
+import {dashBoardApi, pluginList} from "../../api/interface";
 
 export default {
   components: {DashboardCard},
