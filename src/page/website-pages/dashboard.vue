@@ -18,20 +18,36 @@
     </div>
     <div style="margin-top: 24px;background-color: #ffffff;height: 100%;padding: 24px">
       <div>
-        <div class="picker">
-          <el-date-picker
-            size="small"
-            v-model="date_range"
-            type="daterange"
-            format="yyyy-MM-dd"
-            popper-class="my-date-picker"
-            value-format="yyyy-MM-dd"
-            @change="dateRangeChange"
-            :picker-options="picker_options"
-            :range-separator="$t('to')"
-            :start-placeholder="$t('start date')"
-            :end-placeholder="$t('end date')">
-          </el-date-picker>
+        <div style="display: flex;align-items: center;">
+          <div class="picker">
+            <el-date-picker
+              size="small"
+              v-model="date_range"
+              type="daterange"
+              :clearable="false"
+              format="yyyy-MM-dd"
+              popper-class="my-date-picker"
+              value-format="yyyy-MM-dd"
+              @change="dateRangeChange"
+              :picker-options="picker_options"
+              :range-separator="$t('to')"
+              :start-placeholder="$t('start date')"
+              :end-placeholder="$t('end date')">
+            </el-date-picker>
+          </div>
+          <div style="display: flex;align-items: center;margin-left: 24px;">
+            <div style="padding-right: 12px">{{$t('extension') + ':'}}</div>
+            <div>
+              <el-select size="small" v-model="client_key" :placeholder="$t('select placeholder')" clearable @change="getData" filterable v-loading="client_list_loading">
+                <el-option
+                  v-for="item in client_list"
+                  :key="item.client_key"
+                  :label="$t(item.name)"
+                  :value="item.client_key">
+                </el-option>
+              </el-select>
+            </div>
+          </div>
         </div>
         <div style="display: flex;flex-wrap: wrap;justify-content: space-between;align-items: center;">
           <div class="echarts-container" v-for="(value,key) in title_ref" :key="key">
@@ -51,7 +67,7 @@
 <script>
 import DashboardCard from "../components/dashboard-card.vue";
 import CURRENCY_OPTIONS from "../../options/currency_options.json";
-import {dashBoardApi} from "../../api/interface";
+import {dashBoardApi, pluginList} from "../../api/interface";
 
 export default {
   components: {DashboardCard},
@@ -139,6 +155,9 @@ export default {
         maskColor: 'rgba(255, 255, 255, 0.8)', // 自定义加载遮罩层颜色
         zlevel: 0 // loading的层级，设置为和图表层级相同
       },
+      client_key:'',
+      client_list_loading:false,
+      client_list:[],
     }
   },
   watch: {
@@ -159,8 +178,26 @@ export default {
     }
   },
   created() {
+    this.getPluginList();
   },
   methods: {
+    getPluginList() {
+      this.client_list_loading = true;
+      this.client_list = [];
+      pluginList().then(res => {
+        this.client_list_loading = false;
+        if (parseInt(res.data.code) === 100000) {
+          this.client_list = res.data.data;
+        } else {
+          if (res && res.data && res.data.message) {
+            this.$message.warning(res.data.message)
+          }
+        }
+      }).catch(err => {
+        this.client_list_loading = false;
+        console.log(err);
+      });
+    },
     updateShortcuts () {
       this.$set(this.picker_options, 'shortcuts', this.getShortcuts());
     },
@@ -314,6 +351,7 @@ export default {
       let args = {
         start_time: this.date_range[0],
         end_time: this.date_range[1],
+        client_key:this.client_key
       };
       let vm = this;
       dashBoardApi(args).then(res => {

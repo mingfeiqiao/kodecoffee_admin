@@ -59,7 +59,7 @@
             </span>
           </span>
         </el-descriptions-item>
-        <el-descriptions-item :label="$t('create time')">{{ order_detail.created_time }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('Pay Time')">{{ order_detail.created_time }}</el-descriptions-item>
         <el-descriptions-item :label="$t('sell plan')">{{ order_detail.prod_name }}</el-descriptions-item>
         <el-descriptions-item :label="$t('Type')">{{ $t(order_detail.plan_type)}}</el-descriptions-item>
         <el-descriptions-item :label="$t('extension')">{{ order_detail.client_name }}</el-descriptions-item>

@@ -63,6 +63,9 @@
                       {{$t('every 3 months')}}
                     </span>
                   </div>
+                  <div style="color: #929292" v-else-if="scope.row.plan_type_obj.interval === 'day'">
+                    {{$t('every few days', {few: scope.row.plan_type_obj.interval_count})}}
+                  </div>
                 </div>
                 <div v-else-if="scope.row.plan_type_obj.type === 'one_time'">
                   <span>{{ $t(scope.row.plan_type_obj.type ) }}</span>

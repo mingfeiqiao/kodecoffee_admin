@@ -69,10 +69,10 @@ KodepayContent.kodepay_content_start_listener();</code>
               <code class="language-javascript">
 {{`// service_worker
 import {Kodepay} from "kodepay";
-// example: const kodepay_client = Kodepay.kodepay(application_id, extension_id, 'mode')
+// example: const kodepay_client = Kodepay.kodepay({application_id:"xxxx", client_id:"xxxx", mode:"development or production"})
 //You can find the application_id in the Developer Settings page
 //You can find the extension_id in the extension page
-const kodepay_client = Kodepay.kodepay('${application_key}', '${extension_key}', 'development');
+const kodepay_client = Kodepay.kodepay({application_id:"${application_key}", client_id:"${extension_key}", mode:"development"});
 // get user info
 kodepay_client.get_user_info().then((user) => {
    console.log(user);
@@ -83,7 +83,7 @@ kodepay_client.open_login_page();
  kodepay_client.open_user_management_page();
 // open payment page
 //You can find the plan_id in the plan page
-kodepay_client.open_payment_page('${plan_key}');`
+kodepay_client.open_payment_page({plan_id:"${plan_key}"});`
 }}</code>
             </pre>
             <div class="copy-button" @click="copy()">{{$t('copy code')}}</div>

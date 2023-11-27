@@ -26,9 +26,10 @@
       <el-descriptions  class="order-descriptions">
         <el-descriptions-item :label="$t('customer')"><span class="link" @click="openUserDetail">{{subscription.user_email}}</span></el-descriptions-item>
         <el-descriptions-item :label="$t('create time')">{{ subscription.created_time }}</el-descriptions-item>
-        <el-descriptions-item :label="$t('subscription expired time')">{{ subscription.plan_end_time }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('Effective Start')">{{ subscription.plan_start_time}}</el-descriptions-item>
         <el-descriptions-item :label="$t('sell plan')">{{ subscription.prod_name }}</el-descriptions-item>
         <el-descriptions-item :label="$t('extension')">{{ subscription.client_name }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('subscription expired time')">{{ subscription.plan_end_time }}</el-descriptions-item>
         <el-descriptions-item :label="$t('subscription id')" >{{ subscription.subscription_id }}</el-descriptions-item>
       </el-descriptions>
     </div>
@@ -53,7 +54,7 @@
               </span>
             </template>
           </el-table-column>
-          <el-table-column prop="created_time" :label="$t('create time')" width="auto" >
+          <el-table-column prop="created_time" :label="$t('Pay Time')" width="auto" >
           </el-table-column>
         </el-table>
       </div>
@@ -79,6 +80,7 @@ export default {
         created_time:"",
         canceled_time:"",
         client_name:"",
+        plan_start_time:"",
         plan_end_time:"",
         user_area:"",
         subscription_id:"",
@@ -164,6 +166,7 @@ export default {
         client_name:data.client_name || "",
         price_format: this.formatPrice(data.pay_amount, data.currency) || "",
         user_email: data.user_email || "",
+        plan_start_time:this.formatTime(data.plan_start_time) || "",
         subscription_status_obj: this.formatSubscriptionObj(data.order_status) || "",
         plan_end_time: this.formatTime(data.plan_end_time) || "",
         canceled_time: this.formatTime(data.canceld_time) || "",

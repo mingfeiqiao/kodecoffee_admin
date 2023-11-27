@@ -1,9 +1,24 @@
 <template>
   <div>
     <div>
-      <div style="max-width: 300px;">
-        <el-input v-model="condition.q" :placeholder="$t('please input email')"  size="small" clearable @keyup.enter.native="search" @clear="search">
-        </el-input>
+      <div style="display: flex;flex-wrap:wrap;align-items: center">
+        <div style="display: flex;align-items: center;margin-right: 24px">
+          <div style="padding-right: 12px">{{$t('extension') + ':'}}</div>
+          <div>
+            <el-select size="small" v-model="condition.client_key" :placeholder="$t('select placeholder')" clearable @change="search" filterable v-loading="client_list_loading">
+              <el-option
+                v-for="item in client_list"
+                :key="item.client_key"
+                :label="$t(item.name)"
+                :value="item.client_key">
+              </el-option>
+            </el-select>
+          </div>
+        </div>
+        <div style="max-width: 300px;">
+          <el-input v-model="condition.q" :placeholder="$t('please input email')"  size="small" clearable @keyup.enter.native="search" @clear="search">
+          </el-input>
+        </div>
       </div>
       <div style="padding-top: 24px">
         <el-table :data="table_data"
@@ -54,7 +69,7 @@
 <script>
 import {timestampToDateString} from "../../utils/dateUtils";
 import CURRENCY_OPTIONS from "../../options/currency_options.json";
-import {customerListApi} from "../../api/interface";
+import {customerListApi, pluginList} from "../../api/interface";
 
 export default {
   data() {
@@ -74,15 +89,35 @@ export default {
       table_data: [],
       page:1,
       total:0,
+      client_list:[],
+      client_list_loading:false,
       sort:[{prop:"created_time", order:"descending"}],
       table_loading:false,
       page_size:10,
     }
   },
   created() {
+    this.getPluginList();
     this.getData();
   },
   methods: {
+    getPluginList() {
+      this.client_list_loading = true;
+      this.client_list = [];
+      pluginList().then(res => {
+        this.client_list_loading = false;
+        if (parseInt(res.data.code) === 100000) {
+          this.client_list = res.data.data;
+        } else {
+          if (res && res.data && res.data.message) {
+            this.$message.warning(res.data.message)
+          }
+        }
+      }).catch(err => {
+        this.client_list_loading = false;
+        console.log(err);
+      });
+    },
     openUserDetail (user_id) {
       this.$router.push({path: "/customers/detail/" + user_id});
     },
@@ -244,5 +279,4 @@ export default {
 }
 </script>
 <style scoped lang="less">
-
 </style>

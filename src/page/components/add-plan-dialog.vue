@@ -34,28 +34,17 @@
                {{$t('Billing cycle')}}
              </div>
              <div style="max-width: 150px">
-               <el-select v-model="main_price_obj.interval_count" :disabled="!unable_modify">
-                 <el-option v-for="item in interval_count_options" :key="item.value" :label="$t(item.label)" :value="item.value">
+               <el-select v-model="interval_option" :disabled="!unable_modify" @change="intervalOptionChange">
+                 <el-option v-for="item in interval_options" :key="item.value" :label="$t(item.label)" :value="item.value">
                  </el-option>
                </el-select>
              </div>
            </div>
-
-<!--           <div style="display: flex;align-items: center;padding-left: 80px">-->
-<!--             {{$t('recurring monthly tip')}}-->
-<!--           </div>-->
          </el-form-item>
-<!--         <el-form-item>-->
-<!--           <el-switch v-model="plan_trial_obj.is_trial" :inactive-text="$t('free trial')">-->
-<!--           </el-switch>-->
-<!--         </el-form-item>-->
-<!--         <el-form-item v-if="plan_trial_obj.is_trial">-->
-<!--           <div style="display: flex;padding-left: 60px">-->
-<!--             <el-radio-group v-model="plan_trial_obj.trial_days">-->
-<!--               <el-radio v-for="item in trial_days_option" :key="item.index" :label="item.value">{{item.value + ' ' + $t('days')}}</el-radio>-->
-<!--             </el-radio-group>-->
-<!--           </div>-->
-<!--         </el-form-item>-->
+         <div v-if="plan_type_obj.type === 'recurring' && interval_option === 'every day'"  style="display: flex;align-items: center;padding-left: 80px;color: #f5222d">
+            {{$t('Daily subscription is for testing purposes in the development environment')}}
+         </div>
+
        </div>
        <div style="height: 1px; background-color: rgba(232, 232, 232, 1);"></div>
        <div v-if="operationType === 'add'">
@@ -147,9 +136,11 @@ export default {
       multiple_selection: [],// 选中的数据
       unable_modify: false, // 是否不可修改
       app_price_options:[],
-      interval_count_options:[
-        {"label":"monthly","value": 1},
-        {"label":"every 3 months","value":3}
+      interval_option: "monthly",
+      interval_option_map: {"monthly": {interval:"month", interval_count:1}, "every quarter": {interval_count:3, interval: "month"}, "every day": {interval_count:1, interval:"day"}},
+      interval_options:[
+        {"label":"monthly","value": "monthly"},
+        {"label":"every 3 months","value": "every quarter"}
       ],
       plan: {
         plan_id: "",
@@ -167,12 +158,13 @@ export default {
         type: 'recurring'
       },
       plan_trial_obj: {
-        is_trial: true,
-        trial_days: 3
+        is_trial: false,
+        trial_days: 0
       },
       main_price_obj: {
         price: 1.99,
         currency: 'usd',
+        interval:"month",
         interval_count:1
       },
       other_price_obj: [],
@@ -204,12 +196,16 @@ export default {
     imgUpload
   },
   created() {
+    if (this.$mode === this.MODECONFIG.SANDBOX.mode) {
+      this.interval_options.push({label:"every day", value:"every day"});
+    }
     this.app_price_options = this.OPTIONS.app_price_options;
     if (this.chosen_plan_data && this.chosen_plan_data.plan_id) {
       this.plan = JSON.parse(JSON.stringify(this.chosen_plan_data))
       this.plan_type_obj = this.plan.plan_type_obj;
       this.plan_trial_obj = this.plan.plan_trial_obj;
       this.main_price_obj = this.plan.main_price_obj;
+      this.interval_option = this.getIntervalOption(this.main_price_obj.interval, this.main_price_obj.interval_count);
       this.other_price_obj = this.plan.other_price_obj;
     }
     this.dialog_form_visible = this.visible;
@@ -274,6 +270,7 @@ export default {
         this.main_price_obj = {
           price: 1.99,
           currency: 'usd',
+          interval: 'month',
           interval_count: 1
         };
         this.other_price_obj = [];
@@ -292,6 +289,19 @@ export default {
     }
   },
   methods: {
+    getIntervalOption(interval, interval_count) {
+      for (let interval_option_map_key in this.interval_option_map) {
+        if (this.interval_option_map[interval_option_map_key].interval === interval && parseInt(this.interval_option_map[interval_option_map_key].interval_count) === parseInt(interval_count)) {
+          return interval_option_map_key;
+        }
+      }
+    },
+    intervalOptionChange(new_value) {
+      if (this.interval_option_map[new_value]) {
+        this.main_price_obj.interval_count = this.interval_option_map[new_value].interval_count;
+        this.main_price_obj.interval = this.interval_option_map[new_value].interval;
+      }
+    },
     handleIsTrialChange (newValue) {
         if (newValue) {
           this.plan_trial_obj.trial_days = 3;
@@ -427,7 +437,7 @@ export default {
             amount: this.main_price_obj.price,
             currency: this.main_price_obj.currency,
             type: 'recurring',
-            interval: 'month',
+            interval: this.main_price_obj.interval,
             interval_count: this.main_price_obj.interval_count,
             currency_options: currency_options
           }];

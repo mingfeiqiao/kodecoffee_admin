@@ -13,9 +13,13 @@
       <el-descriptions>
         <el-descriptions-item :label="$t('create time')">{{ user.created_time }}</el-descriptions-item>
         <el-descriptions-item :label="$t('area')">{{ user.country }}</el-descriptions-item>
+        <el-descriptions-item v-if="user.actived_timestamp" :label="$t('Activation Time')">{{ user.actived_timestamp }}</el-descriptions-item>
+        <el-descriptions-item v-if="user.first_makeorder_timestamp" :label="$t('First Order Placement')">{{ user.first_makeorder_timestamp }}</el-descriptions-item>
+        <el-descriptions-item v-if="user.first_paysuccess_timestamp" :label="$t('First Payment')">{{ user.first_paysuccess_timestamp }}</el-descriptions-item>
         <el-descriptions-item :label="$t('last pay time')">{{ user.last_payment }}</el-descriptions-item>
         <el-descriptions-item :label="$t('total spend')" >{{ user.total_spend }}</el-descriptions-item>
         <el-descriptions-item :label="$t('succeed pay times')" >{{ user.pay_success_times }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('extension')" >{{ user.client_name }}</el-descriptions-item>
       </el-descriptions>
     </div>
     <div class="border-bottom">
@@ -83,7 +87,7 @@
             </span>
           </template>
         </el-table-column>
-        <el-table-column :label="$t('create time')" prop="created_time" align="center">
+        <el-table-column :label="$t('Pay Time')" prop="created_time" align="center">
         </el-table-column>
       </el-table>
       <div style="padding:12px;display: flex;align-items: center;justify-content: center;">
@@ -130,6 +134,10 @@ export default {
         last_payment: "",
         total_spend: "",
         pay_success_times: "",
+        actived_timestamp:'',
+        first_makeorder_timestamp:'',
+        first_paysuccess_timestamp:'',
+        client_name:""
       },
       subscription_list: [],
       order_list:[],
@@ -153,16 +161,15 @@ export default {
      */
     getCustomerInfoData () {
       if (this.$route.params && this.$route.params.id) {
-        let vm = this;
         customerDetailApi(this.$route.params.id).then(res => {
           if (!res.data) {
             return;
           }
           if (parseInt(res.data.code) === 100000) {
-            vm.user = vm.formatUserData(res.data.data);
+            this.user = this.formatUserData(res.data.data);
           } else {
             if (res && res.data && res.data.message) {
-              vm.$message.warning(res.data.message)
+              this.$message.warning(res.data.message)
             }
           }
         }).catch(err => {
@@ -186,6 +193,10 @@ export default {
         user_key: item.user_key || "",
         user_email: item.email || "",
         country: item.country || "",
+        actived_timestamp:this.formatTime(item.actived_timestamp),
+        first_makeorder_timestamp:this.formatTime(item.first_makeorder_timestamp),
+        first_paysuccess_timestamp:this.formatTime(item.first_paysuccess_timestamp),
+        client_name:item.client_name || "",
         total_spend: this.formatPrice(user_consumption_statistics.sum_settle_pay_amount, currency),
         payments_times: this.formatPrice(user_consumption_statistics.sum_settle_pay_count, currency),
         pay_success_times: user_consumption_statistics.sum_settle_pay_success_count || 0,
