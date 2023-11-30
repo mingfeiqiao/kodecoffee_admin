@@ -339,9 +339,15 @@
     "Effective Start": "Effective Start",
     "every few days": "every {few} days",
     "every day": "every day",
-    "Daily subscription is for testing purposes in the development environment": "Daily subscription is for testing purposes in the development environment"
+    "Daily subscription is for testing purposes in the development environment": "Daily subscription is for testing purposes in the development environment",
+    "Limit": "Limit",
+    "No Limit": "No Limit",
+    "Allow the number of simultaneous logins on different devices for the same account": "Allow the number of simultaneous logins on different devices for the same account"
   },
   "zh-CN": {
+    "Allow the number of simultaneous logins on different devices for the same account":"允许同一个账号在不同设备上同时登录在线使用的数量",
+    "No Limit": "不限制",
+    "Limit": "限制",
     "Daily subscription is for testing purposes in the development environment": "天级订阅仅供测试环境用来调试",
     "every day": "每天",
     "every few days": "每{few}天",

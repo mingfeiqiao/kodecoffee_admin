@@ -154,7 +154,7 @@ export default {
     loginOrRegisterUser () {
       // zbUserInfo().then(function(res) { // 先请求zbase的用户信息
       // axios.get('http://127.0.0.1:3000/user/v2/userinfo')
-      zbUserInfo().then(res => { // 先请求zbase的用户信息
+      axios.get('http://127.0.0.1:3000/user/v2/userinfo').then(res => { // 先请求zbase的用户信息
         const { data } = res || {};
         const { code = 0 } = data || {};
         const { userinfo = {} } = data || {};
