@@ -54,12 +54,12 @@
               <el-form-item :label="$t('extension')">
                 <div style="display:flex;flex-direction: column">
                   <div style="max-width: 200px">
-                    <el-select size="small" v-model="web_hook_event_data.client_key" :placeholder="$t('select placeholder')" filterable clearable v-loading="client_list_loading">
+                    <el-select size="small" v-model="web_hook_event_data.client_id" :placeholder="$t('select placeholder')" filterable clearable v-loading="client_list_loading">
                       <el-option
                         v-for="item in client_list"
-                        :key="item.client_key"
+                        :key="item.client_id"
                         :label="$t(item.name)"
-                        :value="item.client_key">
+                        :value="item.client_id">
                       </el-option>
                     </el-select>
                   </div>
@@ -136,7 +136,7 @@ export default {
       web_hook_table_data: [],
       web_hook_event_data: {
         endpoint:'',
-        client_key:'',
+        client_id:'',
         event_types: []
       },
       event_types: [], // event 列表
@@ -191,6 +191,9 @@ export default {
     },
     editWebHookDetail(row) {
       this.web_hook_event_data = row;
+      if (!this.web_hook_event_data.client_id) {
+        this.web_hook_event_data.client_id = '';
+      }
       this.show_update_webhook_config = true;
     },
     deleteWebHookDetail(row) {
@@ -316,10 +319,10 @@ export default {
      * 获取新增事件的参数
      * @param endpoint
      * @param event_types
-     * @param client_key
+     * @param client_id
      * @returns {{endpoint}}
      */
-    getAddEventArgs (endpoint, event_types, client_key) {
+    getAddEventArgs (endpoint, event_types, client_id) {
       const result = {endpoint:endpoint}
       // 判断是不是全选
       if (event_types.length === this.event_types.length) {
@@ -328,8 +331,8 @@ export default {
         result.event_type = 'include';
         result.event_types = event_types;
       }
-      if (client_key) {
-        result.client_key = client_key;
+      if (client_id) {
+        result.client_id = client_id;
       }
       return result;
     },
@@ -340,7 +343,7 @@ export default {
       this.$refs['add_web_hook_event_form'].validate(valid => {
         if (valid) {
           if (this.show_add_webhook_config) {
-            addWebHookEventApi(this.getAddEventArgs(this.web_hook_event_data.endpoint, this.web_hook_event_data.event_types, this.web_hook_event_data.client_key)).then(res => {
+            addWebHookEventApi(this.getAddEventArgs(this.web_hook_event_data.endpoint, this.web_hook_event_data.event_types, this.web_hook_event_data.client_id)).then(res => {
               if (res.data && res.data.code && parseInt(res.data.code) === 100000) {
                 this.$message({
                   message: this.$t('add success'),
@@ -357,7 +360,7 @@ export default {
               console.log(err);
             })
           } else if (this.show_update_webhook_config) {
-            updateWebHookEventApi(this.web_hook_event_data.webhook_id, this.getAddEventArgs(this.web_hook_event_data.endpoint, this.web_hook_event_data.event_types)).then(res => {
+            updateWebHookEventApi(this.web_hook_event_data.webhook_id, this.getAddEventArgs(this.web_hook_event_data.endpoint, this.web_hook_event_data.event_types, this.web_hook_event_data.client_id)).then(res => {
               const { data } = res || {};
               const { code = 0, message } =  data || {};
               if (parseInt(code) === 100000) {
