@@ -12,6 +12,12 @@
       >
         <el-table-column prop="endpoint" :label="$t('Endpoint URL')" width="auto">
         </el-table-column>
+        <el-table-column prop="client_name" :label="$t('Applied extension')" width="auto">
+          <template slot-scope="scope">
+            <span v-if="scope.row.client_name">{{ scope.row.client_name }}</span>
+            <span v-else>{{ $t('all') }}</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="created_time_format" :label="$t('create time')" width="auto">
         </el-table-column>
         <el-table-column :label="$t('Operation')" width="200" align="center">
@@ -45,6 +51,21 @@
                   <el-checkbox v-for="(item, key) in event_types" :key="key" :label="item.value">{{ $i18n.locale  === 'en-US' ? item.value : item.label }}</el-checkbox>
                 </el-checkbox-group>
               </el-form-item>
+              <el-form-item :label="$t('extension')">
+                <div style="display:flex;flex-direction: column">
+                  <div style="max-width: 200px">
+                    <el-select size="small" v-model="web_hook_event_data.client_id" :placeholder="$t('select placeholder')" filterable clearable v-loading="client_list_loading">
+                      <el-option
+                        v-for="item in client_list"
+                        :key="item.client_id"
+                        :label="$t(item.name)"
+                        :value="item.client_id">
+                      </el-option>
+                    </el-select>
+                  </div>
+                  <span style="color: #929292">{{$t('If no extension is selected, you will receive event callbacks for all extensions under the account')}}</span>
+                </div>
+              </el-form-item>
             </el-form>
           </div>
           <div style="display: flex;flex-direction: row-reverse;align-items: center;">
@@ -68,13 +89,9 @@
               <el-descriptions-item :label="$t('Endpoint URL')" :span="12">
                 {{chosen_web_hook_event_data.endpoint}}
               </el-descriptions-item>
-            </el-descriptions>
-            <el-descriptions>
               <el-descriptions-item :label="$t('Event')" :span="12" v-loading="event_types_loading">
                 {{getEventNames(chosen_web_hook_event_data.event_types)}}
               </el-descriptions-item>
-            </el-descriptions>
-            <el-descriptions>
               <el-descriptions-item :label="$t('Signature Key')" :span="12">
                 <div style="display: flex;align-items: center">
                   <span>{{chosen_web_hook_event_data.webhook_id}}</span>
@@ -87,6 +104,14 @@
                 </div>
 
               </el-descriptions-item>
+              <el-descriptions-item :label="$t('Applied extension')" :span="12">
+                <span v-if="chosen_web_hook_event_data.client_name">
+                  {{getEventNames(chosen_web_hook_event_data.client_name)}}
+                </span>
+                <span v-else>
+                  {{ $t('all') }}
+                </span>
+              </el-descriptions-item>
             </el-descriptions>
           </div>
         </div>
@@ -95,13 +120,13 @@
   </div>
 </template>
 <script>
-import {addWebHookEventApi, getWebHookEventTypesApi, getWebHookEventListApi, deleteWebHookEventApi, updateWebHookEventApi} from "../../../api/interface";
+import {addWebHookEventApi, getWebHookEventTypesApi, getWebHookEventListApi, deleteWebHookEventApi, updateWebHookEventApi, pluginList} from "../../../api/interface";
 import {timestampToDateString} from "../../../utils/dateUtils";
 import Clipboard from "clipboard";
 export default {
   data() {
     return {
-      WEB_HOOK_EVENT_LIMIT: 5,
+      WEB_HOOK_EVENT_LIMIT: 10,
       chosen_web_hook_event_data: {},
       web_hook_event_table_loading: false,
       event_types_loading: false,
@@ -111,13 +136,19 @@ export default {
       web_hook_table_data: [],
       web_hook_event_data: {
         endpoint:'',
+        client_id:'',
         event_types: []
       },
       event_types: [], // event 列表
+      client_list:[],
+      client_list_loading:false,
     }
   },
   computed: {
     show_config_dialog () {
+      if (this.client_list.length === 0) {
+        this.getPluginList()
+      }
       return this.show_add_webhook_config || this.show_update_webhook_config;
     },
     rules () {
@@ -137,12 +168,32 @@ export default {
     this.getWebHookEventTypes();
   },
   methods: {
+    getPluginList() {
+      this.client_list_loading = true;
+      this.client_list = [];
+      pluginList().then(res => {
+        this.client_list_loading = false;
+        if (parseInt(res.data.code) === 100000) {
+          this.client_list = res.data.data;
+        } else {
+          if (res && res.data && res.data.message) {
+            this.$message.warning(res.data.message)
+          }
+        }
+      }).catch(err => {
+        this.client_list_loading = false;
+        console.log(err);
+      });
+    },
     cancelConfigDialog() {
       this.show_update_webhook_config = false;
       this.show_add_webhook_config = false;
     },
     editWebHookDetail(row) {
       this.web_hook_event_data = row;
+      if (!this.web_hook_event_data.client_id) {
+        this.web_hook_event_data.client_id = '';
+      }
       this.show_update_webhook_config = true;
     },
     deleteWebHookDetail(row) {
@@ -268,22 +319,22 @@ export default {
      * 获取新增事件的参数
      * @param endpoint
      * @param event_types
-     * @returns {{endpoint, event_type: string}|{endpoint, event_type: string, event_types}}
+     * @param client_id
+     * @returns {{endpoint}}
      */
-    getAddEventArgs (endpoint, event_types) {
+    getAddEventArgs (endpoint, event_types, client_id) {
+      const result = {endpoint:endpoint}
       // 判断是不是全选
       if (event_types.length === this.event_types.length) {
-        return {
-          endpoint:endpoint,
-          event_type: 'all'
-        }
+        result.event_type = 'all';
       } else {
-        return {
-          endpoint: endpoint,
-          event_type: 'include',
-          event_types:event_types
-        }
+        result.event_type = 'include';
+        result.event_types = event_types;
       }
+      if (client_id) {
+        result.client_id = client_id;
+      }
+      return result;
     },
     /**
      * 新增一个回调事件地址
@@ -292,7 +343,7 @@ export default {
       this.$refs['add_web_hook_event_form'].validate(valid => {
         if (valid) {
           if (this.show_add_webhook_config) {
-            addWebHookEventApi(this.getAddEventArgs(this.web_hook_event_data.endpoint, this.web_hook_event_data.event_types)).then(res => {
+            addWebHookEventApi(this.getAddEventArgs(this.web_hook_event_data.endpoint, this.web_hook_event_data.event_types, this.web_hook_event_data.client_id)).then(res => {
               if (res.data && res.data.code && parseInt(res.data.code) === 100000) {
                 this.$message({
                   message: this.$t('add success'),
@@ -309,7 +360,7 @@ export default {
               console.log(err);
             })
           } else if (this.show_update_webhook_config) {
-            updateWebHookEventApi(this.web_hook_event_data.webhook_id, this.getAddEventArgs(this.web_hook_event_data.endpoint, this.web_hook_event_data.event_types)).then(res => {
+            updateWebHookEventApi(this.web_hook_event_data.webhook_id, this.getAddEventArgs(this.web_hook_event_data.endpoint, this.web_hook_event_data.event_types, this.web_hook_event_data.client_id)).then(res => {
               const { data } = res || {};
               const { code = 0, message } =  data || {};
               if (parseInt(code) === 100000) {

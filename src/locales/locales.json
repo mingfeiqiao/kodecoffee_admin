@@ -348,6 +348,8 @@
     "Allow the number of simultaneous logins on different devices for the same account":"允许同一个账号在不同设备上同时登录在线使用的数量",
     "No Limit": "不限制",
     "Limit": "限制",
+    "If no extension is selected, you will receive event callbacks for all extensions under the account": "如果不选择插件，则会收到账号下所有插件的事件回调",
+    "Applied extension": "应用插件",
     "Daily subscription is for testing purposes in the development environment": "天级订阅仅供测试环境用来调试",
     "every day": "每天",
     "every few days": "每{few}天",

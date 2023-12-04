@@ -13,6 +13,12 @@
             </span>
           </template>
         </el-table-column>
+        <el-table-column prop="client_name" :label="$t('Applied extension')" width="auto">
+          <template slot-scope="scope">
+            <span v-if="scope.row.client_name">{{ scope.row.client_name }}</span>
+            <span v-else>{{ $t('all') }}</span>
+          </template>
+        </el-table-column>
         <el-table-column  :label="$t('status')" width="auto">
           <template slot-scope="scope" v-if="scope.row.event_status_obj">
             <span :style="{'color': scope.row.event_status_obj.color }">
