@@ -87,6 +87,14 @@
                 </div>
 
               </el-descriptions-item>
+              <el-descriptions-item :label="$t('Applied extension')" :span="12">
+                <span v-if="chosen_web_hook_event_data.client_name">
+                  {{chosen_web_hook_event_data.client_name}}
+                </span>
+                <span v-else>
+                  {{ $t('all') }}
+                </span>
+              </el-descriptions-item>
             </el-descriptions>
           </div>
         </div>
