@@ -150,7 +150,7 @@ export default {
           console.log('发送成功:', 'transaction',Object.assign({}, data, post_params));
           window.location.href = res.data.data.url;
         } else {
-          this.$message.error(res.data.message);
+          this.$message.warning(res.data.message);
         }
       }).catch(err => {
         this.$message.error(err);

@@ -89,7 +89,9 @@ export default {
   data() {
     return {
       input: "",
+      LIMIT_GOOGLE_LOGIN_TIME: 120,
       is_email_valid: true,
+      is_limit_click:false,
       args : {
         api_key: '',
         application_id: '',
@@ -110,9 +112,6 @@ export default {
     this.google_login_args.countdown_interval = null;
   },
   mounted() {
-    // 在页面加载完成后，创建一个script标签
-    // this.google_login_args.is_login_success = false;
-    // this.google_login_args.is_login_success = false;
     const script = document.createElement('script');
     script.src = 'https://accounts.google.com/gsi/client';
     script.async = true;
@@ -139,6 +138,7 @@ export default {
     };
     // 将script标签添加到body中
     document.body.appendChild(script);
+    this.handleGoogleLoginLimit();
   },
   created() {
     let headers = this.getCommonHeaders();
@@ -157,6 +157,57 @@ export default {
     languageChange
   },
   methods: {
+    /**
+     * 处理Google 一键登录速率限制
+     */
+    handleGoogleLoginLimit() {
+      const limit_time = this.getLimitGoogleLoginTime();
+      if (limit_time > 0) {
+        this.is_limit_click = true;
+        const google_sign_button = document.getElementById('google-signin-button')
+        google_sign_button.setAttribute('style', 'opacity:.5')
+        google_sign_button.addEventListener('click', function (event) {
+          // 检查点击事件的目标元素是否是 iframe
+          if (this.is_limit_click && event.target.tagName === 'IFRAME') {
+            event.preventDefault(); // 阻止 iframe 的点击事件
+            event.stopPropagation(); // 阻止事件冒泡
+          } else {
+            this.$message.warning("请在" + limit_time + "后使用Google一键登录")
+            setTimeout(() => {
+              google_sign_button.setAttribute('style', 'opacity:0');
+              this.is_limit_click = false;
+            }, limit_time * 1000)
+          }
+        });
+      }
+    },
+    /**
+     * 用户还需要等待多少秒，才能继续使用Google登录
+     * @returns {number} 0 不需要等待， N 需要等待N秒
+     */
+    getLimitGoogleLoginTime() {
+      const unix_timestamp_seconds = this.getTimeStampNow();
+      const last_google_login_success = localStorage.get('last_google_login_success');
+      if (last_google_login_success) {
+        return unix_timestamp_seconds - last_google_login_success;
+      } else {
+        return 0
+      }
+    },
+    /**
+     * 获取当前的unix时间戳，不带时区， 秒为单位
+     * @returns {number}
+     */
+    getTimeStampNow () {
+      // 将毫秒数转换为秒数（Unix 时间戳以秒为单位，不带时区）
+      return Math.floor(Date.now() / 1000);
+    },
+    /**
+     * 设置Google登录上次登录成功事件
+     */
+    setLastGoogleLoginSuccessTime() {
+      localStorage.setItem('last_google_login_success', String(this.getTimeStampNow()))
+    },
     getCommonHeaders() {
       let headers = {};
       for (let key in this.$route.query) {
@@ -166,12 +217,17 @@ export default {
       return headers
     },
     handleCredentialResponse(response) {
+      const limit_time = this.getLimitGoogleLoginTime()
+      if (limit_time > 0) {
+        this.$message.warning("请在" + limit_time + "后使用Google一键登录");
+      }
       this.google_login_args.is_third_part_loading = true;
       extensionGoogleLoginApi(this.getCommonHeaders(),response).then(res => {
         this.google_login_args.is_third_part_loading = false;
         const { data } = res || {};
         const { code = 0, message } = data;
         if (parseInt(code) === 100000) {
+          this.setLastGoogleLoginSuccessTime();
           this.google_login_args.is_login_success = true;
           window.postMessage({
             type: 'login',
