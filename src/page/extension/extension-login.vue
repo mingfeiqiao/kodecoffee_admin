@@ -138,7 +138,6 @@ export default {
     };
     // 将script标签添加到body中
     document.body.appendChild(script);
-    this.handleGoogleLoginLimit();
   },
   created() {
     let headers = this.getCommonHeaders();
@@ -158,38 +157,15 @@ export default {
   },
   methods: {
     /**
-     * 处理Google 一键登录速率限制
-     */
-    handleGoogleLoginLimit() {
-      const limit_time = this.getLimitGoogleLoginTime();
-      if (limit_time > 0) {
-        this.is_limit_click = true;
-        const google_sign_button = document.getElementById('google-signin-button')
-        google_sign_button.setAttribute('style', 'opacity:.5')
-        google_sign_button.addEventListener('click', function (event) {
-          // 检查点击事件的目标元素是否是 iframe
-          if (this.is_limit_click && event.target.tagName === 'IFRAME') {
-            event.preventDefault(); // 阻止 iframe 的点击事件
-            event.stopPropagation(); // 阻止事件冒泡
-          } else {
-            this.$message.warning("请在" + limit_time + "后使用Google一键登录")
-            setTimeout(() => {
-              google_sign_button.setAttribute('style', 'opacity:0');
-              this.is_limit_click = false;
-            }, limit_time * 1000)
-          }
-        });
-      }
-    },
-    /**
      * 用户还需要等待多少秒，才能继续使用Google登录
      * @returns {number} 0 不需要等待， N 需要等待N秒
      */
     getLimitGoogleLoginTime() {
       const unix_timestamp_seconds = this.getTimeStampNow();
-      const last_google_login_success = localStorage.get('last_google_login_success');
+      const last_google_login_success = localStorage.getItem('last_google_login_success');
       if (last_google_login_success) {
-        return unix_timestamp_seconds - last_google_login_success;
+        console.log(unix_timestamp_seconds, last_google_login_success, this.LIMIT_GOOGLE_LOGIN_TIME, unix_timestamp_seconds - last_google_login_success - this.LIMIT_GOOGLE_LOGIN_TIME);
+        return this.LIMIT_GOOGLE_LOGIN_TIME - (unix_timestamp_seconds - last_google_login_success);
       } else {
         return 0
       }
@@ -219,7 +195,8 @@ export default {
     handleCredentialResponse(response) {
       const limit_time = this.getLimitGoogleLoginTime()
       if (limit_time > 0) {
-        this.$message.warning("请在" + limit_time + "后使用Google一键登录");
+        this.$message.warning(this.$t('Please use Google One-Click Login in xxx seconds', {seconds: limit_time}));
+        return;
       }
       this.google_login_args.is_third_part_loading = true;
       extensionGoogleLoginApi(this.getCommonHeaders(),response).then(res => {

@@ -186,14 +186,14 @@ export default {
      */
     getUserInfo () {
       extensionUserInfo(this.common_headers).then(res => {
-        let resData = res.data;
-        if (parseInt(resData.code) === 100000) {
-          this.user_info = resData.userinfo;
-          this.subscription_list = this.formatSubscriptionListFromRes(resData.payinfo);
-          this.order_list = this.formatOrderListFromRes(resData.invoice_list);
+        let res_data = res.data;
+        if (parseInt(res_data.code) === 100000) {
+          this.user_info = res_data.userinfo;
+          this.subscription_list = this.formatSubscriptionListFromRes(res_data.payinfo);
+          this.order_list = this.formatOrderListFromRes(res_data.invoice_list);
         } else {
-          if (parseInt(resData.code) === 401) {
-            this.$message.warning(res.message)
+          if (parseInt(res_data.code) === 401) {
+            this.$message.warning(res_data.message)
           } else {
             this.$message.warning('not login');
             this.$router.push({

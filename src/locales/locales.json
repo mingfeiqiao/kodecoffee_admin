@@ -343,9 +343,11 @@
     "Limit": "Limit",
     "No Limit": "No Limit",
     "Allow the number of simultaneous logins on different devices for the same account": "Allow the number of simultaneous logins on different devices for the same account",
-    "Another user has logged into this account at off_line_timestamp. This device has been logged out": "Another user has logged into this account at {off_line_timestamp}. This device has been logged out"
+    "Another user has logged into this account at off_line_timestamp. This device has been logged out": "Another user has logged into this account at {off_line_timestamp}. This device has been logged out",
+    "Please use Google One-Click Login in xxx seconds": "Please use Google One-Click Login in {seconds} seconds"
   },
   "zh-CN": {
+    "Please use Google One-Click Login in xxx seconds": "请在{seconds}秒后使用Google一键登录",
     "Another user has logged into this account at off_line_timestamp. This device has been logged out": "有其他人于{off_line_timestamp}登录该账号，本设备已经下线",
     "Allow the number of simultaneous logins on different devices for the same account":"允许同一个账号在不同设备上同时登录在线使用的数量",
     "No Limit": "不限制",
