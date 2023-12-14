@@ -19,7 +19,7 @@
           <el-input v-model="plugin_data.store_address" :placeholder="$t('please input store address')"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" size="small" @click="submitForm('ruleForm')">
+          <el-button type="primary" size="small" @click="submitForm('ruleForm')" :loading="btn_loading">
             {{ operationType === 'add' ? $t('create') : $t('update') }}
           </el-button>
           <el-button @click="resetForm('ruleForm')" size="small">{{ $t('Reset') }}</el-button>
@@ -38,6 +38,7 @@ export default {
       icon_file: null,
       dialog_form_visible: false,
       plugin_data : {},
+      btn_loading:false
     }
   },
   components : {
@@ -144,7 +145,9 @@ export default {
         }
       }
       let vm = this;
+      this.btn_loading = true;
       addPlugin(args).then((res) => {
+        this.btn_loading = false;
         if (parseInt(res.data.code) === 100000) {
           vm.$message({
             message: 'success',
@@ -158,6 +161,7 @@ export default {
           }
         }
       }).catch((err) => {
+        this.btn_loading = false;
         this.$message({
           message: 'fail',
           type: 'error'
@@ -185,7 +189,9 @@ export default {
       }
       args.client_key = this.chosen_plugin_data.client_key;
       let vm = this;
+      this.btn_loading = true;
       updatePlugin(args).then((res) => {
+        this.btn_loading = false;
         if (parseInt(res.data.code) === 100000) {
           vm.$message({
             message: 'success',
@@ -199,6 +205,7 @@ export default {
           }
         }
       }).catch((err) => {
+        this.btn_loading = false;
         vm.$message({
           message: 'fail',
           type: 'error'

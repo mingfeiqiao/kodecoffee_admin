@@ -4,7 +4,7 @@
       <div>
         <div>{{$t('pay')}}:</div>
         <div style="display:flex;align-items: center;padding: 8px 0 24px 0">
-          <span class="title-20">{{ order_detail.price_format }}</span>
+          <span class="title-20" style="flex-shrink: 0;">{{ order_detail.price_format }}</span>
           <span v-if="order_detail.currency" style="color: #929292;font-size: 20px;padding-left: 8px">{{order_detail.currency.toUpperCase()}}</span>
           <span v-if="order_detail.order_status_obj" :style="{
             'border-radius': '4px',
@@ -12,7 +12,8 @@
             'padding':'0 10px',
             'color': order_detail.order_status_obj.color,
             'background-color': order_detail.order_status_obj['background-color'],
-            'border': '1px solid ' + order_detail.order_status_obj.color
+            'border': '1px solid ' + order_detail.order_status_obj.color,
+            'flex-shrink': 0
           }">{{ $t(order_detail.order_status_obj.message) }}</span>
           <span v-if="order_detail.error_msg" style="padding-left: 24px;color: #929292">
             {{order_detail.error_msg}}

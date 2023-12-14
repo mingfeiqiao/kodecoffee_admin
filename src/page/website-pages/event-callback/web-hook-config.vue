@@ -69,7 +69,7 @@
             </el-form>
           </div>
           <div style="display: flex;flex-direction: row-reverse;align-items: center;">
-            <el-button type="primary" size="small" style="margin-left: 12px" @click="addWebHookEvent">{{ $t('save') }}</el-button>
+            <el-button type="primary" size="small" style="margin-left: 12px" @click="addWebHookEvent" :loading="save_loading">{{ $t('save') }}</el-button>
             <el-button size="small" @click="cancelConfigDialog">{{ $t('cancel') }}</el-button>
           </div>
         </div>
@@ -142,6 +142,7 @@ export default {
       event_types: [], // event 列表
       client_list:[],
       client_list_loading:false,
+      save_loading:false
     }
   },
   computed: {
@@ -342,8 +343,10 @@ export default {
     addWebHookEvent() {
       this.$refs['add_web_hook_event_form'].validate(valid => {
         if (valid) {
+          this.save_loading = true;
           if (this.show_add_webhook_config) {
             addWebHookEventApi(this.getAddEventArgs(this.web_hook_event_data.endpoint, this.web_hook_event_data.event_types, this.web_hook_event_data.client_id)).then(res => {
+              this.save_loading = false;
               if (res.data && res.data.code && parseInt(res.data.code) === 100000) {
                 this.$message({
                   message: this.$t('add success'),
@@ -357,12 +360,14 @@ export default {
                 }
               }
             }).catch(err => {
+              this.save_loading = false;
               console.log(err);
             })
           } else if (this.show_update_webhook_config) {
             updateWebHookEventApi(this.web_hook_event_data.webhook_id, this.getAddEventArgs(this.web_hook_event_data.endpoint, this.web_hook_event_data.event_types, this.web_hook_event_data.client_id)).then(res => {
               const { data } = res || {};
               const { code = 0, message } =  data || {};
+              this.save_loading = false;
               if (parseInt(code) === 100000) {
                 this.$message.success(this.$t('update success'))
                 this.cancelConfigDialog();
@@ -374,6 +379,7 @@ export default {
               }
             }).catch(err => {
               console.error(err);
+              this.save_loading = false;
             })
           }
         } else {

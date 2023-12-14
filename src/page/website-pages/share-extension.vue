@@ -104,7 +104,7 @@
             </el-form>
           </div>
           <div style="display: flex;flex-direction: row-reverse;align-items: center;">
-            <el-button type="primary" @click="submit" size="small" style="margin-left: 12px">{{$t('save')}}</el-button>
+            <el-button type="primary" @click="submit" size="small" style="margin-left: 12px" :loading="save_loading">{{$t('save')}}</el-button>
             <el-button @click="share_dialog_visible = false" size="small" >{{ $t('cancel') }}</el-button>
           </div>
         </div>
@@ -182,7 +182,8 @@ export default {
       },
       table_data:[],
       table_loading:false,
-      show_share_detail_dialog:false
+      show_share_detail_dialog:false,
+      save_loading:false
     };
   },
   created() {
@@ -302,7 +303,9 @@ export default {
       this.$refs['share_form'].validate((valid) => {
         if (valid) {
           let vm = this;
+          vm.save_loading = true;
           addExtensionShareApi(this.share_data).then(res => {
+            vm.save_loading = false;
             if (res.data && parseInt(res.data.code) === 100000) {
               vm.$message({
                 message: this.$t('add success'),
@@ -318,6 +321,7 @@ export default {
               }
             }
           }).catch(err => {
+            vm.save_loading = false;
             vm.$message({
               message: err,
               type: 'error'

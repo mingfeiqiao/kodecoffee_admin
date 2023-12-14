@@ -116,7 +116,7 @@
            </div>
            <div style="float: right;padding-top: 24px">
              <el-button @click="dialog_form_visible = false" >{{ $t('cancel') }}</el-button>
-             <el-button type="primary" @click="onSubmit('ruleForm')">{{operationType === 'add' ? $t('create') : $t('update')}}</el-button>
+             <el-button type="primary" @click="onSubmit('ruleForm')" :loading="save_loading">{{operationType === 'add' ? $t('create') : $t('update')}}</el-button>
            </div>
          </el-form-item>
        </div>
@@ -190,6 +190,7 @@ export default {
         }
       ],
       dialog_form_visible: false,
+      save_loading:false
     }
   },
   components: {
@@ -457,8 +458,10 @@ export default {
         }
       }
       let vm = this;
+      vm.save_loading = true;
       addPlan(args).then(res => {
         if (parseInt(res.data.code) === 100000) {
+          vm.save_loading = false;
           vm.$message({
             message: vm.$t('create success'),
             type: 'success'
@@ -471,6 +474,7 @@ export default {
           }
         }
       }).catch(err => {
+        vm.save_loading = false;
         vm.$message({
           message: vm.$t('create error'),
           type: 'error'
@@ -508,7 +512,9 @@ export default {
       }
       let vm = this;
       let id = this.plan.plan_id;
+      vm.save_loading = true;
       updatePlan(id, args).then(res => {
+        vm.save_loading = false;
         if (res.data && parseInt(res.data.code)=== 100000) {
           vm.$message({
             message: vm.$t('update success'),
@@ -522,6 +528,7 @@ export default {
           }
         }
       }).catch(err => {
+        vm.save_loading = false;
         vm.$message({
           message: vm.$t('update error'),
           type: 'error'

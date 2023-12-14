@@ -80,7 +80,7 @@
             </div>
           </div>
           <div style="display: flex;flex-direction: row-reverse;align-items: center;">
-            <el-button type="primary" @click="createSym" size="small" style="margin-left: 12px">{{ $t('save') }}
+            <el-button type="primary" @click="createSym('commission_form')" size="small" style="margin-left: 12px" :loading="save_loading">{{ $t('save') }}
             </el-button>
             <el-button @click="show_add_dialog = false" size="small">{{ $t('cancel') }}</el-button>
           </div>
@@ -101,7 +101,8 @@ export default {
       support_clients_loading: false,
       show_add_dialog: false,
       table_loading: false,
-      table_data: []
+      table_data: [],
+      save_loading:false
     }
   },
   computed: {
@@ -145,25 +146,32 @@ export default {
         this.support_clients_loading = false;
       });
     },
-    createSym() {
-      addSymmetricKeyApi(this.sym).then(res => {
-        if (res.data && parseInt(res.data.code) === 100000) {
-          this.$message({
-            message: this.$t('add success'),
-            type: 'success'
+    createSym(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.save_loading = true;
+          addSymmetricKeyApi(this.sym).then(res => {
+            this.save_loading = false;
+            if (res.data && parseInt(res.data.code) === 100000) {
+              this.$message({
+                message: this.$t('add success'),
+                type: 'success'
+              })
+              this.show_add_dialog = false;
+              this.getSymList();
+            } else {
+              if (res && res.data && res.data.message) {
+                this.$message.warning(res.data.message)
+              }
+            }
+          }).catch(err => {
+            this.save_loading = false;
+            this.$message({
+              message:err,
+              type:'error'
+            })
           })
-          this.show_add_dialog = false;
-          this.getSymList();
-        } else {
-          if (res && res.data && res.data.message) {
-            this.$message.warning(res.data.message)
-          }
         }
-      }).catch(err => {
-        this.$message({
-          message:err,
-          type:'error'
-        })
       })
     },
     /**
