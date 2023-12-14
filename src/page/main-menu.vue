@@ -144,7 +144,6 @@ export default {
       }
     }
     this.loginOrRegisterUser()
-    // this.test();
     this.initOptions();
     this.currentMenu = this.$route.path; // 初始化当前路由路径
   },
@@ -161,42 +160,6 @@ export default {
         this.$message.error(this.$t('Login failed. Please try logging in again'));
         console.log(err);
       });
-    },
-    test() {
-      const res = {};
-      res.data = {
-        "code": 100000,
-        "message": "success",
-        "product_id": 70,
-        "product_mark": 70,
-        "userinfo": {
-        "user_id": 113,
-          // "user_id":"2964976", // 志天的账号
-          // "user_id":2900983,
-          // "user_id":2840846,
-          // "user_id":"2857824",
-          // "user_id":"2843847",
-          // "user_id":"2840846",
-          // "user_id":"2840846",// 王涵, han wang
-          // "user_id":"2912918",// 王涵 wangjack
-          "email": "ligoogel1918@gmail.com",
-          "username": "李谷歌",
-          "created_at": "2023-05-29 20:27:01",
-          "phone_number": ""
-      },
-        "payinfo": {
-        "is_subscribed": "0",
-          "plan_start": "",
-          "plan_end": "",
-          "plan_price": "",
-          "plan_name": "No Plan",
-          "plan_date": "No upcoming payments",
-          "is_recurly": "0",
-          "channel": "0",
-          "status": "0"
-      }
-      };
-      this.handleResult(res);
     },
     handleResult(res) {
       const { data } = res || {};
