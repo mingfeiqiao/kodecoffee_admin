@@ -143,8 +143,8 @@ export default {
         }
       }
     }
-    // this.loginOrRegisterUser()
-    this.test();
+    this.loginOrRegisterUser()
+    // this.test();
     this.initOptions();
     this.currentMenu = this.$route.path; // 初始化当前路由路径
   },
