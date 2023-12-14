@@ -186,7 +186,7 @@
                     <div v-if="CURRENCY_OPTIONS[balance_settings.currency]" style="width: 70px">
                       {{CURRENCY_OPTIONS[balance_settings.currency][$i18n.locale]}}
                     </div>
-                    <div style="width: 70px">
+                    <div style="min-width: 100px;max-width: 170px">
                       {{ rateChange('usd', balance_settings.currency, balance.withdraw_amount)}}
                     </div>
                     <div style="padding-left: 12px;color: #929292;width: calc(100% - 140px)">
@@ -202,7 +202,7 @@
             </el-descriptions>
           </div>
           <div style="display: flex;flex-direction: row-reverse;align-items: center;">
-            <el-button @click="openWithdrawalDialog" size="small" style="margin-left: 12px">{{ $t('cancel') }}</el-button>
+            <el-button @click="show_withdrawal_dialog = !show_withdrawal_dialog" size="small" style="margin-left: 12px">{{ $t('cancel') }}</el-button>
             <el-button type="primary"  @click="createWithdraw" size="small">{{$t('create')}}</el-button>
           </div>
         </div>
@@ -269,33 +269,32 @@ export default {
      * 初始化数据
      */
     createWithdraw () {
-      let vm = this;
       let args = {
-        withdraw_type: vm.balance_settings.withdraw_type,
-        settle_currency: vm.balance.currency,
-        settle_amount: vm.balance.left_amount,
-        real_settle_amount:vm.balance.withdraw_amount,
-        paypal_email: vm.balance_settings.paypal_email,
-        card_num: vm.balance_settings.card_num,
-        bank_name: vm.balance_settings.bank_name,
-        bank_account_hold_name: vm.balance_settings.bank_account_hold_name,
-        withdraw_currency: vm.balance_settings.currency,
-        withdraw_amount: vm.balance.withdraw_amount,
+        withdraw_type: this.balance_settings.withdraw_type,
+        settle_currency: this.balance.currency,
+        settle_amount: this.balance.left_amount,
+        real_settle_amount:this.balance.withdraw_amount,
+        paypal_email: this.balance_settings.paypal_email,
+        card_num: this.balance_settings.card_num,
+        bank_name: this.balance_settings.bank_name,
+        bank_account_hold_name: this.balance_settings.bank_account_hold_name,
+        withdraw_currency: this.balance_settings.currency,
+        withdraw_amount: this.balance.withdraw_amount,
       };
       applyWithdrawApi(args).then(res => {
         if (!res.data) {
           return;
         }
         if (parseInt(res.data.code) === 100000) {
-          vm.$message({
-            message: vm.$t('success'),
+          this.$message({
+            message: this.$t('success'),
             type: 'success'
           });
-          vm.show_withdrawal_dialog = false;
-          vm.getWithdrawList();
+          this.show_withdrawal_dialog = false;
+          this.getWithdrawList();
         } else {
           if (res && res.data && res.data.message) {
-            vm.$message.warning(res.data.message)
+            this.$message.warning(res.data.message)
           }
         }
       }).catch(err => {
@@ -330,21 +329,20 @@ export default {
      */
     getWithdrawList() {
       this.table_loading = true;
-      let vm = this;
       accountWithdrawInfoListApi().then(res => {
-        vm.table_loading = false;
+        this.table_loading = false;
         if (!res.data) {
           return;
         }
         if (parseInt(res.data.code )=== 100000) {
-          vm.table_data = vm.formatWithdrawList(res.data.data);
+          this.table_data = this.formatWithdrawList(res.data.data);
         } else {
           if (res && res.data && res.data.message) {
-            vm.$message.warning(res.data.message)
+            this.$message.warning(res.data.message)
           }
         }
       }).catch(err => {
-        vm.table_loading = false;
+        this.table_loading = false;
         console.log(err);
       });
     },
@@ -352,16 +350,15 @@ export default {
      * 获取账户余额和可提现余额
      */
     getRealAmount () {
-      let vm = this;
       searchWithdrawAmountApi().then(res => {
         if (!res.data) {
           return;
         }
         if (parseInt(res.data.code )=== 100000) {
-          vm.formatBalance(res.data.data);
+          this.formatBalance(res.data.data);
         } else {
           if (res && res.data && res.data.message) {
-            vm.$message.warning(res.data.message)
+            this.$message.warning(res.data.message)
           }
         }
       }).catch(err => {
@@ -372,18 +369,17 @@ export default {
      * 获取提现设置
      */
     getAccountWithdrawInfo () {
-      let vm = this;
       accountWithdrawInfoApi().then(res => {
-        vm.is_balance_settings_loaded = true;
+        this.is_balance_settings_loaded = true;
         if (!res.data) {
           return;
         }
         if (parseInt(res.data.code) === 100000) {
-          vm.has_balance_settings = JSON.stringify(res.data.data) !== '{}';
-          vm.balance_settings = res.data.data;
+          this.has_balance_settings = JSON.stringify(res.data.data) !== '{}';
+          this.balance_settings = res.data.data;
         } else {
           if (res && res.data && res.data.message) {
-            vm.$message.warning(res.data.message)
+            this.$message.warning(res.data.message)
           }
         }
       }).catch(err => {
@@ -481,8 +477,8 @@ export default {
       if (parseInt(response.data.code) === 100000) {
         return response.data.data.exchange_rate;
       } else {
-        if (res && res.data && res.data.message) {
-          vm.$message.warning(res.data.message)
+        if (response && response.data && response.data.message) {
+          this.$message.warning(response.data.message)
         }
       }
     },
@@ -493,26 +489,29 @@ export default {
       // 先获取汇率
       if (!this.show_withdrawal_dialog) {
         // 检查是否能够提现
-        let vm = this;
         checkWithdrawApi().then(res => {
           if (!res.data) {
             return;
           }
           if (parseInt(res.data.code) === 100000) {
-            if (vm.balance_settings.currency === 'usd') {
-              vm.rate = 1;
-              vm.show_withdrawal_dialog = !vm.show_withdrawal_dialog;
+            if (this.balance_settings.currency === 'usd') {
+              this.rate = 1;
+              this.show_withdrawal_dialog = !this.show_withdrawal_dialog;
             } else {
-              this.rate = vm.getRate('usd', vm.balance_settings.currency).then(
+              this.rate = this.getRate('usd', this.balance_settings.currency).then(
                 rate => {
-                  vm.rate = rate;
-                  vm.show_withdrawal_dialog = !vm.show_withdrawal_dialog;
+                  this.rate = rate;
+                  this.show_withdrawal_dialog = !this.show_withdrawal_dialog;
                 }
               );
             }
           } else { // 不能提现
-            vm.$alert(res.data.message, res.data.title, {
-              confirmButtonText: vm.$t('OK')
+            this.$alert(res.data.message, res.data.title, {
+              confirmButtonText: this.$t('OK')
+            }).then(() => {
+              this.show_withdrawal_settings_edit_dialog = true;
+            }).catch(() => {
+              console.log('close');
             });
           }
         }).catch(err => {

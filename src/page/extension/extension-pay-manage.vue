@@ -185,18 +185,17 @@ export default {
      * 获取用户信息
      */
     getUserInfo () {
-      let vm = this;
-      extensionUserInfo(vm.common_headers).then(res => {
+      extensionUserInfo(this.common_headers).then(res => {
         let resData = res.data;
         if (parseInt(resData.code) === 100000) {
-          vm.user_info = resData.userinfo;
-          vm.subscription_list = vm.formatSubscriptionListFromRes(resData.payinfo);
-          vm.order_list = vm.formatOrderListFromRes(resData.invoice_list);
+          this.user_info = resData.userinfo;
+          this.subscription_list = this.formatSubscriptionListFromRes(resData.payinfo);
+          this.order_list = this.formatOrderListFromRes(resData.invoice_list);
         } else {
-          vm.$message.warning('not login');
-          vm.$router.push({
+          this.$message.warning('not login');
+          this.$router.push({
             path: "/extension/login",
-            query: vm.$route.query
+            query: this.$route.query
           });
         }
       });
@@ -283,27 +282,33 @@ export default {
      * @param row
      */
     cancelSubscription (row) {
-      let vm = this;
-      extensionCancelSubscription(vm.common_headers,{transaction_id: row.transaction_id}).then(res => {
-        let resData = res.data;
-        if (parseInt(resData.code) === 100000) {
-          vm.$message({
-            message: '取消中，请稍后',
-            type: 'success'
-          });
-          vm.getUserInfo();
-        } else {
-          if (res && res.data && res.data.message) {
-            vm.$message.warning(res.data.message)
+      this.$confirm(this.$t('This operation will cancel the subscription. Do you want to proceed?'), this.$t('Tips'), {
+        confirmButtonText: this.$t('Ok'),
+        cancelButtonText: this.$t('cancel'),
+        type: 'warning'
+      }).then(() => {
+        extensionCancelSubscription(this.common_headers,{transaction_id: row.transaction_id}).then(res => {
+          let resData = res.data;
+          if (parseInt(resData.code) === 100000) {
+            this.$message({
+              message: this.$t('Canceling, please wait'),
+              type: 'success'
+            });
+            this.getUserInfo();
+          } else {
+            if (res && res.data && res.data.message) {
+              this.$message.warning(res.data.message)
+            }
           }
-        }
-      }).catch(err => {
-        vm.$message({
-          message: 'error',
-          type: 'error'
+        }).catch(err => {
+          this.$message({
+            message: 'error',
+            type: 'error'
+          });
+          console.log(err);
         });
-        console.log(err);
       });
+
     },
     /**
      * tab切换

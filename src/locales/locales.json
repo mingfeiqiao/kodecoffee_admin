@@ -341,9 +341,13 @@
     "every day": "every day",
     "Daily subscription is for testing purposes in the development environment": "Daily subscription is for testing purposes in the development environment",
     "Applied extension": "Applied extension",
-    "If no extension is selected, you will receive event callbacks for all extensions under the account": "If no extension is selected, you will receive event callbacks for all extensions under the account"
+    "If no extension is selected, you will receive event callbacks for all extensions under the account": "If no extension is selected, you will receive event callbacks for all extensions under the account",
+    "This operation will cancel the subscription. Do you want to proceed?": "This operation will cancel the subscription. Do you want to proceed?",
+    "Canceling, please wait": "Canceling, please wait"
   },
   "zh-CN": {
+    "Canceling, please wait": "取消中，请稍后",
+    "This operation will cancel the subscription. Do you want to proceed?": "此操作将会取消该订阅，是否继续？",
     "If no extension is selected, you will receive event callbacks for all extensions under the account": "如果不选择插件，则会收到账号下所有插件的事件回调",
     "Applied extension": "应用插件",
     "Daily subscription is for testing purposes in the development environment": "天级订阅仅供测试环境用来调试",
