@@ -18,7 +18,7 @@
         <el-form-item :label="$t('store address') + ':'" prop="store_address">
           <el-input v-model="plugin_data.store_address" :placeholder="$t('please input store address')"></el-input>
         </el-form-item>
-        <el-form-item :label="$t('store address') + ':'"  prop="allow_online_user_limit_count">
+        <el-form-item :label="$t('Simultaneously Online') + ':'"  prop="allow_online_user_limit_count">
           <div style="display: flex;flex-direction: column">
             <div>
               <el-radio-group v-model="is_limit_user" @change="handleLimitChange">
