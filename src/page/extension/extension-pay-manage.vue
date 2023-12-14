@@ -295,6 +295,19 @@ export default {
               type: 'success'
             });
             this.getUserInfo();
+            const data = {};
+            Object.assign(data, this.$route.query, row);
+            delete data['operation']
+            window.postMessage({
+              type: 'cancel subscription',
+              data: data
+            });
+            if (window.opener) {
+              window.opener.postMessage({
+                type: 'cancel subscription',
+                data: data
+              }, "*");
+            }
           } else {
             if (res && res.data && res.data.message) {
               this.$message.warning(res.data.message)
@@ -308,7 +321,6 @@ export default {
           console.log(err);
         });
       });
-
     },
     /**
      * tab切换

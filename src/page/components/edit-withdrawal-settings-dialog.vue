@@ -128,7 +128,14 @@ export default {
   data () {
     return {
       Countries: Countries,
-      Currency:Currency,
+      Currency:{
+        "usd": {
+          "symbol": "US$",
+          "full_name": "USD",
+          "en-US": "US Dollar",
+          "zh-CN": "美元"
+        }
+      },
       dialog_form_visible: false,
       withdrawal_settings: {
       },
