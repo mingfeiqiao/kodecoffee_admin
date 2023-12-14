@@ -155,43 +155,46 @@ export default {
       // zbUserInfo().then(function(res) { // 先请求zbase的用户信息
       // axios.get('http://127.0.0.1:3000/user/v2/userinfo')
       zbUserInfo().then(res => { // 先请求zbase的用户信息
-        const { data } = res || {};
-        const { code = 0 } = data || {};
-        const { userinfo = {} } = data || {};
-        if (parseInt(code) === 100000) {
-          if (!res.data.userinfo) { // 如果没有用户信息，就跳转到登录页面(这里可能是zbase出了问题)
-            this.$message.error(this.$t('Login failed. Please try logging in again'));
-            window.location.href = `${this.URL}/user/login`;
-            return;
-          }
-          const user_info = userinfo;
-          const k_user_info = {
-            zbase_user_id: user_info.user_id ? user_info.user_id : '',
-            email: user_info.email ? user_info.email : '',
-            account_name: user_info.username ? user_info.username : '',
-            phone_number: user_info.phone_number ? user_info.phone_number : '',
-            area: user_info.area ? user_info.area : '',
-          };
-          let last_user_info = localStorage.getItem(this.$mode + 'userInfo');// 获取上次登录的用户信息
-          if (last_user_info) {
-            last_user_info = JSON.parse(last_user_info);
-            if (last_user_info.zbase_user_id !== k_user_info.zbase_user_id) { // 如果上次登录的用户和这次登录的用户不一致，那么需要重新登录
-              this.userLogin(k_user_info);
-            } else {// 如果上次登录的用户和这次登录的用户一致，那么就不需要重新登录
-              this.$store.commit('setLoginStatus', true);
-              this.initModeOrUrl()
-            }
-          } else { // 如果没有上次登录的信息，那么基本可以认为用户第一次登录，需要注册
-            this.userLogin(k_user_info);
-          }
-        } else {
-          this.$message.error(this.$t('Login failed. Please try logging in again'));
-          window.location.href = `${this.URL}/user/login`;
-        }
+        this.handleResult(res);
       }).catch( err => {
         this.$message.error(this.$t('Login failed. Please try logging in again'));
         console.log(err);
       });
+    },
+    handleResult(res) {
+      const { data } = res || {};
+      const { code = 0 } = data || {};
+      const { userinfo = {} } = data || {};
+      if (parseInt(code) === 100000) {
+        if (!res.data.userinfo) { // 如果没有用户信息，就跳转到登录页面(这里可能是zbase出了问题)
+          this.$message.error(this.$t('Login failed. Please try logging in again'));
+          window.location.href = `${this.URL}/user/login`;
+          return;
+        }
+        const user_info = userinfo;
+        const k_user_info = {
+          zbase_user_id: user_info.user_id ? user_info.user_id : '',
+          email: user_info.email ? user_info.email : '',
+          account_name: user_info.username ? user_info.username : '',
+          phone_number: user_info.phone_number ? user_info.phone_number : '',
+          area: user_info.area ? user_info.area : '',
+        };
+        let last_user_info = localStorage.getItem(this.$mode + 'userInfo');// 获取上次登录的用户信息
+        if (last_user_info) {
+          last_user_info = JSON.parse(last_user_info);
+          if (last_user_info.zbase_user_id !== k_user_info.zbase_user_id) { // 如果上次登录的用户和这次登录的用户不一致，那么需要重新登录
+            this.userLogin(k_user_info);
+          } else {// 如果上次登录的用户和这次登录的用户一致，那么就不需要重新登录
+            this.$store.commit('setLoginStatus', true);
+            this.initModeOrUrl()
+          }
+        } else { // 如果没有上次登录的信息，那么基本可以认为用户第一次登录，需要注册
+          this.userLogin(k_user_info);
+        }
+      } else {
+        this.$message.error(this.$t('Login failed. Please try logging in again'));
+        window.location.href = `${this.URL}/user/login`;
+      }
     },
     /**
      * 登录
