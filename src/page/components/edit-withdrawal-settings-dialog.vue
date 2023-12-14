@@ -128,7 +128,14 @@ export default {
   data () {
     return {
       Countries: Countries,
-      Currency:Currency,
+      Currency:{
+        "usd": {
+          "symbol": "US$",
+          "full_name": "USD",
+          "en-US": "US Dollar",
+          "zh-CN": "美元"
+        }
+      },
       dialog_form_visible: false,
       withdrawal_settings: {
       },
@@ -179,7 +186,6 @@ export default {
           { required: true, message: this.$t('Field cannot be empty'), trigger: 'blur' }
         ],
         tax_number :[
-          { required: true, message: this.$t('Field cannot be empty'), trigger: 'blur' },
           { validator: this.validateTrimmedField, trigger: 'blur' }
         ],
         post_code:[
@@ -304,26 +310,25 @@ export default {
       this.$refs['form'].validate((valid) => {
         if (valid) {
           if (this.operationType === 'add') {
-            let vm = this;
             let args = JSON.parse(JSON.stringify(this.withdrawal_settings));
             if (args.card_num) {
               args.card_num = args.card_num.replace(/\D/g, '');
             }
-            addWithdrawInfoApi(this.withdrawal_settings).then((response) => {
+            addWithdrawInfoApi(args).then(response => {
               if (response.data && parseInt(response.data.code) === 100000) {
-                vm.$message({
-                  message: vm.$t('create success'),
+                this.$message({
+                  message: this.$t('create success'),
                   type: 'success'
                 });
-                vm.dialog_form_visible = false;
-                vm.$emit('operateSuccess');
+                this.dialog_form_visible = false;
+                this.$emit('operateSuccess');
               } else {
                 if (response && response.data && response.data.message) {
-                  vm.$message.warning(response.data.message)
+                  this.$message.warning(response.data.message)
                 }
               }
             }).catch((error) => {
-              vm.$message({
+              this.$message({
                 message: error.message,
                 type: 'error'
               });
@@ -339,22 +344,21 @@ export default {
             if (args.card_num) {
               args.card_num = args.card_num.replace(/\D/g, '');
             }
-            let vm = this;
-            updateWithdrawInfoApi(this.withdrawal_settings).then((response) => {
+            updateWithdrawInfoApi(args).then(response => {
               if (response.data && parseInt(response.data.code) === 100000) {
-                vm.$message({
-                  message: vm.$t('update success'),
+                this.$message({
+                  message: this.$t('update success'),
                   type: 'success'
                 });
-                vm.dialog_form_visible = false;
-                vm.$emit('operateSuccess');
+                this.dialog_form_visible = false;
+                this.$emit('operateSuccess');
               } else {
                 if (response && response.data && response.data.message) {
-                  vm.$message.warning(response.data.message)
+                  this.$message.warning(response.data.message)
                 }
               }
             }).catch((error) => {
-              vm.$message({
+              this.$message({
                 message: error.message,
                 type: 'error'
               });

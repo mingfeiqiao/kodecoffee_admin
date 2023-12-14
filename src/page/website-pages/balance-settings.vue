@@ -116,8 +116,8 @@
               <span v-if="scope.row.withdraw_type === 'card'">
                 {{$t('card')}} {{formatCard(scope.row.card_num)}}
               </span>
-              <span v-if="scope.row.withdraw_type === 'paypay'">
-                {{$t('paypal')}} {{scope.row.paypal}}
+              <span v-if="scope.row.withdraw_type === 'paypal'">
+                {{$t('paypal')}} {{scope.row.paypal_email}}
               </span>
             </template>
           </el-table-column>
@@ -156,9 +156,15 @@
           <div class="custom-descriptions-container" style="display: flex;align-items: center;justify-content: center">
             <el-descriptions border :column="1"  class="custom-descriptions">
               <el-descriptions-item :label="$t('payout amount')">
+                <template slot="label">
+                  <span style="color:#929292;">{{$t('payout amount')}}</span>
+                  <span>
+                    <el-tooltip class="item" :content="$t('The payout amount is rounded up for ease of calculation and financial processing. The remaining amount will be accumulated in subsequent withdrawals')" effect="light" placement="top"><i class="el-icon-info" style="color:#929292;"></i></el-tooltip>
+                  </span>
+                </template>
                 <div class="withdraw-width">
-                  <span class="title-20"> {{balance.withdrawable_format}} </span>
-                  <span style="color: #929292;">{{ $t('available') +' '+ balance.total_balance_format}} </span>
+                  <span class="title-20"> {{balance.withdrawable_round_down_format}} </span>
+                  <span style="color: #929292;">{{ $t('available') +' '+ balance.withdrawable_format}} </span>
                 </div>
               </el-descriptions-item>
               <el-descriptions-item :label="$t('payout method')">
@@ -181,13 +187,13 @@
                     {{balance_settings.bank_account_hold_name}}
                   </div>
                 </el-descriptions-item>
-              <el-descriptions-item v-if="balance_settings.withdraw_type === 'card'" :label="$t('transfer currency')">
+              <el-descriptions-item :label="$t('transfer currency')" v-if="balance_settings.currency!=='usd'">
                   <div class="withdraw-width">
                     <div v-if="CURRENCY_OPTIONS[balance_settings.currency]" style="width: 70px">
                       {{CURRENCY_OPTIONS[balance_settings.currency][$i18n.locale]}}
                     </div>
-                    <div style="width: 70px">
-                      {{ rateChange('usd', balance_settings.currency, balance.withdraw_amount)}}
+                    <div style="min-width: 100px;max-width: 170px">
+                      {{ rateChange('usd', balance_settings.currency, Math.floor(balance.withdraw_amount))}}
                     </div>
                     <div style="padding-left: 12px;color: #929292;width: calc(100% - 140px)">
                       {{$t('calculate by rate')}}
@@ -202,7 +208,7 @@
             </el-descriptions>
           </div>
           <div style="display: flex;flex-direction: row-reverse;align-items: center;">
-            <el-button @click="openWithdrawalDialog" size="small" style="margin-left: 12px">{{ $t('cancel') }}</el-button>
+            <el-button @click="show_withdrawal_dialog = !show_withdrawal_dialog" size="small" style="margin-left: 12px">{{ $t('cancel') }}</el-button>
             <el-button type="primary"  @click="createWithdraw" size="small">{{$t('create')}}</el-button>
           </div>
         </div>
@@ -265,37 +271,33 @@ export default {
     this.initData();
   },
   methods: {
-    /**
-     * 初始化数据
-     */
     createWithdraw () {
-      let vm = this;
       let args = {
-        withdraw_type: vm.balance_settings.withdraw_type,
-        settle_currency: vm.balance.currency,
-        settle_amount: vm.balance.left_amount,
-        real_settle_amount:vm.balance.withdraw_amount,
-        paypal_email: vm.balance_settings.paypal_email,
-        card_num: vm.balance_settings.card_num,
-        bank_name: vm.balance_settings.bank_name,
-        bank_account_hold_name: vm.balance_settings.bank_account_hold_name,
-        withdraw_currency: vm.balance_settings.currency,
-        withdraw_amount: vm.balance.withdraw_amount,
+        withdraw_type: this.balance_settings.withdraw_type,
+        settle_currency: this.balance.currency,
+        settle_amount: this.balance.left_amount,
+        real_settle_amount:Math.floor(this.balance.withdraw_amount),
+        paypal_email: this.balance_settings.paypal_email,
+        card_num: this.balance_settings.card_num,
+        bank_name: this.balance_settings.bank_name,
+        bank_account_hold_name: this.balance_settings.bank_account_hold_name,
+        withdraw_currency: this.balance_settings.currency,
+        withdraw_amount: Math.floor(this.balance.withdraw_amount),
       };
       applyWithdrawApi(args).then(res => {
         if (!res.data) {
           return;
         }
         if (parseInt(res.data.code) === 100000) {
-          vm.$message({
-            message: vm.$t('success'),
+          this.$message({
+            message: this.$t('success'),
             type: 'success'
           });
-          vm.show_withdrawal_dialog = false;
-          vm.getWithdrawList();
+          this.show_withdrawal_dialog = false;
+          this.initData();
         } else {
           if (res && res.data && res.data.message) {
-            vm.$message.warning(res.data.message)
+            this.$message.warning(res.data.message)
           }
         }
       }).catch(err => {
@@ -330,21 +332,20 @@ export default {
      */
     getWithdrawList() {
       this.table_loading = true;
-      let vm = this;
       accountWithdrawInfoListApi().then(res => {
-        vm.table_loading = false;
+        this.table_loading = false;
         if (!res.data) {
           return;
         }
         if (parseInt(res.data.code )=== 100000) {
-          vm.table_data = vm.formatWithdrawList(res.data.data);
+          this.table_data = this.formatWithdrawList(res.data.data);
         } else {
           if (res && res.data && res.data.message) {
-            vm.$message.warning(res.data.message)
+            this.$message.warning(res.data.message)
           }
         }
       }).catch(err => {
-        vm.table_loading = false;
+        this.table_loading = false;
         console.log(err);
       });
     },
@@ -352,16 +353,15 @@ export default {
      * 获取账户余额和可提现余额
      */
     getRealAmount () {
-      let vm = this;
       searchWithdrawAmountApi().then(res => {
         if (!res.data) {
           return;
         }
         if (parseInt(res.data.code )=== 100000) {
-          vm.formatBalance(res.data.data);
+          this.formatBalance(res.data.data);
         } else {
           if (res && res.data && res.data.message) {
-            vm.$message.warning(res.data.message)
+            this.$message.warning(res.data.message)
           }
         }
       }).catch(err => {
@@ -372,18 +372,17 @@ export default {
      * 获取提现设置
      */
     getAccountWithdrawInfo () {
-      let vm = this;
       accountWithdrawInfoApi().then(res => {
-        vm.is_balance_settings_loaded = true;
+        this.is_balance_settings_loaded = true;
         if (!res.data) {
           return;
         }
         if (parseInt(res.data.code) === 100000) {
-          vm.has_balance_settings = JSON.stringify(res.data.data) !== '{}';
-          vm.balance_settings = res.data.data;
+          this.has_balance_settings = JSON.stringify(res.data.data) !== '{}';
+          this.balance_settings = res.data.data;
         } else {
           if (res && res.data && res.data.message) {
-            vm.$message.warning(res.data.message)
+            this.$message.warning(res.data.message)
           }
         }
       }).catch(err => {
@@ -400,6 +399,7 @@ export default {
       }
       data.total_balance_format = this.formatPrice(data.currency, data.left_amount || 0);
       data.withdrawable_format = this.formatPrice(data.currency, data.withdraw_amount || 0);
+      data.withdrawable_round_down_format = this.formatPrice(data.currency, Math.floor(data.withdraw_amount) || 0)
       this.balance = data;
     },
     /**
@@ -481,8 +481,8 @@ export default {
       if (parseInt(response.data.code) === 100000) {
         return response.data.data.exchange_rate;
       } else {
-        if (res && res.data && res.data.message) {
-          vm.$message.warning(res.data.message)
+        if (response && response.data && response.data.message) {
+          this.$message.warning(response.data.message)
         }
       }
     },
@@ -493,26 +493,35 @@ export default {
       // 先获取汇率
       if (!this.show_withdrawal_dialog) {
         // 检查是否能够提现
-        let vm = this;
         checkWithdrawApi().then(res => {
           if (!res.data) {
             return;
           }
           if (parseInt(res.data.code) === 100000) {
-            if (vm.balance_settings.currency === 'usd') {
-              vm.rate = 1;
-              vm.show_withdrawal_dialog = !vm.show_withdrawal_dialog;
+            if (this.balance_settings.currency === 'usd') {
+              this.rate = 1;
+              this.show_withdrawal_dialog = !this.show_withdrawal_dialog;
             } else {
-              this.rate = vm.getRate('usd', vm.balance_settings.currency).then(
+              this.rate = this.getRate('usd', this.balance_settings.currency).then(
                 rate => {
-                  vm.rate = rate;
-                  vm.show_withdrawal_dialog = !vm.show_withdrawal_dialog;
+                  this.rate = rate;
+                  this.show_withdrawal_dialog = !this.show_withdrawal_dialog;
                 }
               );
             }
           } else { // 不能提现
-            vm.$alert(res.data.message, res.data.title, {
-              confirmButtonText: vm.$t('OK')
+            let is_withdrawal_information_missing = false;
+            if (parseInt(res.data.code) === 120003) {
+              is_withdrawal_information_missing = true;
+            }
+            this.$alert(res.data.message, res.data.title, {
+              confirmButtonText: this.$t('OK')
+            }).then(() => {
+              if (is_withdrawal_information_missing) {
+                this.show_withdrawal_settings_edit_dialog = true;
+              }
+            }).catch(() => {
+              console.log('close');
             });
           }
         }).catch(err => {

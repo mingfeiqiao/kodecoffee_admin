@@ -345,7 +345,12 @@
     "Allow the number of simultaneous logins on different devices for the same account": "Allow the number of simultaneous logins on different devices for the same account",
     "Another user has logged into this account at off_line_timestamp. This device has been logged out": "Another user has logged into this account at {off_line_timestamp}. This device has been logged out",
     "Simultaneously Online":"Simultaneously Online",
-    "Please use Google One-Click Login in xxx seconds": "Please use Google One-Click Login in {seconds} seconds"
+    "Please use Google One-Click Login in xxx seconds": "Please use Google One-Click Login in {seconds} seconds",
+    "Applied extension": "Applied extension",
+    "If no extension is selected, you will receive event callbacks for all extensions under the account": "If no extension is selected, you will receive event callbacks for all extensions under the account",
+    "This operation will cancel the subscription. Do you want to proceed?": "This operation will cancel the subscription. Do you want to proceed?",
+    "Canceling, please wait": "Canceling, please wait",
+    "The payout amount is rounded up for ease of calculation and financial processing. The remaining amount will be accumulated in subsequent withdrawals": "The payout amount is rounded up for ease of calculation and financial processing. The remaining amount will be accumulated in subsequent withdrawals."
   },
   "zh-CN": {
     "Simultaneously Online": "同时在线",
@@ -354,6 +359,9 @@
     "Allow the number of simultaneous logins on different devices for the same account":"允许同一个账号在不同设备上同时登录在线使用的数量",
     "No Limit": "不限制",
     "Limit": "限制",
+    "The payout amount is rounded up for ease of calculation and financial processing. The remaining amount will be accumulated in subsequent withdrawals":"为了方便计算和财务处理，提现时的金额会进行取整。剩余金额会累积到后续的提现当中。",
+    "Canceling, please wait": "取消中，请稍后",
+    "This operation will cancel the subscription. Do you want to proceed?": "此操作将会取消该订阅，是否继续？",
     "If no extension is selected, you will receive event callbacks for all extensions under the account": "如果不选择插件，则会收到账号下所有插件的事件回调",
     "Applied extension": "应用插件",
     "Daily subscription is for testing purposes in the development environment": "天级订阅仅供测试环境用来调试",

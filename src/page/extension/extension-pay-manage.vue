@@ -286,25 +286,44 @@ export default {
      * @param row
      */
     cancelSubscription (row) {
-      extensionCancelSubscription(this.common_headers,{transaction_id: row.transaction_id}).then(res => {
-        let resData = res.data;
-        if (parseInt(resData.code) === 100000) {
-          this.$message({
-            message: '取消中，请稍后',
-            type: 'success'
-          });
-          this.getUserInfo();
-        } else {
-          if (res && res.data && res.data.message) {
-            this.$message.warning(res.data.message)
+      this.$confirm(this.$t('This operation will cancel the subscription. Do you want to proceed?'), this.$t('Tips'), {
+        confirmButtonText: this.$t('Ok'),
+        cancelButtonText: this.$t('cancel'),
+        type: 'warning'
+      }).then(() => {
+        extensionCancelSubscription(this.common_headers,{transaction_id: row.transaction_id}).then(res => {
+          let resData = res.data;
+          if (parseInt(resData.code) === 100000) {
+            this.$message({
+              message: this.$t('Canceling, please wait'),
+              type: 'success'
+            });
+            this.getUserInfo();
+            const data = {};
+            Object.assign(data, this.$route.query, row);
+            delete data['operation']
+            window.postMessage({
+              type: 'cancel subscription',
+              data: data
+            });
+            if (window.opener) {
+              window.opener.postMessage({
+                type: 'cancel subscription',
+                data: data
+              }, "*");
+            }
+          } else {
+            if (res && res.data && res.data.message) {
+              this.$message.warning(res.data.message)
+            }
           }
-        }
-      }).catch(err => {
-        this.$message({
-          message: 'error',
-          type: 'error'
+        }).catch(err => {
+          this.$message({
+            message: 'error',
+            type: 'error'
+          });
+          console.log(err);
         });
-        console.log(err);
       });
     },
     /**
