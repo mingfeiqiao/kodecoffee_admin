@@ -89,7 +89,9 @@ export default {
   data() {
     return {
       input: "",
+      LIMIT_GOOGLE_LOGIN_TIME: 120,
       is_email_valid: true,
+      is_limit_click:false,
       args : {
         api_key: '',
         application_id: '',
@@ -110,9 +112,6 @@ export default {
     this.google_login_args.countdown_interval = null;
   },
   mounted() {
-    // 在页面加载完成后，创建一个script标签
-    // this.google_login_args.is_login_success = false;
-    // this.google_login_args.is_login_success = false;
     const script = document.createElement('script');
     script.src = 'https://accounts.google.com/gsi/client';
     script.async = true;
@@ -157,6 +156,34 @@ export default {
     languageChange
   },
   methods: {
+    /**
+     * 用户还需要等待多少秒，才能继续使用Google登录
+     * @returns {number} 0 不需要等待， N 需要等待N秒
+     */
+    getLimitGoogleLoginTime() {
+      const unix_timestamp_seconds = this.getTimeStampNow();
+      const last_google_login_success = localStorage.getItem('last_google_login_success');
+      if (last_google_login_success) {
+        console.log(unix_timestamp_seconds, last_google_login_success, this.LIMIT_GOOGLE_LOGIN_TIME, unix_timestamp_seconds - last_google_login_success - this.LIMIT_GOOGLE_LOGIN_TIME);
+        return this.LIMIT_GOOGLE_LOGIN_TIME - (unix_timestamp_seconds - last_google_login_success);
+      } else {
+        return 0
+      }
+    },
+    /**
+     * 获取当前的unix时间戳，不带时区， 秒为单位
+     * @returns {number}
+     */
+    getTimeStampNow () {
+      // 将毫秒数转换为秒数（Unix 时间戳以秒为单位，不带时区）
+      return Math.floor(Date.now() / 1000);
+    },
+    /**
+     * 设置Google登录上次登录成功事件
+     */
+    setLastGoogleLoginSuccessTime() {
+      localStorage.setItem('last_google_login_success', String(this.getTimeStampNow()))
+    },
     getCommonHeaders() {
       let headers = {};
       for (let key in this.$route.query) {
@@ -166,12 +193,18 @@ export default {
       return headers
     },
     handleCredentialResponse(response) {
+      const limit_time = this.getLimitGoogleLoginTime()
+      if (limit_time > 0) {
+        this.$message.warning(this.$t('Please use Google One-Click Login in xxx seconds', {seconds: limit_time}));
+        return;
+      }
       this.google_login_args.is_third_part_loading = true;
       extensionGoogleLoginApi(this.getCommonHeaders(),response).then(res => {
         this.google_login_args.is_third_part_loading = false;
         const { data } = res || {};
         const { code = 0, message } = data;
         if (parseInt(code) === 100000) {
+          this.setLastGoogleLoginSuccessTime();
           this.google_login_args.is_login_success = true;
           window.postMessage({
             type: 'login',

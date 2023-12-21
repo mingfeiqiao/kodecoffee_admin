@@ -8,7 +8,7 @@
       </el-card>
     </div>
     <div class="card" v-for="pluginData in plugin_list"><plugin-card :data="pluginData" @operatePluginCard="operatePluginCard"></plugin-card></div>
-    <div>
+    <div v-if="dialog_form_visible">
       <add-plugin-dialog :visible="dialog_form_visible" @visibleChange="visibleChange" :operationType="operationType" @operateSuccess="operateSuccess" :chosen_plugin_data="chosen_plugin_data">
       </add-plugin-dialog>
     </div>

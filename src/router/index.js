@@ -18,6 +18,7 @@ import payAllOrderLayout from "../page/website-pages/pay-all-order-layout.vue";
 import extensionLogin from '../page/extension/extension-login.vue';
 import extensionPayManage from "../page/extension/extension-pay-manage.vue";
 import extensionPayStatus from "../page/extension/extension-pay-status.vue";
+import extensionSessionExpiredPrompt from "../page/extension/extension-session-expired-prompt.vue";
 import userLayout from "../page/website-pages/user-layout.vue";
 import userDetail from "../page/website-pages/user-detail.vue";
 import guide from "../page/website-pages/guide.vue";
@@ -174,6 +175,10 @@ const routes = [
   {
     path: '/extension/payment-choose',
     component: chosenPayment
+  },
+  {
+    path: '/extension/session-expired-prompt-page',
+    component: extensionSessionExpiredPrompt
   }
 ];
 
