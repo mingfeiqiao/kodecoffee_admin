@@ -3,7 +3,7 @@
     <div>
       <div>
         <div>{{$t('pay')}}:</div>
-        <div style="display:flex;align-items: center;padding: 8px 0 24px 0">
+        <div class="payment_information_box">
           <span class="title-20" style="flex-shrink: 0;">{{ order_detail.price_format }}</span>
           <span v-if="order_detail.currency" style="color: #929292;font-size: 20px;padding-left: 8px">{{order_detail.currency.toUpperCase()}}</span>
           <span v-if="order_detail.order_status_obj" :style="{
@@ -18,6 +18,8 @@
           <span v-if="order_detail.error_msg" style="padding-left: 24px;color: #929292">
             {{order_detail.error_msg}}
           </span>
+
+          <el-button size="mini" v-if="isShowRefund" class="btn_refund" @click="onShowRefund">{{ $t('refund') }}</el-button>
         </div>
       </div>
       <el-descriptions  class="order-descriptions">
@@ -95,6 +97,68 @@
         </el-descriptions>
       </div>
     </div>
+
+    <el-dialog :title="$t('refund')"  :visible.sync="dialog_form_visible" width="35%" :modal-append-to-body="false" destroy-on-close >
+      <div :class="lang == 'en-US' ? 'refund_tips_box refund_tips_en' : 'refund_tips_box'">
+        <i class="el-icon-warning"></i>
+        <div>{{ $t('Refund Tips') }}<span style="color: rgba(89, 126, 247, 1);cursor: pointer;">{{ $t('learn more') }}</span></div>
+      </div>
+      
+      <el-form ref="ruleForm" :model="refund"  :label-width="lang == 'en-US' ? '105px' : '55px'" size="mini" :rules="rules" label-position="left">
+        <el-form-item :label="$t('refund')" prop="amount">
+          <el-col :span="12">
+            <el-input placeholder="-" v-model="order_detail.price" @keyup.native="checkNum($event)" :readonly=true>
+              <template slot="prepend">{{order_detail.currency.toUpperCase()}}</template>
+            </el-input>
+          </el-col>
+        </el-form-item>
+        <el-form-item :label="$t('Subscriptions')">
+          <el-col :span="18">
+            <el-radio-group v-model="refund.unsubscribe_immediately" v-if="isSubscribeChecked">
+              <el-radio label="immediate" v-if="!isPayPal">
+                {{ $t('End immediately') }}
+                <el-tooltip class="item" effect="light" :content="$t('immediately tips')" placement="top">
+                  <i class="el-icon-question"></i>
+                </el-tooltip>
+              </el-radio>
+              <el-radio label="expiration">
+                {{ $t('expiration') }}
+                <el-tooltip class="item" effect="light" :content="$t('expiration tips')" placement="top">
+                  <i class="el-icon-question"></i>
+                </el-tooltip>
+              </el-radio>
+            </el-radio-group>
+
+            <el-checkbox v-model="isSubscribeChecked" v-else>{{ $t('unsubscribe') }}</el-checkbox>
+          </el-col>
+        </el-form-item>
+        <el-form-item :label="$t('reason')">
+          <el-col :span="18">
+            <el-select v-model="refund.refund_reason">
+              <el-option v-for="item in interval_options" :key="item.value" :label="$t(item.label)" :value="item.value">
+              </el-option>
+            </el-select>
+          </el-col>
+        </el-form-item>
+        <el-form-item>
+          <el-input
+            type="textarea"
+            :rows="2"
+            :placeholder="$t('Refund reason')"
+            v-model="refund.refund_more_detail"
+            rows="4"
+            resize="none"
+          >
+          </el-input>
+        </el-form-item>
+        <el-form-item>
+          <div style="float: right;padding-top: 24px">
+            <el-button @click="dialog_form_visible = false" >{{ $t('cancel') }}</el-button>
+            <el-button type="primary" @click="onSubmit('ruleForm')" :loading="save_loading">{{ $t('refund') }}</el-button>
+          </div>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
@@ -163,29 +227,58 @@ export default {
         settle_amount_format:"", // 订单实际金额格式化
         cost_format:"", // 费用格式化
         net_income_format:"", // 净收入格式化
-      }
+      },
+      isShowRefund:false,
+      dialog_form_visible:false,
+      save_loading:false,
+      isSubscribeChecked:false,
+      isPayPal:false,
+      refund:{
+        unsubscribe_immediately:'expiration',
+        refund_reason:'Customer Request',
+        refund_more_detail:'',
+      },
+      interval_options:[
+        {"label":'Customer Request',"value": "Customer Request"},
+        {"label":'Duplicate Payment',"value": "Duplicate Payment"},
+        {"label":'Fraud Risk',"value": "Fraud Risk"},
+        {"label":'Other',"value": "Other"},
+      ],
+      rules:{},
+      lang:this.$i18n.locale
     };
   },
-  created() {
-    let vm = this;
-    if (this.$route.params && this.$route.params.id) {
-      orderDetailApi(this.$route.params.id).then((res) => {
-        if (res.data && parseInt(res.data.code) === 100000) {
-          vm.order_detail = this.formatOrderDetail(res.data.data);
-          vm.payment_detail = this.formatPaymentDetail(res.data.data);
-          vm.billing_detail = this.formatBillingDetail(res.data.data);
-          vm.cost_detail = this.formatCostDetail(res.data.data);
-        } else {
-          if (res && res.data && res.data.message) {
-            vm.$message.warning(res.data.message)
-          }
-        }
-      }).catch((err) => {
-        console.log(err);
-      });
+  watch: {
+    '$i18n.locale'(newValue) {
+      this.lang = newValue;
     }
   },
+  created() {
+    this.onOrderDetail();
+  },
   methods: {
+    onOrderDetail() {
+      let vm = this;
+      if (this.$route.params && this.$route.params.id) {
+        orderDetailApi(this.$route.params.id).then((res) => {
+          if (res.data && parseInt(res.data.code) === 100000) {
+            vm.order_detail = this.formatOrderDetail(res.data.data);
+            vm.payment_detail = this.formatPaymentDetail(res.data.data);
+            vm.billing_detail = this.formatBillingDetail(res.data.data);
+            vm.cost_detail = this.formatCostDetail(res.data.data);
+
+            this.isShowRefund = res.data.data.pay_status == "succeed" ? true : false;
+            this.isPayPal = res.data.data.pay_type == "paypal" ? true : false
+          } else {
+            if (res && res.data && res.data.message) {
+              vm.$message.warning(res.data.message)
+            }
+          }
+        }).catch((err) => {
+          console.log(err);
+        });
+      }
+    },
     openUserDetail (user_id) {
       this.$router.push({path: "/customers/detail/" + user_id});
     },
@@ -208,6 +301,7 @@ export default {
         created_time: this.formatCreatedTime(data.created_time),
         payment_type: this.getPaymentType(data),
         card_number: this.getCardNumber(data),
+        transaction_key:data.transaction ? data.transaction.transaction_key : ''
       };
     },
     formatCostDetail (data) {
@@ -285,6 +379,63 @@ export default {
       }
       return "";
     },
+    onShowRefund(){
+      this.isSubscribeChecked = false;
+      this.refund = {
+        unsubscribe_immediately:this.isPayPal ? 'expiration' : 'immediate',
+        refund_reason:'Customer Request',
+        refund_more_detail:'',
+      }
+      this.dialog_form_visible = true;
+    },
+    checkNum($event) {
+      console.log('$event =>', $event.target);
+      $event.target.value = $event.target.value.replace(/[^\d]/g, '')
+      this.input1 = $event.target.value;
+    },
+    onSubmit(formName) {
+      // console.log('ruleForm =>',this.refund);
+      // let params = {
+      //   transaction_key:this.order_detail.transaction_key,
+      //   transaction_invoice_key:this.order_detail.order_id,
+      //   type: this.order_detail.plan_type,
+      //   refund_reason: this.refund.refund_reason,
+      //   refund_more_detail: this.refund.refund_more_detail || '',
+      // }
+      // if(this.isSubscribeChecked) {
+      //   params.unsubscribe_immediately = this.refund.unsubscribe_immediately
+      // }
+      // refundApi  退款接口
+
+      let params = {
+        transaction_invoice_key:this.order_detail.order_id,
+        refund_reason: this.refund.refund_reason,
+        refund_more_detail: this.refund.refund_more_detail || ''
+      }
+      console.log('params =>', params);
+
+      //如果要取消订阅  unsubscriptionDetailApi
+      // if(this.isSubscribeChecked && (res.code == 10000 || res.code == 100001)) {
+      //   let paramsSubscribe = {
+      //     unsubscribe_immediately: this.refund.unsubscribe_immediately,
+      //     transaction_key: this.subscription.subscription_id
+      //   }
+      //   console.log('paramsSubscribe =>', paramsSubscribe);
+      //   //取消订阅的话去刷新一下目前的订单状态
+      //   this.onOrderDetail();
+      // }else if(res.code == 10000){
+      //   this.$message.success(this.$t('Refund successful'));
+      // }else{
+      //   this.$message.warning(this.$t('refund failure 2'));
+      // }
+
+    //   "refund failure 1":"该订单已经退款，无法再次退款",
+    // "refund failure 2":"退款失败，请稍后重试",
+    // "Refund successful": "退款失败",
+    // "Unsubscribe successfully":"取消订阅成功",
+    // "Unsubscribe failure 1":"续订已经取消，无需再次取消订阅",
+    // "Unsubscribe failure 2":"取消订阅失败，请稍后在订阅列表中重新操作"
+    },
   },
   computed: {
     showBrand() {
@@ -299,5 +450,48 @@ export default {
 }
 .container /deep/ .el-descriptions-item__cell {
   padding-bottom: 24px;
+}
+
+/deep/ .el-dialog__body{
+  padding: 20px 30px;
+}
+.payment_information_box{
+  display:flex;
+  align-items: center;
+  padding: 8px 0 24px 0;
+  position: relative;
+  .btn_refund{
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+}
+
+.refund_tips_box{
+  width: 100%;
+  height: 60px;
+  line-height: 20px;
+  border-radius: 5px;
+  background-color: rgba(240, 245, 255, 1);
+  border: 1px solid rgba(89, 126, 247, 1);
+  margin-bottom: 30px;
+  padding: 10px 8px;
+  box-sizing: border-box;
+  display: flex;
+  gap: 5px;
+  i{
+    color: rgba(89, 126, 247, 1);
+    font-size: 16px;
+    margin-top: 2px;
+  }
+  div{
+    line-height: 20px;
+  }
+}
+
+.refund_tips_en{
+  word-wrap: break-word;
+  word-break: normal;
+  height: 100px;
 }
 </style>

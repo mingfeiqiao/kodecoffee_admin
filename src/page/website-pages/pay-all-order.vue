@@ -10,7 +10,7 @@
               </div>
               <div class="order-btn" v-if="active_order_type === 'all order'">
                 <div style="padding-right: 12px">{{$t('status') + ":"}}</div><div>
-                <el-select size="small" v-model="condition.pay_status" :placeholder="$t('select placeholder')" clearable @change="search" filterable>
+                <el-select size="small" multiple v-model="condition.pay_status" :placeholder="$t('select placeholder')" @visible-change="onBlur" @remove-tag="onDelTags">
                   <el-option
                       v-for="item in order_status_options"
                       :key="item.value"
@@ -36,7 +36,7 @@
               <div class="order-btn">
                 <div style="padding-right: 12px">{{$t('Plan') + ':'}}</div>
                 <div>
-                  <el-select size="small" v-model="condition.prod_id" :placeholder="$t('select placeholder')" clearable @change="search" filterable v-loading="plan_list_loading">
+                  <el-select size="small" multiple v-model="condition.prod_id" :placeholder="$t('select placeholder')" @visible-change="onBlur" @remove-tag="onDelTags" filterable v-loading="plan_list_loading">
                     <el-option
                       v-for="item in plan_list"
                       :key="item.prod_id"
@@ -49,7 +49,7 @@
               <div class="order-btn">
                 <div style="padding-right: 12px">{{$t('Type') + ':'}}</div>
                 <div>
-                  <el-select size="small" v-model="condition.plan_type" :placeholder="$t('select placeholder')" clearable @change="search" filterable>
+                  <el-select size="small" multiple v-model="condition.plan_type" :placeholder="$t('select placeholder')" @visible-change="onBlur" @remove-tag="onDelTags" filterable>
                     <el-option
                       v-for="item in order_type_options"
                       :key="item.value"
@@ -292,6 +292,7 @@ export default {
       },
       table_data:[],
       table_loading:false,
+      isDelTags:null
     };
   },
   created() {
@@ -572,8 +573,25 @@ export default {
      * 搜索
      */
     search() {
-      this.resetPageParams();
-      this.getTableData();
+      // this.resetPageParams();
+      // this.getTableData();
+    },
+    //隐藏下拉框（也就是选好了确认）
+    onBlur(event) {
+      if(!event) {
+        // this.resetPageParams();
+        // this.getTableData();
+      }
+    },
+    //移除多选框Tags触发，需要增加防抖事件。
+    onDelTags(){
+      if(this.isDelTags) clearTimeout(this.isDelTags);
+      
+      this.isDelTags = setTimeout(() => {
+        this.isDelTags = null;
+        // this.resetPageParams();
+        // this.getTableData();
+      }, 1000)
     },
     /**
      * 获取api参数

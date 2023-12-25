@@ -460,8 +460,8 @@ export default {
       let vm = this;
       vm.save_loading = true;
       addPlan(args).then(res => {
+        vm.save_loading = false;
         if (parseInt(res.data.code) === 100000) {
-          vm.save_loading = false;
           vm.$message({
             message: vm.$t('create success'),
             type: 'success'
