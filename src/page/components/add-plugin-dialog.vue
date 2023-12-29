@@ -55,6 +55,7 @@ export default {
       plugin_data : {
         allow_online_user_limit_count:0,
       },
+      btn_loading:false
     }
   },
   props: {
