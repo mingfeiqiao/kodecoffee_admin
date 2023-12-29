@@ -5,17 +5,17 @@
         <div>
           <div style="display: flex;flex-wrap:wrap">
             <div class="order-btn">
-              <date-picker :time_filter_range="date_range" @change="dateRangeChange"></date-picker>
+              <date-picker :time_filter_range="date_range" :time_zone="timezone" @change="dateRangeChange"></date-picker>
             </div>
             <div class="order-btn">
               <div style="padding-right: 12px">{{$t('extension') + ':'}}</div>
               <div>
-                <el-select size="small" v-model="condition.client_key" :placeholder="$t('select placeholder')" clearable @change="search" filterable v-loading="client_list_loading">
+                <el-select size="small"  @visible-change="onBlur"  @remove-tag="onDelTags" multiple v-model="condition.client_id" :placeholder="$t('select placeholder')" clearable @change="search" filterable v-loading="client_list_loading">
                   <el-option
                     v-for="item in client_list"
-                    :key="item.client_key"
+                    :key="item.client_id"
                     :label="$t(item.name)"
-                    :value="item.client_key">
+                    :value="item.client_id">
                   </el-option>
                 </el-select>
               </div>
@@ -23,7 +23,7 @@
             <div class="order-btn">
               <div style="padding-right: 12px">{{$t('Plan') + ':'}}</div>
               <div>
-                <el-select size="small" v-model="condition.prod_id" :placeholder="$t('select placeholder')" clearable @change="search" filterable v-loading="plan_list_loading">
+                <el-select size="small" multiple v-model="condition.prod_id"  @visible-change="onBlur"  @remove-tag="onDelTags" :placeholder="$t('select placeholder')" clearable @change="search" filterable v-loading="plan_list_loading">
                   <el-option
                     v-for="item in plan_list"
                     :key="item.prod_id"
@@ -105,6 +105,8 @@ export default {
       condition: {
       },
       date_range:[],
+      timezone:"",
+      user_default_time_zone:"",
       page:1,
       page_size:10,
       client_list:[],
@@ -130,7 +132,8 @@ export default {
         }
       ],
       table_loading: false,
-      table_data:[]
+      table_data:[],
+      isDelTags:null
     };
   },
   created() {
@@ -139,8 +142,15 @@ export default {
     this.getPluginList();
     this.getPlanList();
     this.getSubscriptionData();
+    this.timezone = this.getUserTimezone();
+    this.user_default_time_zone = this.timezone;
   },
   methods: {
+    getUserTimezone() {
+      const offset = new Date().getTimezoneOffset() / -60; // 获取当前时区偏移量，转换为 UTC 偏移量
+      // 根据当前时区偏移量生成显示格式
+      return 'UTC' + (offset >= 0 ? '+' : '') + offset;
+    },
     getPluginList() {
       this.client_list_loading = true;
       this.client_list = [];
@@ -165,6 +175,22 @@ export default {
       this.resetPageParams();
       this.getSubscriptionData();
     },
+    //隐藏下拉框（也就是选好了确认）
+    onBlur(event) {
+      if(!event) {
+        this.resetPageParams();
+        this.getSubscriptionData();
+      }
+    },
+    //移除多选框Tags触发，需要增加防抖事件。
+    onDelTags(){
+      if(this.isDelTags) clearTimeout(this.isDelTags);
+      this.isDelTags = setTimeout(() => {
+        this.isDelTags = null;
+        this.resetPageParams();
+        this.getSubscriptionData();
+      }, 1000)
+    },
     /**
      *
      */
@@ -187,8 +213,10 @@ export default {
     /**
      * 时间筛选范围
      * @param date_range 时间筛选范围
+     * @param timezone 时区
      */
-    dateRangeChange(date_range){
+    dateRangeChange(date_range, timezone){
+      this.timezone = timezone;
       this.resetPageParams();
       this.date_range = date_range;
       this.getSubscriptionData();
@@ -256,6 +284,9 @@ export default {
       let condition_temp = {};
       for (let key in condition) {
         if (condition[key]) {
+          if (Array.isArray(condition[key]) && condition[key].length === 0) {
+            continue
+          }
           condition_temp[key] = condition[key];
         }
       }
@@ -290,21 +321,22 @@ export default {
     transDateRangeTimestamp(date_range) {
       if (date_range) {
         if (date_range.length === 2) {
-          return [this.convertToUnixTimestamp(date_range[0] + 'T00:00:00Z'), this.convertToUnixTimestamp(date_range[1] + 'T23:59:59Z')];
+          return [this.convertToUnixTimestamp(date_range[0] + ' 00:00:00'), this.convertToUnixTimestamp(date_range[1] + ' 23:59:59')];
         } else {
-          return [this.convertToUnixTimestamp(date_range[0] + 'T00:00:00Z')]
+          return [this.convertToUnixTimestamp(date_range[0] + ' 00:00:00')]
         }
+      } else {
+        return [];
       }
     },
     convertToUnixTimestamp(dateString) {
-      // 将日期字符串转换为JavaScript的Date对象
-      const dateObject = new Date(dateString);
-      // 获取本地时区与 UTC 时间的时间差（以分钟为单位）
-      const timezoneOffset = dateObject.getTimezoneOffset();
-      // 将本地时间转换为 UTC 时间
-      const utcTimestamp = dateObject.getTime() + timezoneOffset * 60 * 1000;
-      // 返回 UTC 时间的 UNIX 时间戳（秒为单位）
-      return Math.floor(utcTimestamp / 1000);
+      if (this.timezone === this.user_default_time_zone) {
+        // 将时间字符串转换为本地时间戳（单位：秒）
+        return Math.floor(new Date(dateString).getTime() / 1000);
+      } else {
+        // 将时间字符串转换为 UTC+0 时间戳（单位：秒）
+        return Math.floor(new Date(dateString + ' UTC').getTime() / 1000);
+      }
     },
     /**
      *

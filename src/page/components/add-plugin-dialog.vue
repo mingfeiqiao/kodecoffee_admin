@@ -81,7 +81,7 @@ export default {
     operateSuccess : {
       type: Function,
       default: () => {
-      }
+      },
       btn_loading:false
     }
   },

@@ -19,7 +19,7 @@
             {{order_detail.error_msg}}
           </span>
 
-          <el-button size="mini" v-if="isShowRefund" class="btn_refund" @click="onShowRefund">{{ $t('refund') }}</el-button>
+          <el-button size="mini" v-if="is_show_refund" class="btn_refund" @click="onShowRefund">{{ $t('refund') }}</el-button>
         </div>
       </div>
       <el-descriptions  class="order-descriptions">
@@ -112,10 +112,11 @@
             </el-input>
           </el-col>
         </el-form-item>
-        <el-form-item :label="$t('Subscriptions')">
+        <el-form-item :label="$t('Subscriptions')" v-if="is_support_unsubscribe">
           <el-col :span="18">
-            <el-radio-group v-model="refund.unsubscribe_immediately" v-if="isSubscribeChecked">
-              <el-radio label="immediate" v-if="!isPayPal">
+            <el-checkbox v-model="is_unsubscribe_checked">{{ $t('unsubscribe') }}</el-checkbox>
+            <el-radio-group v-model="refund.unsubscribe_immediately" v-if="is_unsubscribe_checked">
+              <el-radio label="immediate" v-if="!is_paypal">
                 {{ $t('End immediately') }}
                 <el-tooltip class="item" effect="light" :content="$t('immediately tips')" placement="top">
                   <i class="el-icon-question"></i>
@@ -128,8 +129,6 @@
                 </el-tooltip>
               </el-radio>
             </el-radio-group>
-
-            <el-checkbox v-model="isSubscribeChecked" v-else>{{ $t('unsubscribe') }}</el-checkbox>
           </el-col>
         </el-form-item>
         <el-form-item :label="$t('reason')">
@@ -154,7 +153,7 @@
         <el-form-item>
           <div style="float: right;padding-top: 24px">
             <el-button @click="dialog_form_visible = false" >{{ $t('cancel') }}</el-button>
-            <el-button type="primary" @click="onSubmit('ruleForm')" :loading="save_loading">{{ $t('refund') }}</el-button>
+            <el-button type="primary" @click="onSubmit('ruleForm')" :loading="refund_loading">{{ $t('refund') }}</el-button>
           </div>
         </el-form-item>
       </el-form>
@@ -164,7 +163,7 @@
 
 <script>
 import ORDER_OPTIONS from "../../options/order_options.json";
-import {orderDetailApi} from "../../api/interface";
+import {orderDetailApi, refundApi, unsubscriptionDetailApi} from "../../api/interface";
 import {timestampToDateString} from "../../utils/dateUtils";
 import CURRENCY_OPTIONS from "../../options/currency_options.json";
 export default {
@@ -220,6 +219,7 @@ export default {
         created_time: "",
         payment_type:"",
         card_number:"",
+        transaction_invoice_key: "",
       },
       cost_detail: {
         settle_amount:"", // 结算货币的实际金额
@@ -228,11 +228,12 @@ export default {
         cost_format:"", // 费用格式化
         net_income_format:"", // 净收入格式化
       },
-      isShowRefund:false,
       dialog_form_visible:false,
-      save_loading:false,
-      isSubscribeChecked:false,
-      isPayPal:false,
+      refund_loading:false,
+      is_show_refund:false,
+      is_support_unsubscribe:false,
+      is_unsubscribe_checked:false,
+      is_paypal:false,
       refund:{
         unsubscribe_immediately:'expiration',
         refund_reason:'Customer Request',
@@ -258,26 +259,28 @@ export default {
   },
   methods: {
     onOrderDetail() {
-      let vm = this;
       if (this.$route.params && this.$route.params.id) {
-        orderDetailApi(this.$route.params.id).then((res) => {
+        orderDetailApi(this.$route.params.id).then(res => {
           if (res.data && parseInt(res.data.code) === 100000) {
-            vm.order_detail = this.formatOrderDetail(res.data.data);
-            vm.payment_detail = this.formatPaymentDetail(res.data.data);
-            vm.billing_detail = this.formatBillingDetail(res.data.data);
-            vm.cost_detail = this.formatCostDetail(res.data.data);
-
-            this.isShowRefund = res.data.data.pay_status == "succeed" ? true : false;
-            this.isPayPal = res.data.data.pay_type == "paypal" ? true : false
+            this.order_detail = this.formatOrderDetail(res.data.data);
+            this.payment_detail = this.formatPaymentDetail(res.data.data);
+            this.billing_detail = this.formatBillingDetail(res.data.data);
+            this.cost_detail = this.formatCostDetail(res.data.data);
+            this.is_show_refund = res.data.data.pay_status === "succeed";
+            this.is_paypal = res.data.data.pay_type === "paypal";
+            this.is_support_unsubscribe = this.isSupportUnSubscribe(res.data.data.transaction.order_status)
           } else {
             if (res && res.data && res.data.message) {
-              vm.$message.warning(res.data.message)
+              this.$message.warning(res.data.message)
             }
           }
         }).catch((err) => {
           console.log(err);
         });
       }
+    },
+    isSupportUnSubscribe(transaction_order_status) {
+      return transaction_order_status === 'created' || transaction_order_status === 'updated'
     },
     openUserDetail (user_id) {
       this.$router.push({path: "/customers/detail/" + user_id});
@@ -301,7 +304,8 @@ export default {
         created_time: this.formatCreatedTime(data.created_time),
         payment_type: this.getPaymentType(data),
         card_number: this.getCardNumber(data),
-        transaction_key:data.transaction ? data.transaction.transaction_key : ''
+        transaction_key:data.transaction ? data.transaction.transaction_key : '',
+        transaction_invoice_key: data.transaction_invoice_key || ""
       };
     },
     formatCostDetail (data) {
@@ -380,61 +384,58 @@ export default {
       return "";
     },
     onShowRefund(){
-      this.isSubscribeChecked = false;
+      this.is_unsubscribe_checked = false;
       this.refund = {
-        unsubscribe_immediately:this.isPayPal ? 'expiration' : 'immediate',
+        unsubscribe_immediately:this.is_paypal ? 'expiration' : 'immediately',
         refund_reason:'Customer Request',
         refund_more_detail:'',
       }
       this.dialog_form_visible = true;
     },
     checkNum($event) {
-      console.log('$event =>', $event.target);
       $event.target.value = $event.target.value.replace(/[^\d]/g, '')
-      this.input1 = $event.target.value;
     },
-    onSubmit(formName) {
-      // console.log('ruleForm =>',this.refund);
-      // let params = {
-      //   transaction_key:this.order_detail.transaction_key,
-      //   transaction_invoice_key:this.order_detail.order_id,
-      //   type: this.order_detail.plan_type,
-      //   refund_reason: this.refund.refund_reason,
-      //   refund_more_detail: this.refund.refund_more_detail || '',
-      // }
-      // if(this.isSubscribeChecked) {
-      //   params.unsubscribe_immediately = this.refund.unsubscribe_immediately
-      // }
-      // refundApi  退款接口
-
-      let params = {
-        transaction_invoice_key:this.order_detail.order_id,
-        refund_reason: this.refund.refund_reason,
-        refund_more_detail: this.refund.refund_more_detail || ''
+    onSubmit() {
+      this.refund_loading = true;
+      // 先进行退款操作，后进行取消订阅
+      const refund_params = {
+        transaction_invoice_key: this.order_detail.transaction_invoice_key,
+        refund_reason:this.refund.refund_reason,
+        refund_more_detail: this.refund.refund_more_detail
       }
-      console.log('params =>', params);
-
-      //如果要取消订阅  unsubscriptionDetailApi
-      // if(this.isSubscribeChecked && (res.code == 10000 || res.code == 100001)) {
-      //   let paramsSubscribe = {
-      //     unsubscribe_immediately: this.refund.unsubscribe_immediately,
-      //     transaction_key: this.subscription.subscription_id
-      //   }
-      //   console.log('paramsSubscribe =>', paramsSubscribe);
-      //   //取消订阅的话去刷新一下目前的订单状态
-      //   this.onOrderDetail();
-      // }else if(res.code == 10000){
-      //   this.$message.success(this.$t('Refund successful'));
-      // }else{
-      //   this.$message.warning(this.$t('refund failure 2'));
-      // }
-
-    //   "refund failure 1":"该订单已经退款，无法再次退款",
-    // "refund failure 2":"退款失败，请稍后重试",
-    // "Refund successful": "退款失败",
-    // "Unsubscribe successfully":"取消订阅成功",
-    // "Unsubscribe failure 1":"续订已经取消，无需再次取消订阅",
-    // "Unsubscribe failure 2":"取消订阅失败，请稍后在订阅列表中重新操作"
+      // 进行退款
+      refundApi(refund_params).then(res => {
+        const { data } = res || {};
+        const { code = 0 , message} = data || {};
+        if (parseInt(code) === 100000) {
+          this.$message.success(this.$t('Refund Successful'));
+          this.dialog_form_visible = false;
+          if (this.is_unsubscribe_checked) { // 需要取消订阅
+            const un_subscribe_params = {
+              transaction_key:this.order_detail.transaction_key,
+              unsubscribe_type:this.refund.unsubscribe_immediately
+            }
+            unsubscriptionDetailApi(un_subscribe_params).then(res => {
+              const { data } = res || {};
+              const { code = 0 , message} = data || {};
+              if (parseInt(code) === 100000) {
+                this.$message.success(this.$t('Unsubscription Successful'))
+              } else {
+                this.$message.warning(message)
+              }
+              this.refund_loading = false;
+              this.onOrderDetail();
+            })
+          } else {
+            this.dialog_form_visible = false;
+            this.refund_loading = false;
+            this.is_show_refund = false;
+            this.onOrderDetail();
+          }
+        } else {
+          this.$message.warning(message)
+        }
+      });
     },
   },
   computed: {

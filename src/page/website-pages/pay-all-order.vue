@@ -6,7 +6,7 @@
           <div>
             <div style="display: flex;flex-wrap:wrap">
               <div class="order-btn">
-                <date-picker :time_filter_range="date_range" @change="dateRangeChange"></date-picker>
+                <date-picker :time_filter_range="date_range" :time_zone="timezone" @change="dateRangeChange"></date-picker>
               </div>
               <div class="order-btn" v-if="active_order_type === 'all order'">
                 <div style="padding-right: 12px">{{$t('status') + ":"}}</div><div>
@@ -23,12 +23,12 @@
               <div class="order-btn">
                 <div style="padding-right: 12px">{{$t('extension') + ':'}}</div>
                 <div>
-                  <el-select size="small" v-model="condition.client_key" :placeholder="$t('select placeholder')" clearable @change="search" filterable v-loading="client_list_loading">
+                  <el-select size="small" multiple v-model="condition.client_id" :placeholder="$t('select placeholder')" @visible-change="onBlur" @remove-tag="onDelTags"  @change="search" filterable v-loading="client_list_loading">
                     <el-option
                       v-for="item in client_list"
-                      :key="item.client_key"
+                      :key="item.client_id"
                       :label="$t(item.name)"
-                      :value="item.client_key">
+                      :value="item.client_id">
                     </el-option>
                   </el-select>
                 </div>
@@ -142,6 +142,8 @@ export default {
       page_size: 10,
       total: 0,
       date_range:[],
+      timezone:"",
+      user_default_time_zone:"",
       condition: {},
       order:{
         created_time:"desc"
@@ -162,8 +164,12 @@ export default {
           value: "one_time"
         },
         {
-          label: "recurring",
-          value: "recurring"
+          label: "Initial Subscription",
+          value: "created"
+        },
+        {
+          label: "Renewal",
+          value: "updated"
         }
       ],
       plan_list:[],
@@ -172,10 +178,6 @@ export default {
       client_list_loading:false,
       export_loading: false,
       order_status_options:[
-        {
-          label: 'unCompleted',
-          value: 'un_completed'
-        },
         {
           label: 'Succeed',
           value: 'succeed'
@@ -187,10 +189,6 @@ export default {
         {
           label: 'Refunded',
           value: 'refunded'
-        },
-        {
-          label: 'Disputed',
-          value: 'disputed'
         }
       ],
       CSV_NAME_MAP: {
@@ -299,11 +297,18 @@ export default {
     this.getPluginList()
     this.getPlanList();
     this.table_data = this.getTableData();
+    this.timezone = this.getUserTimezone();
+    this.user_default_time_zone = this.timezone;
   },
   components: {
     datePicker
   },
   methods: {
+    getUserTimezone() {
+      const offset = new Date().getTimezoneOffset() / -60; // 获取当前时区偏移量，转换为 UTC 偏移量
+      // 根据当前时区偏移量生成显示格式
+      return 'UTC' + (offset >= 0 ? '+' : '') + offset;
+    },
     getPluginList() {
       this.client_list_loading = true;
       this.client_list = [];
@@ -554,7 +559,7 @@ export default {
       this.condition = {};
       this.resetPageParams();
       if (this.active_order_type === 'disputed') {
-        this.condition = {order_status: 'disputed'};
+        this.condition.is_dispute = 1
       }
       this.getTableData();
     },
@@ -573,24 +578,23 @@ export default {
      * 搜索
      */
     search() {
-      // this.resetPageParams();
-      // this.getTableData();
+      this.resetPageParams();
+      this.getTableData();
     },
     //隐藏下拉框（也就是选好了确认）
     onBlur(event) {
       if(!event) {
-        // this.resetPageParams();
-        // this.getTableData();
+        this.resetPageParams();
+        this.getTableData();
       }
     },
     //移除多选框Tags触发，需要增加防抖事件。
     onDelTags(){
       if(this.isDelTags) clearTimeout(this.isDelTags);
-      
       this.isDelTags = setTimeout(() => {
         this.isDelTags = null;
-        // this.resetPageParams();
-        // this.getTableData();
+        this.resetPageParams();
+        this.getTableData();
       }, 1000)
     },
     /**
@@ -603,6 +607,9 @@ export default {
       let condition_temp = {};
       for (let key in condition) {
         if (condition[key]) {
+          if (Array.isArray(condition[key]) && condition[key].length === 0) {
+            continue
+          }
           condition_temp[key] = condition[key];
         }
       }
@@ -617,7 +624,8 @@ export default {
         'order': orders_temp
       }
     },
-    dateRangeChange(date_range){
+    dateRangeChange(date_range, timezone){
+      this.timezone = timezone;
       this.date_range = date_range;
       this.resetPageParams();
       this.getTableData();
@@ -634,45 +642,45 @@ export default {
       let args = this.getApiArgs(condition, this.order);
       args['page'] = this.page;
       args['page_size'] = this.page_size;
-      let vm = this;
-      vm.table_loading = true;
+      this.table_loading = true;
       this.table_data = [];
       orderList(args).then(res => {
-        vm.table_loading = false;
+        this.table_loading = false;
         if (!res.data) {
           return;
         }
         if (parseInt(res.data.code) === 100000) {
-          vm.table_data = vm.formatTableData(res.data.data);
-          vm.total = res.data.totalCount;
+          this.table_data = this.formatTableData(res.data.data);
+          this.total = res.data.totalCount;
         } else {
           if (res && res.data && res.data.message) {
-            vm.$message.warning(res.data.message)
+            this.$message.warning(res.data.message)
           }
         }
       }).catch(err => {
-        vm.table_loading = false;
+        this.table_loading = false;
         console.log(err);
       });
     },
     transDateRangeTimestamp(date_range) {
       if (date_range) {
         if (date_range.length === 2) {
-          return [this.convertToUnixTimestamp(date_range[0] + 'T00:00:00Z'), this.convertToUnixTimestamp(date_range[1] + 'T23:59:59Z')];
+          return [this.convertToUnixTimestamp(date_range[0] + ' 00:00:00'), this.convertToUnixTimestamp(date_range[1] + ' 23:59:59')];
         } else {
-          return [this.convertToUnixTimestamp(date_range[0] + 'T00:00:00Z')]
+          return [this.convertToUnixTimestamp(date_range[0] + ' 00:00:00')]
         }
+      } else {
+        return [];
       }
     },
     convertToUnixTimestamp(dateString) {
-      // 将日期字符串转换为JavaScript的Date对象
-      const dateObject = new Date(dateString);
-      // 获取本地时区与 UTC 时间的时间差（以分钟为单位）
-      const timezoneOffset = dateObject.getTimezoneOffset();
-      // 将本地时间转换为 UTC 时间
-      const utcTimestamp = dateObject.getTime() + timezoneOffset * 60 * 1000;
-      // 返回 UTC 时间的 UNIX 时间戳（秒为单位）
-      return Math.floor(utcTimestamp / 1000);
+      if (this.timezone === this.user_default_time_zone) {
+        // 将时间字符串转换为本地时间戳（单位：秒）
+        return Math.floor(new Date(dateString).getTime() / 1000);
+      } else {
+        // 将时间字符串转换为 UTC+0 时间戳（单位：秒）
+        return Math.floor(new Date(dateString + ' UTC').getTime() / 1000);
+      }
     },
     /**
      * 格式化表格数据
@@ -680,6 +688,7 @@ export default {
      * @returns {*}
      */
     formatTableData (data) {
+      const order_status_option = ['created', 'updated'];
       data.forEach(item => {
         if (item.id) {
           item.order_id = item.id;
@@ -691,7 +700,19 @@ export default {
           item.order_amount_format = this.formatPrice(item.pay_amount, item.currency);
         }
         if (item.plan_type) {
-          item.plan_type_obj = this.SUBSCRIPTION_TYPE_OPTIONS[item.plan_type];
+          if (item.plan_type === 'one_time') {
+            item.plan_type_obj = item.plan_type
+          } else {
+            let order_status = item.order_status
+            if (!order_status_option.includes(item.order_status)) {
+              order_status = item.multiple_transactions_flag
+            }
+            for (const plan_type of this.order_type_options) {
+              if (order_status === plan_type.value) {
+                item.plan_type_obj = plan_type.label
+              }
+            }
+          }
         }
         if (this.ORDER_STATUS_REF[item.pay_status]) {
           item.order_status_obj = this.ORDER_STATUS[this.ORDER_STATUS_REF[item.pay_status]];

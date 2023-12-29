@@ -64,8 +64,12 @@
 
     <el-dialog :title="$t('unsubscribe')"  :visible.sync="dialog_form_visible" width="400px" :modal-append-to-body="false" destroy-on-close >
       <el-radio-group v-model="unsubscribe_immediately">
-        <p style="margin-bottom: 30px;" v-if="!isPayPal"><el-radio label="immediate">{{ $t('Cancel now') }} {{ onShowTime() }}</el-radio></p>
-        <p><el-radio label="expiration">{{ $t('End of this period') }} {{ subscription.unsubscribe_end_time }}</el-radio></p>
+        <p style="margin-bottom: 30px;" >
+          <el-radio label="expiration">{{ $t('End of this period') }} {{ subscription.unsubscribe_end_time }}</el-radio>
+        </p>
+        <p  v-if="!isPayPal">
+          <el-radio label="immediately">{{ $t('Cancel now') }} {{ onShowTime() }}</el-radio>
+        </p>
       </el-radio-group>
 
         <div class="unsubscribe_tips" v-html="$t('Unsubscribe reminder')"></div>
@@ -79,7 +83,7 @@
 <script>
 import {timestampToDateString, getTimeDate} from "../../utils/dateUtils";
 import SUBSCRIPTION_STATUS_OPTIONS from "../../options/subscription_options.json";
-import {subscriptionDetailApi} from "../../api/interface";
+import {subscriptionDetailApi, unsubscriptionDetailApi} from "../../api/interface";
 import ORDER_OPTIONS from "../../options/order_options.json";
 import CURRENCY_OPTIONS from "../../options/currency_options.json";
 export default {
@@ -132,7 +136,7 @@ export default {
       isShowSubscribe:false,
       dialog_form_visible:false,
       save_loading:false,
-      unsubscribe_immediately:'immediate',
+      unsubscribe_immediately:'expiration',
       isPayPal:false
     };
   },
@@ -235,24 +239,26 @@ export default {
       return currency + ' ' + price;
     },
     onShowSubscribe() {
-      this.unsubscribe_immediately = this.isPayPal ? 'expiration' : 'immediate';
       this.dialog_form_visible = true;
     },
     onSubmit() {
+      this.save_loading = true;
       let params = {
-        unsubscribe_immediately: this.unsubscribe_immediately,
+        unsubscribe_type: this.unsubscribe_immediately,
         transaction_key: this.subscription.subscription_id
       }
-      console.log('params =>', params);
-
-      //取消订阅之后去刷新一下当前的订单状态    unsubscriptionDetailApi
-      // this.onSubscriptionDetail()
-      // this.dialog_form_visible = false;
-      // if(res.code == 10000){
-      //   this.$message.success(this.$t('Unsubscribe successfully'));
-      // }else{
-      //   this.$message.warning(this.$t('Unsubscribe failure 2'));
-      // }
+      unsubscriptionDetailApi(params).then(res => {
+        const { data } = res || {};
+        const { code = 0 , message} = data || {};
+        if (parseInt(code) === 100000) {
+          this.$message.success(this.$t('Unsubscription Successful'))
+          this.dialog_form_visible = false;
+        } else {
+          this.$message.warning(message)
+        }
+        this.save_loading = false;
+        this.onSubscriptionDetail();
+      })
     },
     onShowTime() {
       return getTimeDate(new Date());

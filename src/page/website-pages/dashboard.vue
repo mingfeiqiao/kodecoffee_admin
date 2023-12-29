@@ -48,6 +48,9 @@
               </el-select>
             </div>
           </div>
+          <div style="font-size: 12px;margin-left: 24px;color: #929292">
+            {{$t('Page data is based on UTC+0')}}
+          </div>
         </div>
         <div style="display: flex;flex-wrap: wrap;justify-content: space-between;align-items: center;">
           <div class="echarts-container" v-for="(value,key) in title_ref" :key="key">
@@ -301,17 +304,6 @@ export default {
       };
       this.date_range = [formatDate(start_date), formatDate(end_date)];
     },
-    convertToUnixTimestamp(dateString) {
-      // 将日期字符串转换为JavaScript的Date对象
-      const dateObject = new Date(dateString);
-      // 获取本地时区与 UTC 时间的时间差（以分钟为单位）
-      const timezoneOffset = dateObject.getTimezoneOffset();
-      // 将本地时间转换为 UTC 时间
-      const utcTimestamp = dateObject.getTime() + timezoneOffset * 60 * 1000;
-      // 返回 UTC 时间的 UNIX 时间戳（秒为单位）
-      return Math.floor(utcTimestamp / 1000);
-    },
-
     /**
      * 获取图表数据
      */
@@ -358,30 +350,26 @@ export default {
       })
     },
     getData () {
-      // this.showLoading();
+      this.showLoading();
       let args = {
-        start_time: this.convertToUnixTimestamp(this.date_range[0] + 'T00:00:00Z'),
-        end_time: this.convertToUnixTimestamp(this.date_range[1] + 'T00:00:00Z'),
+        start_time: this.date_range[0],
+        end_time: this.date_range[1],
         client_key:this.client_key
       };
-      console.log('args =>', args);
-
-      return;
-      let vm = this;
       dashBoardApi(args).then(res => {
-        vm.hideLoading();
+        this.hideLoading();
         if (parseInt(res.data.code) === 100000) {
-          vm.overall_data = vm.formatOverallData(res.data.data);
-          vm.formatEchartsData(res.data.data);
+          this.overall_data = this.formatOverallData(res.data.data);
+          this.formatEchartsData(res.data.data);
         } else {
           if (res && res.data && res.data.message) {
-            vm.$message.warning(res.data.message)
+            this.$message.warning(res.data.message)
           }
-          vm.setDefaultOptions();
+          this.setDefaultOptions();
         }
       }).catch(err => {
-        vm.hideLoading();
-        vm.setDefaultOptions();
+        this.hideLoading();
+        this.setDefaultOptions();
       })
     },
     setDefaultOptions () {
