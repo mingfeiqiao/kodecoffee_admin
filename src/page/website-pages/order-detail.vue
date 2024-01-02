@@ -116,7 +116,7 @@
           <el-col :span="18">
             <el-checkbox v-model="is_unsubscribe_checked">{{ $t('unsubscribe') }}</el-checkbox>
             <el-radio-group v-model="refund.unsubscribe_immediately" v-if="is_unsubscribe_checked">
-              <el-radio label="immediate" v-if="!is_paypal">
+              <el-radio label="immediately" v-if="!is_paypal">
                 {{ $t('End immediately') }}
                 <el-tooltip class="item" effect="light" :content="$t('immediately tips')" placement="top">
                   <i class="el-icon-question"></i>
