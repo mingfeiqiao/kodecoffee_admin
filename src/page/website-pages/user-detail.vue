@@ -219,22 +219,21 @@ export default {
       this.order_args.table_loading = true;
       this.order_args.total = 0;
       this.order_list = [];
-      let vm = this;
       orderList(args).then(res => {
-        vm.order_args.table_loading = false;
+        this.order_args.table_loading = false;
         if (!res.data) {
           return;
         }
         if (parseInt(res.data.code) === 100000) {
-          vm.order_list = vm.formatOrderList(res.data.data);
-          vm.order_args.total = res.data.totalCount;
+          this.order_list = this.formatOrderList(res.data.data);
+          this.order_args.total = res.data.totalCount;
         } else {
           if (res && res.data && res.data.message) {
-            vm.$message.warning(res.data.message)
+            this.$message.warning(res.data.message)
           }
         }
       }).catch(err => {
-        vm.order_args.table_loading = false;
+        this.order_args.table_loading = false;
         console.log(err);
       });
     },
@@ -251,23 +250,22 @@ export default {
       this.subscription_args.table_loading = true;
       this.subscription_list = [];
       this.subscription_args.total = 0;
-      let vm = this;
       subscriptionList(args).then(res => {
-        vm.subscription_args.table_loading = false;
+        this.subscription_args.table_loading = false;
         if (!res.data) {
           return;
         }
         if (parseInt(res.data.code) === 100000) {
-          vm.subscription_list = vm.formatSubscriptionList(res.data.data);
-          vm.subscription_args.total = res.data.totalCount;
+          this.subscription_list = this.formatSubscriptionList(res.data.data);
+          this.subscription_args.total = res.data.totalCount;
         } else {
           if (res && res.data && res.data.message) {
-            vm.$message.warning(res.data.message)
+            this.$message.warning(res.data.message)
           }
         }
       }).catch(err => {
         console.log(err);
-        vm.subscription_args.table_loading = false;
+        this.subscription_args.table_loading = false;
       });
     },
     /**

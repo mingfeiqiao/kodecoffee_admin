@@ -457,26 +457,25 @@ export default {
           args.icon = icon;
         }
       }
-      let vm = this;
-      vm.save_loading = true;
+      this.save_loading = true;
       addPlan(args).then(res => {
-        vm.save_loading = false;
+        this.save_loading = false;
         if (parseInt(res.data.code) === 100000) {
-          vm.$message({
-            message: vm.$t('create success'),
+          this.$message({
+            message: this.$t('create success'),
             type: 'success'
           });
-          vm.dialog_form_visible = false;
-          vm.$emit('operateSuccess');
+          this.dialog_form_visible = false;
+          this.$emit('operateSuccess');
         } else {
           if (res && res.data && res.data.message) {
-            vm.$message.warning(res.data.message)
+            this.$message.warning(res.data.message)
           }
         }
       }).catch(err => {
-        vm.save_loading = false;
-        vm.$message({
-          message: vm.$t('create error'),
+        this.save_loading = false;
+        this.$message({
+          message: this.$t('create error'),
           type: 'error'
         });
       });
@@ -510,27 +509,26 @@ export default {
           args.trial_days = this.plan_trial_obj.trial_days;
         }
       }
-      let vm = this;
       let id = this.plan.plan_id;
-      vm.save_loading = true;
+      this.save_loading = true;
       updatePlan(id, args).then(res => {
-        vm.save_loading = false;
+        this.save_loading = false;
         if (res.data && parseInt(res.data.code)=== 100000) {
-          vm.$message({
-            message: vm.$t('update success'),
+          this.$message({
+            message: this.$t('update success'),
             type: 'success'
           });
-          vm.dialog_form_visible = false;
-          vm.$emit('operateSuccess');
+          this.dialog_form_visible = false;
+          this.$emit('operateSuccess');
         } else {
           if (res && res.data && res.data.message) {
-            vm.$message.warning(res.data.message)
+            this.$message.warning(res.data.message)
           }
         }
       }).catch(err => {
-        vm.save_loading = false;
-        vm.$message({
-          message: vm.$t('update error'),
+        this.save_loading = false;
+        this.$message({
+          message: this.$t('update error'),
           type: 'error'
         });
       })

@@ -125,15 +125,14 @@ export default {
       this.getData();
     },
     getData() {
-      let vm = this;
       let args = {
-        condition: vm.condition,
-        page: vm.page,
-        page_size: vm.page_size,
+        condition: this.condition,
+        page: this.page,
+        page_size: this.page_size,
         order: this.formatSortParams(this.sort)
       };
-      vm.table_loading = true;
-      vm.table_data = [];
+      this.table_loading = true;
+      this.table_data = [];
       // 如果有created_time作为排序字段，那么删除这个排序字段，如果只有created_time作为排序字段，那么不做任何操作
       let order = JSON.parse(JSON.stringify(args.order));
       if(Object.keys(order).length > 1) {
@@ -141,17 +140,17 @@ export default {
       }
       args.order = order;
       customerListApi(args).then(res => {
-        vm.table_loading = false;
+        this.table_loading = false;
         if (parseInt(res.data.code )=== 100000) {
-          vm.table_data = vm.formatUserList(res.data.data);
-          vm.total = res.data.totalCount;
+          this.table_data = this.formatUserList(res.data.data);
+          this.total = res.data.totalCount;
         } else {
           if (res && res.data && res.data.message) {
-            vm.$message.warning(res.data.message)
+            this.$message.warning(res.data.message)
           }
         }
       }).catch(err => {
-        vm.table_loading = false;
+        this.table_loading = false;
         console.log(err);
       });
     },
