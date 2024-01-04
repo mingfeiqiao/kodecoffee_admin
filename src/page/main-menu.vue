@@ -192,7 +192,6 @@ export default {
       // axios.get('http://127.0.0.1:3000/user/v2/userinfo')
       zbUserInfo().then(res => { // 先请求zbase的用户信息
         this.handleResult(res);
-
       }).catch( err => {
         this.$message.error(this.$t('Login failed. Please try logging in again'));
         console.log(err);
