@@ -132,7 +132,7 @@
             </el-form>
           </div>
           <div style="display: flex;flex-direction: row-reverse;align-items: center;">
-            <el-button type="primary" @click="submitCommissionForm" size="small" style="margin-left: 12px">{{$t('save')}}</el-button>
+            <el-button type="primary" @click="submitCommissionForm" size="small" style="margin-left: 12px" :loading="save_loading">{{$t('save')}}</el-button>
             <el-button @click="commission_dialog_visible = false" size="small" >{{ $t('cancel') }}</el-button>
           </div>
         </div>
@@ -225,7 +225,8 @@ export default {
         x_api_key:"",
         redirect_url:"",
       },
-      show_commission_detail_dialog:false
+      show_commission_detail_dialog:false,
+      save_loading:false
     };
   },
   created() {
@@ -383,7 +384,9 @@ export default {
     submitCommissionForm() {
       this.$refs['commission_form'].validate((valid) => {
         if (valid) {
+          this.save_loading = true;
           addCommissionApi(this.commission).then(res => {
+            this.save_loading = false;
             if (res.data && parseInt(res.data.code) === 100000) {
               this.$message({
                 message: this.$t('add success'),
@@ -400,6 +403,7 @@ export default {
               }
             }
           }).catch(err => {
+            this.save_loading = false;
             this.$message({
               message: err,
               type: 'error'

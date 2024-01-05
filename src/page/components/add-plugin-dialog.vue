@@ -34,7 +34,7 @@
           </div>
         </el-form-item>
         <div style="display: flex;justify-content:flex-end">
-          <el-button type="primary" size="small" @click="submitForm('pluginRuleForm')">
+          <el-button type="primary" size="small" @click="submitForm('pluginRuleForm')" :loading="btn_loading">
             {{ operationType === 'add' ? $t('create') : $t('update') }}
           </el-button>
           <el-button @click="resetForm('pluginRuleForm')" size="small">{{ $t('Reset') }}</el-button>
@@ -55,6 +55,7 @@ export default {
       plugin_data : {
         allow_online_user_limit_count:0,
       },
+      btn_loading:false
     }
   },
   props: {
@@ -81,7 +82,8 @@ export default {
     operateSuccess : {
       type: Function,
       default: () => {
-      }
+      },
+      btn_loading:false
     }
   },
   components : {
@@ -199,7 +201,9 @@ export default {
       if (!this.is_limit_user) {
         args.allow_online_user_limit_count = 0;
       }
+      this.btn_loading = true;
       addPlugin(args).then((res) => {
+        this.btn_loading = false;
         if (parseInt(res.data.code) === 100000) {
           this.$message({
             message: 'success',
@@ -213,6 +217,7 @@ export default {
           }
         }
       }).catch((err) => {
+        this.btn_loading = false;
         this.$message({
           message: 'fail',
           type: 'error'
@@ -242,7 +247,9 @@ export default {
         }
       }
       args.client_key = this.chosen_plugin_data.client_key;
+      this.btn_loading = true;
       updatePlugin(args).then(res => {
+        this.btn_loading = false;
         if (parseInt(res.data.code) === 100000) {
           this.$message({
             message: 'success',
@@ -256,6 +263,7 @@ export default {
           }
         }
       }).catch((err) => {
+        this.btn_loading = false;
         this.$message({
           message: 'fail',
           type: 'error'

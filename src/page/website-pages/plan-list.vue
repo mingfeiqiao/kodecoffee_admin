@@ -224,21 +224,20 @@ export default {
         args.condition = condition;
       }
       args.order = this.order;
-      let vm = this;
-      vm.plan_list = [];
-      vm.table_loading = true;
+      this.plan_list = [];
+      this.table_loading = true;
       planList(args).then(res => {
-        vm.table_loading = false;
+        this.table_loading = false;
         if (parseInt(res.data.code )=== 100000) {
-          vm.plan_list = vm.formatPlanList(res.data.data);
-          vm.total = res.data.totalCount;
+          this.plan_list = this.formatPlanList(res.data.data);
+          this.total = res.data.totalCount;
         } else {
           if (res && res.data && res.data.message) {
-            vm.$message.warning(res.data.message)
+            this.$message.warning(res.data.message)
           }
         }
       }).catch(err => {
-        vm.table_loading = false;
+        this.table_loading = false;
       });
     },
     /**

@@ -48,6 +48,9 @@
               </el-select>
             </div>
           </div>
+          <div style="font-size: 12px;margin-left: 24px;color: #929292">
+            {{$t('Page data is based on UTC+0')}}
+          </div>
         </div>
         <div style="display: flex;flex-wrap: wrap;justify-content: space-between;align-items: center;">
           <div class="echarts-container" v-for="(value,key) in title_ref" :key="key">
@@ -353,21 +356,20 @@ export default {
         end_time: this.date_range[1],
         client_key:this.client_key
       };
-      let vm = this;
       dashBoardApi(args).then(res => {
-        vm.hideLoading();
+        this.hideLoading();
         if (parseInt(res.data.code) === 100000) {
-          vm.overall_data = vm.formatOverallData(res.data.data);
-          vm.formatEchartsData(res.data.data);
+          this.overall_data = this.formatOverallData(res.data.data);
+          this.formatEchartsData(res.data.data);
         } else {
           if (res && res.data && res.data.message) {
-            vm.$message.warning(res.data.message)
+            this.$message.warning(res.data.message)
           }
-          vm.setDefaultOptions();
+          this.setDefaultOptions();
         }
       }).catch(err => {
-        vm.hideLoading();
-        vm.setDefaultOptions();
+        this.hideLoading();
+        this.setDefaultOptions();
       })
     },
     setDefaultOptions () {

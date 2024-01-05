@@ -3,7 +3,7 @@
     <div>
       <div>
         <div>{{$t('pay')}}:</div>
-        <div style="display:flex;align-items: center;padding: 8px 0 24px 0">
+        <div class="payment_information_box">
           <span class="title-20">{{subscription.prod_name}}</span>
           <span v-if="subscription.price_format" style="color: #929292;font-size: 20px;padding-left: 8px">{{ subscription.price_format }}</span>
           <span v-if="subscription.subscription_status_obj" :style="{
@@ -21,6 +21,8 @@
             </span>
               <el-descriptions-item :label="$t('canceled time')">{{subscription.canceled_time}}</el-descriptions-item>
           </span>
+
+          <el-button size="mini" v-if="isShowSubscribe" class="btn_unsubscribe" @click="onShowSubscribe">{{ $t('unsubscribe') }}</el-button>
         </div>
       </div>
       <el-descriptions  class="order-descriptions">
@@ -59,12 +61,29 @@
         </el-table>
       </div>
     </div>
+
+    <el-dialog :title="$t('unsubscribe')"  :visible.sync="dialog_form_visible" width="400px" :modal-append-to-body="false" destroy-on-close >
+      <el-radio-group v-model="unsubscribe_immediately">
+        <p style="margin-bottom: 30px;" >
+          <el-radio label="expiration">{{ $t('End of this period') }} {{ subscription.unsubscribe_end_time }}</el-radio>
+        </p>
+        <p  v-if="!isPayPal">
+          <el-radio label="immediately">{{ $t('Cancel now') }} {{ onShowTime() }}</el-radio>
+        </p>
+      </el-radio-group>
+
+        <div class="unsubscribe_tips" v-html="$t('Unsubscribe reminder')"></div>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="dialog_form_visible = false" size="small">{{ $t('cancel') }}</el-button>
+          <el-button type="primary" @click="onSubmit('ruleForm')" :loading="save_loading" size="small">{{ $t('unsubscribe') }}</el-button>
+        </span>
+    </el-dialog>
   </div>
 </template>
 <script>
-import {timestampToDateString} from "../../utils/dateUtils";
+import {timestampToDateString, getTimeDate} from "../../utils/dateUtils";
 import SUBSCRIPTION_STATUS_OPTIONS from "../../options/subscription_options.json";
-import {subscriptionDetailApi} from "../../api/interface";
+import {subscriptionDetailApi, unsubscriptionDetailApi} from "../../api/interface";
 import ORDER_OPTIONS from "../../options/order_options.json";
 import CURRENCY_OPTIONS from "../../options/currency_options.json";
 export default {
@@ -113,32 +132,43 @@ export default {
           "color":"rgba(16, 16, 16, 100)",
           "background-color":"#F0F0F0"
         },
-      }
+      },
+      isShowSubscribe:false,
+      dialog_form_visible:false,
+      save_loading:false,
+      unsubscribe_immediately:'expiration',
+      isPayPal:false
     };
   },
   created() {
-    if (this.$route.params && this.$route.params.id) {
-      this.table_loading = true;
-      subscriptionDetailApi(this.$route.params.id).then(res => {
-        this.table_loading = false;
-        const { data } = res || {};
-        const { code = 0} = data || {};
-        const { message } = data || {};
-        if ( parseInt(code) === 100000) {
-          this.subscription = this.formatSubscription(res.data.data);
-          this.order_list = this.formatOrderList(res.data.data.transaction_invoice);
-        } else {
-          if (message) {
-            this.$message.warning(res.data.message)
-          }
-        }
-      }).catch((err) => {
-        this.table_loading = false;
-        console.error(err);
-      });
-    }
+    this.onSubscriptionDetail();
   },
   methods: {
+    onSubscriptionDetail() {
+      if (this.$route.params && this.$route.params.id) {
+      this.table_loading = true;
+        subscriptionDetailApi(this.$route.params.id).then(res => {
+          this.table_loading = false;
+          const { data } = res || {};
+          const { code = 0} = data || {};
+          const { message } = data || {};
+          if ( parseInt(code) === 100000) {
+            this.subscription = this.formatSubscription(res.data.data);
+            this.order_list = this.formatOrderList(res.data.data.transaction_invoice);
+
+            this.isShowSubscribe = res.data.data.order_status == "updated" || res.data.data.order_status == "created" ? true : false;
+            this.isPayPal = res.data.data.pay_type == "paypal" ? true : false
+          } else {
+            if (message) {
+              this.$message.warning(res.data.message)
+            }
+          }
+        }).catch((err) => {
+          this.table_loading = false;
+          console.error(err);
+        });
+      }
+    },
     openUserDetail () {
       this.$router.push({path: "/customers/detail/" + this.subscription.user_id});
     },
@@ -172,6 +202,7 @@ export default {
         canceled_time: this.formatTime(data.canceld_time) || "",
         created_time: this.formatTime(data.created_time) || "",
         subscription_id: data.transaction_key || "",
+        unsubscribe_end_time:getTimeDate(new Date(data.plan_end_time * 1000)) || ''
       }
     },
     formatCard (last4) {
@@ -207,6 +238,31 @@ export default {
       }
       return currency + ' ' + price;
     },
+    onShowSubscribe() {
+      this.dialog_form_visible = true;
+    },
+    onSubmit() {
+      this.save_loading = true;
+      let params = {
+        unsubscribe_type: this.unsubscribe_immediately,
+        transaction_key: this.subscription.subscription_id
+      }
+      unsubscriptionDetailApi(params).then(res => {
+        const { data } = res || {};
+        const { code = 0 , message} = data || {};
+        if (parseInt(code) === 100000) {
+          this.$message.success(this.$t('Unsubscription Successful'))
+          this.dialog_form_visible = false;
+        } else {
+          this.$message.warning(message)
+        }
+        this.save_loading = false;
+        this.onSubscriptionDetail();
+      })
+    },
+    onShowTime() {
+      return getTimeDate(new Date());
+    }
   },
 };
 </script>
@@ -215,5 +271,31 @@ export default {
 }
 .container /deep/ .el-descriptions-item__cell {
   padding-bottom: 24px;
+}
+
+.payment_information_box{
+  display:flex;
+  align-items: center;
+  padding: 8px 0 24px 0;
+  position: relative;
+  .btn_unsubscribe{
+    position: absolute;
+    right: 0;
+    top: 10px;
+  }
+}
+
+.unsubscribe_tips{
+  color: rgba(0, 0, 0, 0.45);
+  font-family: SourceHanSansSC-regular;
+  font-size: 14px;
+  line-height: 25px;
+  margin-top: 48px;
+  word-wrap: break-word;
+  word-break: normal;
+}
+
+/deep/ .el-dialog__body{
+  padding: 30px 35px;
 }
 </style>

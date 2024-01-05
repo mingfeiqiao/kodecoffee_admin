@@ -95,12 +95,16 @@ export const planFilterListApi = data =>instance.post('/product/plan-filter-list
 export const updatePlan = (id, data) => instance.post(`/product/save/${id}`, JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 // 订单相关
 export const orderList = (data) => instance.post('/app/bill/list', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
+// 订单退款
+export const refundApi = (data) => instance.post(`/app/bill/refund`, JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 
 export const subscriptionList = (data) => instance.post('/app/subscription/list', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 
 export const orderDetailApi = (id,data) => instance.post(`/app/bill/detail/${id}`, JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 // 订阅相关
 export const subscriptionDetailApi = (id,data) => instance.post(`/app/subscription/detail/${id}`, JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
+// 取消订阅
+export const unsubscriptionDetailApi = (data) => instance.post(`/app/subscription/cancel-subscription`, JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 
 // 客户相关
 export const customerListApi = (data) => instance.post('/app/customers/list', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
