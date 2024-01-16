@@ -71,7 +71,19 @@
             </div>
             <!-- 支付板块，银行卡需要引入板块，故此没写 -->
             <div class="pay-change-box">
-                <div v-if="isActive == 'BANK'"></div>
+                <div v-if="isActive == 'BANK'">
+                  <!-- 引入 Stripe.js -->
+                  <!-- 创建卡片信息收集的表单 -->
+                  <form id="payment-form">
+                    <!-- 这里添加用于收集卡片信息的字段，如卡号、过期日期、CVC等 -->
+                    <!-- 用于容纳 Stripe.js 元素的容器 -->
+                    <div id="card-element"></div>
+                    <!-- 用于显示验证错误的元素 -->
+                    <div id="card-errors" role="alert"></div>
+                    <!-- 提交按钮 -->
+                    <button type="submit">支付</button>
+                  </form>
+                </div>
                 <div v-if="isActive == 'PAYPAL'">{{ $t('PayPal tips') }}</div>
                 <div v-if="isActive == 'ZFB'">{{ $t('zfb tips') }}</div>
                 <div v-if="isActive == 'WX'">{{ $t('wx tips') }}</div>
@@ -126,14 +138,47 @@ export default {
         document.body.style.setProperty('--leftContentBG', '#EFEFEF');
         document.body.style.setProperty('--fontSpecial', '#2F54EB');
         document.body.style.setProperty('--fontTips', '#3D3D3D');
-        
         document.body.style.setProperty('--OrderDetailsBox', 'none');
         
     },
     computed: {
 
     },
-    methods: {
+  mounted() {
+    const script = document.createElement('script')
+    script.src = 'https://js.stripe.com/v3/'
+    script.onload  = () => {
+      var stripe = Stripe('pk_test_51NJ9pwEl6sCLUmt264QVOrinvpxuJGiwAYfmbr3KpHDVEUvAgX321EzM0mCaqlWi3aX7z2aOMKYCalfyyQxswtBw00FYd7Y2Eu');
+      var elements = stripe.elements();
+      // 创建卡片信息输入框
+      var card = elements.create('card');
+      // 将卡片信息输入框添加到页面
+      card.mount('#card-element');
+      // 处理表单提交事件
+      var form = document.getElementById('payment-form');
+      form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        // 使用 Setup Intent 中的 client_secret 进行验证
+        stripe.handleCardSetup(clientSecret, card, {
+          payment_method_data: {
+            // 在这里添加额外的支付方法数据，例如用户信息等
+          }
+        }).then(function(result) {
+          if (result.error) {
+            // 处理验证错误
+            var errorElement = document.getElementById('card-errors');
+            errorElement.textContent = result.error.message;
+          } else {
+            // 验证成功，将 Setup Intent 的 payment_method 放入表单中
+            var paymentMethod = result.setupIntent.payment_method;
+            // 将 paymentMethod 发送到服务器进行后续处理
+          }
+        });
+      });
+    }
+    document.body.appendChild(script)
+  },
+  methods: {
         //切换支付方式
         onChangePay(value){
             this.isActive = value;

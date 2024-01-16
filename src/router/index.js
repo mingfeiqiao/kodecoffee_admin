@@ -28,7 +28,7 @@ import extensionWelcome from "../page/extension/extension-welcome.vue";
 import shareExtension from "../page/website-pages/share-extension.vue";
 import chosenPayment from "../page/extension/chosen-payment.vue";
 import extensionCommission from "../page/website-pages/extension-commission.vue";
-import extensionPay from "../page/website-pages/extension-pay.vue";
+import extensionPay from "../page/extension/extension-pay.vue";
 
 Vue.use(Router);
 const routes = [
@@ -183,7 +183,7 @@ const routes = [
     component: extensionSessionExpiredPrompt
   },
   {
-    path:'/extension-pay',
+    path:'/extension/extension-pay',
     component: extensionPay,
   },
 ];
