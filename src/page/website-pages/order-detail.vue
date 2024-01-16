@@ -68,8 +68,25 @@
         <el-descriptions-item :label="$t('extension')">{{ order_detail.client_name }}</el-descriptions-item>
         <el-descriptions-item :label="$t('order id')" >{{ order_detail.order_id }}</el-descriptions-item>
       </el-descriptions>
+      <div style="padding: 24px 0;border-top: 1px solid rgba(232, 232, 232, 1);border-bottom: 1px solid rgba(232, 232, 232, 1);">
+        <div class="title-16">时间线</div>
+        <div style="padding-top: 24px">
+          <el-timeline>
+            <el-timeline-item
+              v-for="(activity, index) in activities"
+              :key="index"
+              :icon="activity.icon"
+              :type="activity.type"
+              :color="activity.color"
+              :size="activity.size"
+              :timestamp="activity.timestamp">
+              {{activity.content}}
+            </el-timeline-item>
+          </el-timeline>
+        </div>
+      </div>
     </div>
-    <div>
+    <div style="padding-top: 24px">
       <div>
         <el-descriptions :title="$t('payment details')">
           <el-descriptions-item :label="$t('Amount')">
@@ -97,7 +114,6 @@
         </el-descriptions>
       </div>
     </div>
-
     <el-dialog :title="$t('refund')"  :visible.sync="dialog_form_visible" width="35%" :modal-append-to-body="false" destroy-on-close >
       <div :class="lang == 'en-US' ? 'refund_tips_box refund_tips_en' : 'refund_tips_box'">
         <i class="el-icon-warning"></i>
@@ -169,6 +185,20 @@ import CURRENCY_OPTIONS from "../../options/currency_options.json";
 export default {
   data() {
     return {
+      activities: [
+        {
+          content: '支持使用图标',
+          timestamp: '2018-04-12 20:46',
+          size: 'large',
+          type: 'primary',
+          icon: 'el-icon-more'
+        },
+        {
+          content: '支持自定义颜色',
+          timestamp: '2018-04-03 20:46',
+          color: '#0bbd87'
+        }
+      ],
       ORDER_STATUS_BUTTON: {
         un_completed: {
           "message": "unCompleted",
@@ -258,6 +288,31 @@ export default {
     this.onOrderDetail();
   },
   methods: {
+    formatTimeLine(transaction_flows) {
+      const active_time_line = [];
+      transaction_flows.forEach(item => {
+        const time_lien = {};
+        time_lien.timestamp = timestampToDateString(item.created_time, 'yyyy-MM-dd HH:II:SS');
+        let content = '';
+        if (item.pay_status === 'succeed') {
+          content = '支付成功';
+        } else if (item.pay_status === 'invalid') {
+          content = '订单已经失效';
+        } else if (item.pay_status === 'refunded') {
+          content = '订单已经退款';
+          if (item.refunded_reason) {
+            content = content + '，退款原因:' +  item.refunded_reason
+          }
+          if (item.refunded_additional_details) {
+            content = content + '，特殊原因说明:' +  item.refunded_additional_details
+          }
+        } else if (item.pay_status === 'failed') {
+          content = '支付失败';
+        }
+        time_lien.content = content;
+        active_time_line.push(time_lien)
+      });
+    },
     onOrderDetail() {
       if (this.$route.params && this.$route.params.id) {
         orderDetailApi(this.$route.params.id).then(res => {
