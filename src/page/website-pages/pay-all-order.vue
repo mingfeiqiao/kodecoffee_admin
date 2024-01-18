@@ -707,6 +707,9 @@ export default {
             if (!order_status_option.includes(item.order_status)) {
               order_status = item.multiple_transactions_flag
             }
+            if (order_status === 'null') {
+              order_status = 'created';
+            }
             for (const plan_type of this.order_type_options) {
               if (order_status === plan_type.value) {
                 item.plan_type_obj = plan_type.label
