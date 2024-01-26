@@ -109,9 +109,17 @@ export const unsubscriptionDetailApi = (data) => instance.post(`/app/subscriptio
 // 客户相关
 export const customerListApi = (data) => instance.post('/app/customers/list', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 
-export const customerDetailApi = (id,data) => instance.post(`/app/customers/detail/${id}`, JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
+export const customerDetailApi = (data) => instance.post(`/app/customers/detail/${data.id}`, JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 
 export const dashBoardApi = (data) => instance.post('/dashboard/dashboard', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
+
+//支付
+//获取套餐信息
+export const paymentListApi = (key, id) => instance.post(`/extension/bill/retrieve/${id}`, JSON.stringify(id), {headers: {'Content-Type' : 'application/json', 'Client-Key': key}});
+//创建订单
+export const createOrderApi = (data) => instance.post('/extension/bill/create', JSON.stringify(data), {headers: {'Content-Type' : 'application/json', 'Client-Key':'f1cf8eea-bb46-11ee-8bbb-0242ac120002', 'Api-Key':'420a3956-bb50-11ee-904b-0242ac120002'}});
+//下单接口
+export const placeOrderApi = (key, data) => instance.post('/extension/bill/confirm', JSON.stringify(data), {headers: {'Content-Type' : 'application/json', 'Client-Key':key}});
 // 插件端相关
 export const addWithdrawInfoApi = data => instance.post('/withdraw/add_withdraw_info', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 export const accountWithdrawInfoApi = data => instance.post('/withdraw/account_withdraw_info', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});

@@ -399,7 +399,9 @@
     "zfb tips":"For Alipay payment, open the official Alipay page to log in and pay.",
     "wx tips":"After generating the QR code, use WeChat to scan the QR code to pay.",
     "try out tips":"After the trial period ends, you will be charged ${amount} every month starting on {day}. You can unsubscribe at any time.",
-    "Add address":"Add billing address information"
+    "Add address":"Add billing address information",
+    "Policy Manual":"User Privacy Policy Manual",
+    "Order details":"Order details"
   },
   "zh-CN": {
     "Page data is based on UTC+0": "页面数据基于UTC+0",
@@ -800,6 +802,8 @@
     "zfb tips":"支付宝支付，打开支付宝官方页面进行登录并支付",
     "wx tips":"生成二维码后，使用微信进行扫码支付",
     "try out tips":"试用期结束后，从{day}开始，您将被每个月扣取${amount}。你可以随时取消订阅。",
-    "Add address":"添加账单地址信息"
+    "Add address":"添加账单地址信息",
+    "Policy Manual":"用户隐私协议",
+    "Order details":"订单详情"
   }
 }
