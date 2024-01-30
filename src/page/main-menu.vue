@@ -147,16 +147,16 @@ export default {
     // Crisp.configure('29c69934-5e71-4ba8-9eff-d80342cdd79e');
     // Crisp.chat.show();
     // Vue.prototype.$Crisp = Crisp;
-    // let last_mode = localStorage.getItem('lastMode');
-    // if (last_mode) {
-    //   if (this.$mode !== last_mode) {
-    //     if (last_mode === this.MODECONFIG.PRODUCTION.mode) {
-    //       window.location.href = this.MODECONFIG.PRODUCTION.baseURL;
-    //     } else if (last_mode === this.MODECONFIG.SANDBOX.mode) {
-    //       window.location.href = this.MODECONFIG.SANDBOX.baseURL;
-    //     }
-    //   }
-    // }
+    let last_mode = localStorage.getItem('lastMode');
+    if (last_mode) {
+      if (this.$mode !== last_mode) {
+        if (last_mode === this.MODECONFIG.PRODUCTION.mode) {
+          window.location.href = this.MODECONFIG.PRODUCTION.baseURL;
+        } else if (last_mode === this.MODECONFIG.SANDBOX.mode) {
+          window.location.href = this.MODECONFIG.SANDBOX.baseURL;
+        }
+      }
+    }
     this.loginOrRegisterUser();
     // this.test();
     this.initOptions();
