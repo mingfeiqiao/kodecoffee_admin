@@ -72,8 +72,8 @@
         <pre style="white-space: pre-wrap;word-wrap: break-word;margin-top: 8px">
 {{$t('payouts instructions content')}}
         </pre>
-        <div style="display: flex;align-items: center;justify-content: space-between;">
-          <div style="display: flex">
+        <div style="display: flex;align-items: center;justify-content: flex-end;">
+          <!-- <div style="display: flex">
             <span style="color: #C6C6C6">{{ $t('more question') }}</span>
             <span class="link" @click="OpenCrispChat" style="display:flex;align-items: center;padding-left: 8px">
               <span style="display: flex">
@@ -85,7 +85,7 @@
                 {{$t('contact us')}}
               </span>
             </span>
-          </div>
+          </div> -->
           <div style="display:flex;">
             <span>
               KodePay Power by

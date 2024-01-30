@@ -113,18 +113,32 @@ kodepay_client.open_payment_page({plan_id:"${plan_key}"});`
     </div>
     <div v-show="current_step === 3">
       <div style="display:flex;align-items: center;justify-content: center;flex-direction: column">
-        <div style="padding-top: 80px">{{'🎉' + $t('Integration successful')}}</div>
         <div style="padding-top: 80px">
-          <span class="link" @click="gotoDocCenter($i18n.locale)">{{  $t('Help documentation center') }}</span>
+          <span>{{'🎉' + $t('Integration successful')}}</span>
+          <span class="link" @click="gotoDocCenter($i18n.locale)">{{  $t('Developer documentation') }}</span>
         </div>
-        <el-button size="small" @click="finishGuide" type="primary" style="margin-top: 80px">
-          {{ $t('Complete') }}
-        </el-button>
+        <div class="WhatsApp_tips">{{ $t('WhatsApp tips') }}</div>
+        <div class="Cash_withdrawal_note">{{ $t('coupon 10') }}</div>
+        <div class="WeChat_box">
+          <div>
+            <p>WeChat</p><img class="img_box" src="http://saasbox.uncledesk.com/wp-content/uploads/2024/01/KodeLab_WeChat.png">
+            <el-button v-if="$i18n.locale == 'en-US'" type="primary" size="small" @click="dialogTableVisible = true">Scan to get</el-button>
+          </div>
+          <div>
+            <p>WhatsApp</p><img class="img_box" src="http://saasbox.uncledesk.com/wp-content/uploads/2024/01/KodeLab_WhatsApp.png">
+            <el-button v-if="$i18n.locale == 'en-US'" @click="onClickWhats" type="primary" size="small">Click to get</el-button>
+          </div>
+        </div>
+        <el-button @click="finishGuide" type="text" style="margin-top: 40px;">{{ $t('Complete') }}</el-button>
       </div>
     </div>
     <div style="display: flex;align-items: center;justify-content: center;padding-top: 80px">
       <el-button style="margin-top: 12px;" @click="nextStep" v-if="current_step < 3" size="small" type="primary">{{$t('Next Step')}}</el-button>
     </div>
+
+    <el-dialog :visible.sync="dialogTableVisible" width="550px">
+      <img style="width: 500px;height: 500px;" src="http://saasbox.uncledesk.com/wp-content/uploads/2024/01/KodeLab_WeChat.png">
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -156,6 +170,7 @@ export default {
         },
       ],
       current_step: 0,
+      dialogTableVisible:false,
       plan_options: {
         '$3.99-recurring': {
           "en-US":"$3.99/month Recurring",
@@ -275,6 +290,9 @@ export default {
     finishGuide() {
       this.nextStep();
       this.$router.push({path: '/dashboard'});
+    },
+    onClickWhats(){
+      window.open('https://api.whatsapp.com/send/?phone=15309888116&text&type=phone_number&app_absent=0');
     },
     setLocalStorageGuideStep (step) {
       localStorage.setItem('guideStep', step);
@@ -454,4 +472,31 @@ export default {
 pre[class*="language-"] {
   background-color: #F0F0F0;
 }
+
+.WhatsApp_tips{
+  max-width: 700px;
+  text-align: center;
+  line-height: 22px;
+  margin: 24px 0 40px 0;
+  color:#3D3D3D;
+}
+.Cash_withdrawal_note{
+  color: #FF8F1F;
+  font-size: 36px;
+  font-weight: 600;
+}
+.WeChat_box{
+  display: flex;
+  justify-content: space-around;
+  width: 360px;
+  margin: 0 auto;
+  padding-top: 24px;
+  text-align: center;
+  .img_box{
+    width: 150px;
+    height: 150px;
+    margin: 16px 0;
+  }
+}
+
 </style>
