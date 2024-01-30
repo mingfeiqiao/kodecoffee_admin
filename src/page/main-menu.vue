@@ -80,6 +80,20 @@
           <router-view></router-view>
         </div>
       </el-main>
+
+      <el-footer height="60px">
+        <el-tooltip placement="top" effect="light">
+          <div slot="content" style="text-align: center;width: 200px;font-size: 14px;">
+            <p style="color: #3D3D3D;font-weight: 700;margin-bottom: 16px;">{{ $t('technical support') }}</p>
+            <img style="width: 150px;height: 150px;" src="http://saasbox.uncledesk.com/wp-content/uploads/2024/01/KodeLab_WeChat.png"><p style="margin-bottom: 25px;">微信扫码</p>
+            <img style="width: 150px;height: 150px;" src="http://saasbox.uncledesk.com/wp-content/uploads/2024/01/KodeLab_WhatsApp.png"><p style="margin-bottom: 25px;">WhatsApp <el-link type="primary" href="https://api.whatsapp.com/send/?phone=15309888116&text&type=phone_number&app_absent=0">{{ $t('Start conversation') }}</el-link></p>
+          </div>
+          <div>
+            <img src="http://saasbox.uncledesk.com/wp-content/uploads/2024/01/容器-1-1.png" alt="Technical Support" style="height: 24px;width: 24px;">
+            <p>{{ $t('Technical Support') }}</p>
+          </div>
+        </el-tooltip>
+      </el-footer>
     </el-container>
   </el-container>
 </template>
@@ -130,20 +144,21 @@ export default {
     },
   },
   created() {
-    Crisp.configure('29c69934-5e71-4ba8-9eff-d80342cdd79e');
-    Crisp.chat.show();
-    Vue.prototype.$Crisp = Crisp;
-    let last_mode = localStorage.getItem('lastMode');
-    if (last_mode) {
-      if (this.$mode !== last_mode) {
-        if (last_mode === this.MODECONFIG.PRODUCTION.mode) {
-          window.location.href = this.MODECONFIG.PRODUCTION.baseURL;
-        } else if (last_mode === this.MODECONFIG.SANDBOX.mode) {
-          window.location.href = this.MODECONFIG.SANDBOX.baseURL;
-        }
-      }
-    }
+    // Crisp.configure('29c69934-5e71-4ba8-9eff-d80342cdd79e');
+    // Crisp.chat.show();
+    // Vue.prototype.$Crisp = Crisp;
+    // let last_mode = localStorage.getItem('lastMode');
+    // if (last_mode) {
+    //   if (this.$mode !== last_mode) {
+    //     if (last_mode === this.MODECONFIG.PRODUCTION.mode) {
+    //       window.location.href = this.MODECONFIG.PRODUCTION.baseURL;
+    //     } else if (last_mode === this.MODECONFIG.SANDBOX.mode) {
+    //       window.location.href = this.MODECONFIG.SANDBOX.baseURL;
+    //     }
+    //   }
+    // }
     this.loginOrRegisterUser();
+    // this.test();
     this.initOptions();
     this.currentMenu = this.$route.path; // 初始化当前路由路径
   },
@@ -337,5 +352,21 @@ export default {
 <style>
 .sidebar .el-submenu__title i {
   color: #ffffff;
+}
+
+.el-footer{
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 60px;
+  color: #ffffff;
+  opacity: 1;
+  border-radius: 8px;
+  background: #3662EC;
+  text-align: center;
+  padding: 5px 0 0 0 !important;
+  box-sizing: border-box;
+  cursor: pointer;
+  font-size: 12px;
 }
 </style>

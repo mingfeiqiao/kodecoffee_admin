@@ -238,9 +238,9 @@
     "Complete": "Complete",
     "Next Step": "Next Step",
     "Create Extension": "Create Extension",
-    "Integration successful": "Integration successful! Your plugin now has full payment functionality!",
+    "Integration successful": "The integration was successful and you can now start further feature debugging!",
     "Development integration process documentation": "Development integration process documentation",
-    "Help documentation center": "Help documentation center",
+    "Developer documentation": "Developer Doc",
     "in 3 min": "in 3 min",
     "The onboarding process is completed": "The onboarding process is completed",
     "Continue": "Continue",
@@ -386,7 +386,12 @@
     "You have processed the refund in the background, refund reason:": "{email} have processed the refund in the background, refund reason:",
     "Platform refund completed": "Platform refund completed",
     "Special reason description:": "Special reason description:",
-    "Payment failed, reason for failure:": "Payment failed, reason for failure:"
+    "Payment failed, reason for failure:": "Payment failed, reason for failure:",
+    "WhatsApp tips":"Add our support team on WeChat or WhatsApp and we will provide you with one-on-one technical support services to help you with payment access and product launch! \n Right now, there are also limited time cash withdrawal coupons available!",
+    "coupon 10":"$10 cash-out coupon for a limited time!",
+    "Technical Support":"Support",
+    "technical support":"Scan QR code for consultation and technical support",
+    "Start conversation":"Start conversation"
   },
   "zh-CN": {
     "Payment failed, reason for failure:": "支付失败，失败原因:",
@@ -514,9 +519,9 @@
     "Continue": "继续",
     "The onboarding process is completed": "设置引导已经完成",
     "in 3 min": "3分钟内",
-    "Help documentation center": "帮助文档中心",
+    "Developer documentation": "开发者文档",
     "Development integration process documentation": "开发接入流程文档",
-    "Integration successful": "接入成功，您的插件现在已经拥有完整的支付功能了!",
+    "Integration successful": "接入成功，你现在可以开始进一步的功能调试了！",
     "Create Extension": "创建插件",
     "Create Plan": "添加套餐",
     "Create Plan and Price": "添加套餐和价格",
@@ -774,6 +779,12 @@
     "Refund successful": "退款失败",
     "Unsubscribe successfully":"取消订阅成功",
     "Unsubscribe failure 1":"续订已经取消，无需再次取消订阅",
-    "Unsubscribe failure 2":"取消订阅失败，请稍后在订阅列表中重新操作"
+    "Unsubscribe failure 2":"取消订阅失败，请稍后在订阅列表中重新操作",
+
+    "WhatsApp tips":"添加我们支持团队的微信或WhatsApp，我们将为您提供一对一的技术支持服务，帮助你完成支付接入和产品上线！现在，可领取限时现金提现券！",
+    "coupon 10":"$10 提现券，限时扫码领取！",
+    "Technical Support":"技术支持",
+    "technical support":"扫码咨询，技术支持",
+    "Start conversation":"开始会话"
   }
 }
