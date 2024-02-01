@@ -68,8 +68,21 @@
         <el-descriptions-item :label="$t('extension')">{{ order_detail.client_name }}</el-descriptions-item>
         <el-descriptions-item :label="$t('order id')" >{{ order_detail.order_id }}</el-descriptions-item>
       </el-descriptions>
+      <div style="padding: 24px 0;border-top: 1px solid rgba(232, 232, 232, 1);border-bottom: 1px solid rgba(232, 232, 232, 1);" v-if="activities.length > 0">
+        <div class="title-16">{{$t('Timeline')}}</div>
+        <div style="padding-top: 24px">
+          <el-timeline>
+            <el-timeline-item
+              v-for="(activity, index) in activities"
+              :key="index"
+              :timestamp="activity.timestamp">
+              {{activity.content}}
+            </el-timeline-item>
+          </el-timeline>
+        </div>
+      </div>
     </div>
-    <div>
+    <div style="padding-top: 24px">
       <div>
         <el-descriptions :title="$t('payment details')">
           <el-descriptions-item :label="$t('Amount')">
@@ -97,7 +110,6 @@
         </el-descriptions>
       </div>
     </div>
-
     <el-dialog :title="$t('refund')"  :visible.sync="dialog_form_visible" width="35%" :modal-append-to-body="false" destroy-on-close >
       <div :class="lang == 'en-US' ? 'refund_tips_box refund_tips_en' : 'refund_tips_box'">
         <i class="el-icon-warning"></i>
@@ -221,6 +233,7 @@ export default {
         card_number:"",
         transaction_invoice_key: "",
       },
+      activities: [],
       cost_detail: {
         settle_amount:"", // 结算货币的实际金额
         settle_currency:"usd", // 结算币种
@@ -258,6 +271,46 @@ export default {
     this.onOrderDetail();
   },
   methods: {
+    getUserEmail () {
+      const user_info = localStorage.getItem(this.$mode + 'userInfo') ? JSON.parse(localStorage.getItem(this.$mode + 'userInfo')) : {};
+      return user_info.email;
+    },
+    formatTimeLine(data) {
+      // 首次订阅的和一次性付费的，需要将下单时间补充，其他不需要补充
+      // 如何判断是首次订阅？该transaction_invoice记录中 1.multiple_transactions_flag为created 或者为null的
+      const active_time_line = [];
+      if (data.plan_type === 'one_time' || (data.plan_type === 'recurring' && (data.multiple_transactions_flag === 'created' || data.multiple_transactions_flag === 'null'))) {
+        active_time_line.push({
+          content:this.$t('User initiates payment'),
+          timestamp:timestampToDateString(data.transaction.created_time, 'yyyy-MM-dd HH:II:SS')
+        })
+      }
+      const transaction_flows = data.transaction_flows;
+      transaction_flows.forEach(item => {
+        const time_lien = {};
+        time_lien.timestamp = timestampToDateString(item.created_time, 'yyyy-MM-dd HH:II:SS');
+        let content = '';
+        if (item.pay_status === 'succeed') {
+          content = this.$t('pay success');
+        } else if (item.pay_status === 'invalid') {
+          content = this.$t('The order has expired');
+        } else if (item.pay_status === 'refunded') {
+          if (item.refunded_reason) {
+            content = this.$t('You have processed the refund in the background, refund reason:', {email: this.getUserEmail()}) +  this.$t(item.refunded_reason)
+          } else {
+            content = this.$t('Platform refund completed')
+          }
+          if (item.refunded_additional_details) {
+            content = content + ',' + this.$t('Special reason description:') +  item.refunded_additional_details
+          }
+        } else if (item.pay_status === 'failed') {
+          content = this.$t('Payment failed, reason for failure:') + this.order_detail.error_msg;
+        }
+        time_lien.content = content;
+        active_time_line.push(time_lien)
+      });
+      return active_time_line;
+    },
     onOrderDetail() {
       if (this.$route.params && this.$route.params.id) {
         orderDetailApi(this.$route.params.id).then(res => {
@@ -266,6 +319,7 @@ export default {
             this.payment_detail = this.formatPaymentDetail(res.data.data);
             this.billing_detail = this.formatBillingDetail(res.data.data);
             this.cost_detail = this.formatCostDetail(res.data.data);
+            this.activities = this.formatTimeLine(res.data.data)
             this.is_show_refund = res.data.data.pay_status === "succeed";
             this.is_paypal = res.data.data.pay_type === "paypal";
             this.is_support_unsubscribe = this.isSupportUnSubscribe(res.data.data.transaction.order_status)
