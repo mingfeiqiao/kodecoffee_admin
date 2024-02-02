@@ -65,7 +65,7 @@
                 <div class="left-address-box font-tips">{{ $t('Add address') }}</div>
             </div>
             <!-- 右侧板块 -->
-            <div class="right-content-box">
+            <div class="right-content-box" v-if="JSON.stringify(PayCompletionInfor) == '{}'">
                 <div style="    margin: 0 auto;max-width: 400px;">
                     <b class="right-pay-title">{{ $t('Payment') }}</b>
                     <div class="contact-email">{{ $t('Contact email') }}</div>
@@ -114,10 +114,21 @@
                     <div class="pay-btn" id="submit" @click="onPay">{{ onBtnText() }}</div>
                 </div>
             </div>
+
+            <div class="right-content-box" v-if="JSON.stringify(PayCompletionInfor) != '{}'">
+                <div class="pay-completion-infor">
+                    <svg width="80" height="80">
+                        <use :xlink:href="PayCompletionInfor.payStatusIcon"></use>
+                    </svg>
+                    <p class="pay-text">{{ PayCompletionInfor.payText }}</p>
+                    <p class="pay-tips">{{ PayCompletionInfor.payTips }}</p>
+                    <div class="pay-repeat" v-if="PayCompletionInfor.payStatus == 'error'">重新支付</div>
+                </div>
+            </div>
         </div>
         <div class="agreement-box" style="font-size: 12px;">
             <div><b
-                    style="font-size: 14px;margin-right: 5px;">KodePay</b><span>本交易由在线分销商和记录商户KodePay处理订单相关事宜。相关数据会与【xxx插件名】共享，并由其完成订单的产品或服务。</span>
+                    style="font-size: 14px;margin-right: 5px;">KodePay</b><span v-html="$t('extensions tips').replace('${name}', product_info.name || '')"></span>
             </div>
             <div>Powered by <b>KodePay</b></div>
             <div class="protocol-manual">{{ $t('Policy Manual') }}</div>
@@ -173,7 +184,23 @@ export default {
             clientKey: '',
             wx_img: '',
             product_loading:false,
-            filteredArray:[]
+            filteredArray:[],
+            PayCompletionInfor:{},
+            PayCompletionObj:{
+                error:{
+                    payStatusIcon:'#error-pay',
+                    payText:'支付失败',
+                    payTips:'失败原因描述，银行拒绝了你的支付，请更换卡或者更换支付方式重新支付。',
+                    payStatus:'error'
+                },
+                success:{
+                    payStatusIcon:'#successful-pay',
+                    payText:'支付成功',
+                    payTips:'试用期结束后，从2023年12月12日开始，您将被每个月扣取$99.99。你可以随时取消订阅。',
+                    payStatus:'success'
+                }
+            }
+            
         };
     },
     created() {
@@ -234,8 +261,6 @@ export default {
             }
 
         })
-
-
     },
     methods: {
         //切换支付方式
@@ -321,8 +346,14 @@ export default {
                     if (this.isActive == 'BANK') {
                         this.stripe.confirmCardPayment(client_secret)
                             .then((result)=> {
-                                // window.location.href = 'https://www.baidu.com/';
-                                // Handle result.error or result.paymentMethod
+                                let { paymentIntent } = res;
+                                if (error) {
+                                    this.PayCompletionInfor = this.PayCompletionObj.error;
+                                } else if (paymentIntent.status === 'succeeded') {
+                                    this.PayCompletionInfor = this.PayCompletionObj.success;
+                                } else if (paymentIntent.status === 'requires_action') {
+                                    
+                                }
                             });
                     } else if (this.isActive == 'ZFB') {
                         this.stripe.confirmAlipayPayment(client_secret, {
@@ -338,12 +369,13 @@ export default {
                                 }
                             },
                         }).then(function (result) {
-                            if (result.error) {
-                                // 处理支付失败的情况
-                                console.error(result.error.message);
-                            } else {
-                                // 支付成功，处理订单逻辑
-                                console.log('Payment successful:', result);
+                            let { paymentIntent } = res;
+                            if (error) {
+                                this.PayCompletionInfor = this.PayCompletionObj.error;
+                            } else if (paymentIntent.status === 'succeeded') {
+                                this.PayCompletionInfor = this.PayCompletionObj.success;
+                            } else if (paymentIntent.status === 'requires_action') {
+                                
                             }
                         });
                     } else if (this.isActive == 'WX') {
@@ -356,9 +388,9 @@ export default {
                         }, { handleActions: false }).then((res, error) => {
                             let { paymentIntent } = res;
                             if (error) {
-                                // Inform the customer that there was an error.
+                                this.PayCompletionInfor = this.PayCompletionObj.error;
                             } else if (paymentIntent.status === 'succeeded') {
-
+                                this.PayCompletionInfor = this.PayCompletionObj.success;
                             } else if (paymentIntent.status === 'requires_action') {
                                 this.wx_img = paymentIntent.next_action.wechat_pay_display_qr_code.image_data_url;
                             }
@@ -507,7 +539,25 @@ export default {
     text-decoration: underline;
     cursor: pointer;
 }
-
+.pay-completion-infor{
+    text-align: center;
+    .pay-text{
+        font-size: 24px;
+        margin: 18px 0 36px;
+    }
+    
+    .pay-repeat{
+        width: 280px;
+        height: 32px;
+        line-height: 32px;
+        color: #fff;
+        background-color: #2F54EB;
+        border-radius: 8px;
+        margin: 0 auto;
+        margin-top: 72px;
+        text-align: center;
+    }
+}
 @media screen and (min-width:700px) {
     .extension-pay-content {
         max-height: 650px;
@@ -568,6 +618,14 @@ export default {
             margin: 20px 0 5px 0;
         }
     }
+
+    .pay-completion-infor{
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 350px;
+    }    
 }
 
 @media screen and (max-width:700px) {
@@ -633,4 +691,5 @@ export default {
     .agreement-box>div:last-child {
         text-align: left;
     }
-}</style>
+}
+</style>

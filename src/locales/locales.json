@@ -413,7 +413,8 @@
     "try out tips":"After the trial period ends, you will be charged ${amount} every month starting on {day}. You can unsubscribe at any time.",
     "Add address":"Add billing address information",
     "Policy Manual":"User Privacy Policy Manual",
-    "Order details":"Order details"
+    "Order details":"Order details",
+    "extensions tips":"This transaction is handled by KodePay, the online distributor and merchant of record. The relevant data will be shared with [${name}] and it will complete the ordered product or service."
   },
   "zh-CN": {
     "Payment failed, reason for failure:": "支付失败，失败原因:",
@@ -829,6 +830,7 @@
     "coupon 10":"$10 提现券，限时扫码领取！",
     "Technical Support":"技术支持",
     "technical support":"扫码咨询，技术支持",
-    "Start conversation":"开始会话"
+    "Start conversation":"开始会话",
+    "extensions tips":"本交易由在线分销商和记录商户KodePay处理订单相关事宜。相关数据会与【${name}】共享，并由其完成订单的产品或服务。"
   }
 }
