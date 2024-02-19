@@ -28,8 +28,15 @@
           <div style="height: 34%">
         </div>
       </div>
-      <div>
+      <div style="display: flex; justify-content: space-between;margin-top: 5px;">
         <language-change></language-change>
+        <div>
+          <span style="font-size: 12px;color: #767676;">Powered by</span>
+          <a :href="$i18n.locale === ZH_CODE ? 'https://kodepay.io/cn?utm=chosen-payment' : 'https://kodepay.io/en?utm=chosen-payment'" target="_blank" style="color: #767676;text-decoration: none;font-size: 12px;font-weight: 700;">KodePay</a>
+          <span style="color: #767676;">&nbsp;|&nbsp;</span>
+          <a :href="$i18n.locale === ZH_CODE ? 'https://kodepay.io/buyer-terms-cn?utm=chosen-payment' : 'https://kodepay.io/buyer-terms-en?utm=chosen-payment'" target="_blank" class="agreement_link">{{ $t('Terms') }}</a>
+          <a href="https://kodepay.io/privacy?utm=chosen-payment" target="_blank" class="agreement_link">{{ $t('Privacy') }}</a>
+        </div>
       </div>
     </main>
   </div>
@@ -220,5 +227,11 @@ export default {
 .el-message-box__title {
   font-weight: bold;
   font-size: 16px;
+}
+.agreement_link{
+  color: rgb(118, 118, 118);
+  text-decoration: underline;
+  font-size: 12px;
+  margin-left: 5px;
 }
 </style>

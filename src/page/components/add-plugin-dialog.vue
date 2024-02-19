@@ -6,7 +6,7 @@
           <div>{{ plugin_data.client_key }}</div>
         </el-form-item>
         <el-form-item :label="$t('name') + ':'" prop="name">
-          <el-input v-model="plugin_data.name" :placeholder="$t('please input extension name')">
+          <el-input v-model="plugin_data.name" :placeholder="$t('extension name is required')">
           </el-input>
         </el-form-item>
         <el-form-item :label="$t('icon') + ':'" prop="icon">
