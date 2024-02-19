@@ -21,7 +21,7 @@
           {{$t('please input extension name')}}
         </div>
         <div style="max-width: 300px;padding-top: 12px">
-          <el-input v-model="plugin_name" size="small" :placeholder="$t('please input extension name')"></el-input>
+          <el-input v-model="plugin_name" size="small" :placeholder="$t('extension name is required')"></el-input>
         </div>
       </div>
 
@@ -41,7 +41,9 @@
     </div>
     <div v-show="current_step === 2">
       <div style="margin-top: 24px">
-        <div>
+        <el-tabs v-model="activeName" type="card">
+          <el-tab-pane :label="$t('Chrome(Edge) Extension Integration')" name="extensions">
+            <div>
           <div class="title-14">{{'1.' + $t('Import the dependency package')}}</div>
           <div class="code-container">
             <pre>
@@ -109,6 +111,45 @@ kodepay_client.open_payment_page({plan_id:"${plan_key}"});`
             <div class="copy-button" @click="copy()">{{$t('copy code')}}</div>
           </div>
         </div>
+          </el-tab-pane>
+          <el-tab-pane :label="$t('Website Integration')" name="web">
+            <div class="code-container">
+            <pre>
+              <code class="language-javascript my-code-style">
+window.KODEPAY_APPLICATION_ID='176e9f1a-0698-11ee-9f89-ee976976769e'; // application_id
+window.KODEPAY_CLIENT_ID= '15560ede-14b7-11ee-b656-4a11ab462b2e';//client_id
+window.KODEPAY_ENV = 'development';//env,development,production
+(function () {
+  const s = document.createElement('script');
+  s.src = 'https://kodepay-global.zingfront.com/common/kodepay-website.js'
+  s.async = 1;
+  document.head.appendChild(s);
+})();
+
+// {{ $t('web-tips1') }}
+window.onload = function () {
+  if (window.KodePay) {
+    const origial_data= {user_id:3242422,order_id:123123}; // {{ $t('web-tips2') }}
+    const price_id = 'prod_a96e31a4e35046d3'; // price_id
+    const currency = 'usd'; // usd, cny
+    window.KodePay.open_payment_page(price_id, origial_data);
+    window.KodePay.open_payment_choose_page(price_id, currency);
+    // {{ $t('web-tips3') }}
+    window.KodePay.on_pay_completed.addListener(paySuccessCallBack);
+  }
+};
+function paySuccessCallBack(user_info, status) {
+  if (status === 'succeed') { 
+       // user_info {{ $t('web-tips4') }}
+  } else {
+  }
+}
+              </code>
+            </pre>
+            <div class="copy-button" @click="copy()">{{$t('copy code')}}</div>
+          </div>
+          </el-tab-pane>
+        </el-tabs>
       </div>
     </div>
     <div v-show="current_step === 3">
@@ -155,6 +196,7 @@ export default {
       application_key:"",
       extension_key:"",
       plan_key:"",
+      activeName:'extensions',
       guideSteps: [
         {
           title: 'Create Extension',
@@ -263,7 +305,6 @@ export default {
     if (this.current_step === 4) {
       this.$router.push({path: '/dashboard'});
     }
-    //
     this.application_key = localStorage.getItem(this.$mode + 'applicationKey') || "your application id";
     this.extension_key = localStorage.getItem('extensionKey') || "your extension id";
     this.plan_key = localStorage.getItem('planKey') || "your plan id";
