@@ -422,7 +422,8 @@
     "Add address":"Add billing address information",
     "Policy Manual":"User Privacy Policy Manual",
     "Order details":"Order details",
-    "extensions tips":"This transaction is handled by KodePay, the online distributor and merchant of record. The relevant data will be shared with [${name}] and it will complete the ordered product or service."
+    "extensions tips":"This transaction is handled by KodePay, the online distributor and merchant of record. The relevant data will be shared with [${name}] and it will complete the ordered product or service.",
+    "error pay":"Order failed, please try again later"
   },
   "zh-CN": {
     "Payment failed, reason for failure:": "支付失败，失败原因:",
@@ -847,6 +848,7 @@
     "web-tips1":"以下是API的一些简单使用示例，请确保在使用Kodepay对象之前已经加载了JS。",
     "web-tips2":"支付时可以额外透传的一些信息，我们会在支付回调中将这些信息传递给你的服务器，建议通过这些信息(例如自己的订单号)你可以唯一标识你系统的用户",
     "web-tips3":"前端支付成功的回调，通过这个函数，你可以在前端获取到支付的回调信息,但是更好的方式是前端收到这个回调信息后再次刷新页面获取用户最新的信息来确保用户已经支付，因为前端不可信",
-    "web-tips4":"可以参考接入文档中的get_user_info 接口返回的内容，实际对你有用的是付费信息"
+    "web-tips4":"可以参考接入文档中的get_user_info 接口返回的内容，实际对你有用的是付费信息",
+    "error pay": "下单失败,请稍后再试"
   }
 }

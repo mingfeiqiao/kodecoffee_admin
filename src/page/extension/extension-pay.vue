@@ -49,7 +49,7 @@
                             }}</b>
                         </div>
                         <!-- 添加优惠券 -->
-                        <div class="add-coupon">{{ $t('Add coupon') }}</div>
+                        <!-- <div class="add-coupon">{{ $t('Add coupon') }}</div> -->
                         <!-- <div class="flex-box font-tips">
                             <p>{{ $t('After trial') }}</p>
                             <p>US {{ product_info.amount ? product_info.amount / 100 : '' }}</p>
@@ -62,16 +62,17 @@
                     </div>
                 </div>
 
-                <div class="left-address-box font-tips">{{ $t('Add address') }}</div>
+                <!-- <div class="left-address-box font-tips">{{ $t('Add address') }}</div> -->
             </div>
             <!-- 右侧板块 -->
             <div class="right-content-box" v-if="JSON.stringify(PayCompletionInfor) == '{}'">
                 <div style="    margin: 0 auto;max-width: 400px;">
                     <b class="right-pay-title">{{ $t('Payment') }}</b>
-                    <div class="contact-email">{{ $t('Contact email') }}</div>
+                    <!-- 联系邮箱 -->
+                    <!-- <div class="contact-email">{{ $t('Contact email') }}</div>
                     <div style="max-width: 400px;">
                         <el-input v-model="input" :placeholder="$t('Contact email tips')"></el-input>
-                    </div>
+                    </div> -->
                     <!-- 支付类型 -->
                     <div class="pay-title">{{ $t('payment method') }}</div>
                     <div class="pay-type-box">
@@ -104,13 +105,13 @@
                     <div v-if="isActive == 'ZFB'">{{ $t('zfb tips') }}</div>
                     <div v-if="isActive == 'WX'" id="wxPay">
                         <span v-if="!wx_img">{{ $t('wx tips') }}</span>
-                        <img :src="wx_img" alt="" style="width: 150px;height: 150px;">
+                        <img v-else :src="wx_img" alt="" style="width: 150px;height: 150px;">
                     </div>
                 </div>
                 <!-- 支付按钮 -->
-                <div class="pay-btn-box">
-                    <p class="font-tips"
-                        v-html="$t('try out tips').replace('{day}', '2023年12月12日').replace('{amount}', '99.99')"></p>
+                <div class="pay-btn-box" v-loading="payLoading">
+                    <!-- <p class="font-tips"
+                        v-html="$t('try out tips').replace('{day}', product_info.date).replace('{amount}', product_info.amount)"></p> -->
                     <div class="pay-btn" id="submit" @click="onPay">{{ onBtnText() }}</div>
                 </div>
             </div>
@@ -199,8 +200,8 @@ export default {
                     payTips:'试用期结束后，从2023年12月12日开始，您将被每个月扣取$99.99。你可以随时取消订阅。',
                     payStatus:'success'
                 }
-            }
-            
+            },
+            payLoading:false
         };
     },
     created() {
@@ -219,7 +220,8 @@ export default {
         createOrderApi({
             "redirect_path": "extension/pay-manage",
             "product_id": "prod_a9cf30752b654dd1",
-            "currency": "cny",
+            "currency": "usd",
+            "redirect_url":"https://www.baidu.com/"
         }).then(res => {
             let { code, data } = res.data;
             if (code == 100000) {
@@ -300,10 +302,13 @@ export default {
         async onPay() {
             let pay = this.payType.find(item => item.value === this.isActive);
             pay = pay ? pay.name : null;
-            // 这里需要设置loading，暂时不处理
+            this.payLoading = true;
             const { error: submitError } = await this.elements.submit();
             if (submitError) { // 处理验证异常
                 console.log(submitError);
+                this.$message.error($t('error pay'));
+                this.payLoading = false;
+                return;
             }
             let paymentMethodObj = null;
             if (this.isActive == 'BANK') {
@@ -311,9 +316,13 @@ export default {
                 const { paymentMethod, error: paymentMethodError } = await this.stripe.createPaymentMethod({
                     type: 'card',
                     card: this.paymentElement,
+                    // request_three_d_secure: "any"
                 });
                 if (paymentMethodError) {
                     console.log('paymentMethodError =>', paymentMethodError);
+                    this.$message.error($t('error pay'));
+                    this.payLoading = false;
+                    return;
                 }
                 paymentMethodObj = paymentMethod;
             } else if (this.isActive == 'ZFB' || this.isActive == 'WX') {
@@ -324,41 +333,60 @@ export default {
                 });
                 if (paymentMethodError) {
                     console.log('paymentMethodError =>', paymentMethodError);
+                    this.$message.error($t('error pay'));
+                    this.payLoading = false;
+                    return;
                 }
                 paymentMethodObj = paymentMethod;
             }
             if (paymentMethodObj.id == null) {
                 return;
             }
-            // this.product_info.currency ? product_info.currency.toUpperCase() : ''
             let param = {
                 "transaction_id": this.transaction_info.transaction_id,
                 "product_id": this.product_info.product_id,
                 "currency": this.product_info.currency || '',
+                // "currency": 'cny',
                 "payment_channel": 'stripe',
                 "payment_method": pay,
                 "payment_method_id": paymentMethodObj.id || ''
             }
             //请求后端下单接口
             placeOrderApi(this.clientKey, param).then(res => {
+                this.payLoading = false;
                 if (res.data.code == 100000) {
-                    let { client_secret } = res.data.data;
+                    let { client_secret, cancel_url, success_url } = res.data.data;
+                    let urlParams = new URLSearchParams(success_url.split('?')[1]);
+                    let jsonResult = {};
+                    urlParams.forEach((value, key) => {
+                        jsonResult[key] = value;
+                    });
+                    jsonResult = {
+                        ...jsonResult,
+                        ...this.product_info
+                    }
+
                     if (this.isActive == 'BANK') {
-                        this.stripe.confirmCardPayment(client_secret)
+                        this.stripe.confirmCardPayment(client_secret, 
+                            {
+                                return_url: cancel_url,
+                            }
+                        )
                             .then((result)=> {
-                                let { paymentIntent } = res;
-                                if (error) {
-                                    this.PayCompletionInfor = this.PayCompletionObj.error;
-                                } else if (paymentIntent.status === 'succeeded') {
-                                    this.PayCompletionInfor = this.PayCompletionObj.success;
+                                let { paymentIntent } = result;
+                                if (paymentIntent.status === 'succeeded') {
+                                    this.$router.push({path: '/extension/extension-pay-success', query: jsonResult});
                                 } else if (paymentIntent.status === 'requires_action') {
                                     
+                                }else{
+                                    // this.PayCompletionInfor = this.PayCompletionObj.error;
+                                    this.$message.error(res.data.message);
                                 }
                             });
                     } else if (this.isActive == 'ZFB') {
                         this.stripe.confirmAlipayPayment(client_secret, {
                             'return_url': window.location.href,
-                            setup_future_usage: 'off_session',
+                            // setup_future_usage: 'off_session',
                             mandate_data: {
                                 customer_acceptance: {
                                     type: 'online',
@@ -368,14 +396,14 @@ export default {
                                     }
                                 }
                             },
-                        }).then(function (result) {
-                            let { paymentIntent } = res;
-                            if (error) {
-                                this.PayCompletionInfor = this.PayCompletionObj.error;
-                            } else if (paymentIntent.status === 'succeeded') {
-                                this.PayCompletionInfor = this.PayCompletionObj.success;
+                        }).then((result) => {
+                            let { paymentIntent } = result;
+                            if (paymentIntent.status === 'succeeded') {
+                                this.$router.push({path: '/extension/extension-pay-success', query: jsonResult});
                             } else if (paymentIntent.status === 'requires_action') {
                                 
+                            }else{
+                                this.$message.error(res.data.message);
                             }
                         });
                     } else if (this.isActive == 'WX') {
@@ -385,22 +413,29 @@ export default {
                                     client: 'web'
                                 }
                             },
-                        }, { handleActions: false }).then((res, error) => {
-                            let { paymentIntent } = res;
-                            if (error) {
-                                this.PayCompletionInfor = this.PayCompletionObj.error;
-                            } else if (paymentIntent.status === 'succeeded') {
-                                this.PayCompletionInfor = this.PayCompletionObj.success;
+                        }, { handleActions: false }).then((result, error) => {
+                            let { paymentIntent } = result;
+                            if (paymentIntent.status === 'succeeded') {
+                                this.$router.push({path: '/extension/extension-pay-success', query: jsonResult});
                             } else if (paymentIntent.status === 'requires_action') {
                                 this.wx_img = paymentIntent.next_action.wechat_pay_display_qr_code.image_data_url;
+                            }else{
+                                this.$message.error(res.data.message);
                             }
                         }).catch(err => {
                             console.log('err', err)
                         });
                     }
                 } else {
-                    console.log('下单失败');
+                    console.log('下单失败', res.data);
+                    this.$message.error(res.data.message);
+                    this.payLoading = false;
+                    return;
                 }
+            }).catch(err => {
+                console.log('err', err);
+                this.$message.error($t('error pay'));
+                this.payLoading = false;
             })
         },
     }

@@ -29,6 +29,7 @@ import shareExtension from "../page/website-pages/share-extension.vue";
 import chosenPayment from "../page/extension/chosen-payment.vue";
 import extensionCommission from "../page/website-pages/extension-commission.vue";
 import extensionPay from "../page/extension/extension-pay.vue";
+import extensionPaySuccess from "../page/extension/extension-pay-success.vue";
 
 Vue.use(Router);
 const routes = [
@@ -186,6 +187,11 @@ const routes = [
     path:'/extension/extension-pay',
     component: extensionPay,
   },
+  {
+    path:'/extension/extension-pay-success',
+    component: extensionPaySuccess,
+  },
+ 
 ];
 
 const router = new Router({
