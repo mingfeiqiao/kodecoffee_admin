@@ -10,5 +10,11 @@
     "full_name": "人民币",
     "en-US": "Chinese Yuan",
     "zh-CN": "人民币"
+  },
+  "inr": {
+    "symbol": "₹",
+    "full_name": "INR",
+    "en-US": "Indian Rupee",
+    "zh-CN": "印度卢比"
   }
 }
