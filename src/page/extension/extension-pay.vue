@@ -219,8 +219,8 @@ export default {
         this.product_loading = true;
         createOrderApi({
             "redirect_path": "extension/pay-manage",
-            "product_id": "prod_a9cf30752b654dd1",
-            "currency": "usd",
+            "product_id": "prod_1ac7c64be993446f",
+            "currency": "cny",
             "redirect_url":"https://www.baidu.com/"
         }).then(res => {
             let { code, data } = res.data;
@@ -306,7 +306,7 @@ export default {
             const { error: submitError } = await this.elements.submit();
             if (submitError) { // 处理验证异常
                 console.log(submitError);
-                this.$message.error($t('error pay'));
+                this.$message.error(this.$t('error pay'));
                 this.payLoading = false;
                 return;
             }
@@ -320,7 +320,7 @@ export default {
                 });
                 if (paymentMethodError) {
                     console.log('paymentMethodError =>', paymentMethodError);
-                    this.$message.error($t('error pay'));
+                    this.$message.error(paymentMethodError.message);
                     this.payLoading = false;
                     return;
                 }
@@ -333,7 +333,7 @@ export default {
                 });
                 if (paymentMethodError) {
                     console.log('paymentMethodError =>', paymentMethodError);
-                    this.$message.error($t('error pay'));
+                    this.$message.error(paymentMethodError.message);
                     this.payLoading = false;
                     return;
                 }
@@ -353,7 +353,6 @@ export default {
             }
             //请求后端下单接口
             placeOrderApi(this.clientKey, param).then(res => {
-                this.payLoading = false;
                 if (res.data.code == 100000) {
                     let { client_secret, cancel_url, success_url } = res.data.data;
                     let urlParams = new URLSearchParams(success_url.split('?')[1]);
@@ -373,6 +372,7 @@ export default {
                             }
                         )
                             .then((result)=> {
+                                this.payLoading = false;
                                 let { paymentIntent } = result;
                                 if (paymentIntent.status === 'succeeded') {
                                     this.$router.push({path: '/extension/extension-pay-success', query: jsonResult});
@@ -382,7 +382,9 @@ export default {
                                     // this.PayCompletionInfor = this.PayCompletionObj.error;
                                     this.$message.error(res.data.message);
                                 }
-                            });
+                            }).catch(() =>{
+                                this.payLoading = false;
+                            })
                     } else if (this.isActive == 'ZFB') {
                         this.stripe.confirmAlipayPayment(client_secret, {
                             'return_url': window.location.href,
@@ -397,6 +399,7 @@ export default {
                                 }
                             },
                         }).then((result) => {
+                            this.payLoading = false;
                             let { paymentIntent } = result;
                             if (paymentIntent.status === 'succeeded') {
                                 this.$router.push({path: '/extension/extension-pay-success', query: jsonResult});
@@ -405,7 +408,9 @@ export default {
                             }else{
                                 this.$message.error(res.data.message);
                             }
-                        });
+                        }).catch(() =>{
+                            this.payLoading = false;
+                        })
                     } else if (this.isActive == 'WX') {
                         this.stripe.confirmWechatPayPayment(client_secret, {
                             payment_method_options: {
@@ -414,6 +419,7 @@ export default {
                                 }
                             },
                         }, { handleActions: false }).then((result, error) => {
+                            this.payLoading = false;
                             let { paymentIntent } = result;
                             if (paymentIntent.status === 'succeeded') {
                                 this.$router.push({path: '/extension/extension-pay-success', query: jsonResult});
@@ -424,6 +430,7 @@ export default {
                             }
                         }).catch(err => {
                             console.log('err', err)
+                            this.payLoading = false;
                         });
                     }
                 } else {
@@ -434,7 +441,7 @@ export default {
                 }
             }).catch(err => {
                 console.log('err', err);
-                this.$message.error($t('error pay'));
+                this.$message.error(this.$t('error pay'));
                 this.payLoading = false;
             })
         },
