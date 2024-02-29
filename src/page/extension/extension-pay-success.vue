@@ -75,7 +75,7 @@
                     <svg width="80" height="80">
                         <use :xlink:href="PayCompletionObj.payStatusIcon"></use>
                     </svg>
-                    <p class="pay-text">{{ PayCompletionObj.payText }}</p>
+                    <p class="pay-text">{{ $t(PayCompletionObj.payText) }}</p>
                     <!-- <p class="pay-tips">{{ PayCompletionObj.payTips }}</p> -->
                     <div v-if="params.redirect_url" style="padding: 24px 80px;">
                         <span>
@@ -83,7 +83,7 @@
                             <span class="text-loading"></span>
                         </span>
                     </div>
-                    <div class="pay-repeat" v-if="PayCompletionObj.payStatus == 'error'">重新支付</div>
+                    <!-- <div class="pay-repeat" v-if="PayCompletionObj.payStatus == 'error'">重新支付</div> -->
                 </div>
             </div>
         </div>
@@ -106,9 +106,9 @@ export default {
         return {
             PayCompletionObj: {
                 payStatusIcon: '#successful-pay',
-                payText: '支付成功',
+                payText: 'pay success',
                 payTips: '试用期结束后，从2023年12月12日开始，您将被每个月扣取$99.99。你可以随时取消订阅。',
-                payStatus: 'success'
+                payStatus: 'success',
             },
             countdown: 5, // 倒计时秒
             timer: null,// 用于存储计时器的引用

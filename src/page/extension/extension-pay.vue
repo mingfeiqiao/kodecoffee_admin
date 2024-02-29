@@ -19,7 +19,8 @@
                     </div> -->
                     <!-- 单次支付或循环订阅 -->
                     <div class="pay-title-font">
-                        <div><span class="font-blue">{{ product_info.currency ? product_info.currency.toUpperCase() : '' }}{{ product_info.amount ? product_info.amount / 100 : '' }}</span></div>
+                        <div><span class="font-blue">{{ product_info.currency ? product_info.currency.toUpperCase() : '' }}{{ product_info.amount ? product_info.amount / 100 : '' }}</span>
+                        <span v-if="product_info.interval">/ {{ $t(product_info.interval) }}</span></div>
                         <div style="margin-bottom: 30px;"><span class="font-tips">{{ product_info.plan_type == 'one_time' ? $t('one_time') : $t('recurring')
                         }}</span></div>
                     </div>
@@ -43,6 +44,7 @@
                                 <!-- <p style="margin-bottom: 7px;" v-html="$t('Free days Try').replace('{day}', '7')"></p>
                                 <p class="font-tips" v-html="$t('Free duration Amount').replace('{Amount}', product_info.amount ? product_info.amount / 100 : '')"></p> -->
                                 {{ product_info.currency ? product_info.currency.toUpperCase() : '' }} {{ product_info.amount ? product_info.amount / 100 : '' || '' }}
+                                <span v-if="product_info.interval">/ {{ $t(product_info.interval) }}</span>
                             </div>
                         </div>
                         <div class="flex-box">
@@ -71,14 +73,14 @@
                 <div style="    margin: 0 auto;max-width: 400px;">
                     <b class="right-pay-title">{{ $t('Payment') }}</b>
                     <!-- 联系邮箱 -->
-                    <!-- <div class="contact-email">{{ $t('Contact email') }}</div>
-                    <div style="max-width: 400px;">
-                        <el-input v-model="input" :placeholder="$t('Contact email tips')"></el-input>
-                    </div> -->
+                    <div class="contact-email" v-if="emailShow">{{ $t('Contact email') }}</div>
+                    <div style="max-width: 400px;" v-if="emailShow">
+                        <el-input v-model="emailInput" :placeholder="$t('Contact email tips')"></el-input>
+                    </div>
                     <!-- 支付类型 -->
                     <div class="pay-title">{{ $t('payment method') }}</div>
                     <div class="pay-type-box">
-                        <div v-for="(item, index) in payType" :key="index"
+                        <div v-for="(item, index) in filteredArray" :key="index"
                             :class="isActive == item.value ? 'active-pay-box basics-pay-box' : 'basics-pay-box normal'"
                             @click="onChangePay(item.value)">
                             <svg style="width: 16px;height: 16px;">
@@ -107,8 +109,7 @@
                     <div v-if="isActive == 'PAYPAL'">{{ $t('PayPal tips') }}</div>
                     <div v-if="isActive == 'ZFB'">{{ $t('zfb tips') }}</div>
                     <div v-if="isActive == 'WX'" id="wxPay">
-                        <span v-if="!wx_img">{{ $t('wx tips') }}</span>
-                        <img v-else :src="wx_img" alt="" style="width: 150px;height: 150px;">
+                        <span>{{ $t('wx tips') }}</span>
                     </div>
                 </div>
                 <!-- 支付按钮 -->
@@ -121,17 +122,29 @@
         </div>
         <div class="agreement-box" style="font-size: 12px;">
             <div><b
-                    style="font-size: 14px;margin-right: 5px;">KodePay</b><span v-html="$t('extensions tips').replace('${name}', product_info.name || '')"></span>
+                    style="font-size: 14px;margin-right: 5px;">KodePay</b><span v-html="$t('extensions tips').replace('${name}', transaction_info.client_name || '')"></span>
             </div>
             <div>Powered by <b>KodePay</b></div>
             <div class="protocol-manual" @click="onPolicyManualOpen()">{{ $t('Policy Manual') }}</div>
         </div>
+
+        <el-dialog
+            :title="$t('wechat')"
+            :visible.sync="dialogVisible"
+            width="30%"
+            :append-to-body="true"
+        >
+        <div style="text-align: center;">
+            <img :src="wx_img" alt="" style="width: 200px;height: 200px;">
+        </div>
+            
+        </el-dialog>
     </div>
 </template>
   
 <script>
 import languageChange from "../components/language-change.vue";
-import { paymentListApi, createOrderApi, placeOrderApi } from "../../api/interface";
+import { paymentListApi, placeOrderApi, extensionUserInfo } from "../../api/interface";
 export default {
     components: { languageChange },
     data() {
@@ -175,14 +188,20 @@ export default {
             product_info: {},
             elements: {},
             clientKey: '',
+            transaction_id:'',
             wx_img: '',
             product_loading:false,
             filteredArray:[],
             PayCompletionInfor:{},
             payLoading:false,
-            card: null,
-            cvc: null,
-            exp: null,
+            timer:null,
+            PaymentListNub: 0,
+            dialogVisible: false,
+            pollingNub: 0,
+            user_info:{},
+            common_headers:{},
+            emailInput:'',
+            emailShow:false
         };
     },
     created() {
@@ -197,59 +216,117 @@ export default {
 
     },
     mounted() {
+        this.onClearTimeout();
+        this.getUserInfo();
         this.product_loading = true;
-        createOrderApi({
-            "redirect_path": "extension/pay-manage",
-            "product_id": "prod_1ac7c64be993446f",
-            "currency": "cny",
-            "redirect_url":"https://www.baidu.com/"
-        }).then(res => {
-            let { code, data } = res.data;
-            if (code == 100000) {
-                const urlParams = new URLSearchParams(data.url.split('?')[1]);
-                const jsonResult = {};
-                urlParams.forEach((value, key) => {
-                    jsonResult[key] = value;
-                });
+        const urlParams = new URLSearchParams(this.$route.query);
+        const jsonResult = {};
+        urlParams.forEach((value, key) => {
+            jsonResult[key] = value;
+        });
 
-                let { transaction_id, client_id } = jsonResult;
-                this.clientKey = client_id;
-                paymentListApi(client_id, transaction_id).then(result => {
-                    this.product_loading = false;
-                    if (result.data.code == 100000) {
-                        const {
-                            payment_config_info: {
-                                card: {
-                                    setup_intent: { client_secret },
-                                    stripe_public_key
-                                },
-                                available_payment_methods
-                            }
-                        } = result.data.data;
-                        this.stripe_public_key = stripe_public_key;
-                        this.client_secret = client_secret;
+        let { transaction_id, client_id } = jsonResult;
+        this.clientKey = client_id;
+        this.transaction_id = transaction_id;
+        this.pollingNub = 10;
+        this.onPaymentListApi(transaction_id, client_id);
+    },
+    methods: {
+        onPaymentListApi(transaction_id, client_id){
+            if(this.PaymentListNub >= this.pollingNub) {
+                clearTimeout(this.timer);
+                this.product_loading = false;
+                this.PaymentListNub = 0;
+                this.$message.error(this.$t('error pay'));
+                return;
+            }
+            paymentListApi(client_id, transaction_id).then(result => {
+                this.product_loading = false;
+                if (result.data.code == 100000) {
+                    const {
+                        payment_config_info: {
+                            card: {
+                                setup_intent: { client_secret },
+                                stripe_public_key
+                            },
+                            available_payment_methods
+                        }
+                    } = result.data.data;
+                    this.stripe_public_key = stripe_public_key;
+                    this.client_secret = client_secret;
 
-                        this.product_info = result.data.data.product_info;
-                        this.transaction_info = result.data.data.transaction_info;
+                    this.product_info = result.data.data.product_info;
+                    this.transaction_info = result.data.data.transaction_info;
 
-                        // 筛选一下已经有的支付方式
-                        this.filteredArray = this.payType.filter(item => available_payment_methods.includes(item.name));
+                    // 如果是支付中状态，就开始轮询
+                    if(this.transaction_info.pay_status == 'confirming') {
+                        //判断下，如果当前是获取支付状态，就添加loading
+                        this.pollingNub == 10 ? this.product_loading = true : '';
+                        this.timer = setTimeout(() => {
+                            this.PaymentListNub++;
+                            this.onPaymentListApi(transaction_id, client_id);
+                        }, 5000);
+                    //  支付成功就直接跳转过去了
+                    }else if(this.transaction_info.pay_status == 'succeed') {
+                        let jsonResult = {
+                            status: '1',
+                            transaction_key: transaction_id,
+                            client_id: this.clientKey,
+                            redirect_url: this.transaction_info.redirect_url,
+                            ...this.product_info
+                        };
+                        this.$router.push({path: '/extension/extension-pay-success', query: jsonResult});
+                    //支付失败给提示语句
+                    }else if(this.transaction_info.pay_status == 'failed') {
+                        this.$message.error(this.$t('error pay'));
+                    }
+                    // 如果是银行卡支付，就加载Stripe
+                    if(this.isActive == 'BANK'){
                         this.$nextTick(() => {
                             this.onGetCard();
                         })
                     }
-                }).catch(err =>{
-                    console.log('err =>', err);
-                })
+                    // 筛选一下已经有的支付方式
+                    this.filteredArray = this.payType.filter(item => available_payment_methods.includes(item.name));
+                }
+            }).catch(err =>{
+                console.log('err =>', err);
+            })
+        },
+        /**
+         * 获取用户信息
+         */
+        getUserInfo () {
+            this.common_headers = this.getCommonHeaders();
+            extensionUserInfo(this.common_headers).then(res => {
+                let res_data = res.data;
+                    if (parseInt(res_data.code) === 100000) {
+                        this.user_info = res_data.userinfo;
+                        this.emailInput = this.user_info.email || '';
+                        if (!this.user_info.email) this.emailShow = true;
+                    } else {
+                    if (parseInt(res_data.code) === 401) {
+                        this.$message.warning(res_data.message)
+                    } 
+                }
+            });
+        },
+        getCommonHeaders() {
+            let headers = {};
+            for (let key in this.$route.query) {
+                let newKey = key.replace(/_/g, "-");
+                headers[newKey] = this.$route.query[key];
             }
-
-        })
-    },
-    methods: {
+            return headers;
+        },
         //切换支付方式
         onChangePay(value) {
+            // 如果正在支付中，不允许切换支付方式
             if(this.payLoading) return;
+            this.wx_img = '';
             this.isActive = value;
+            //切换的时候清除现有的轮询状态(如果此时还在加载订单状态，就不清除轮询状态)
+            if(!this.product_loading) this.onClearTimeout();
 
             if (this.isActive == 'BANK') {
                 this.$nextTick(() => {
@@ -269,6 +346,15 @@ export default {
         onPolicyManualOpen(){
             window.open('https://kodepay.io/privacy?utm_source=new_extension_pay', '_blank');
         },
+        /**
+         * 验证邮箱格式
+         * @param mail
+         * @returns {boolean}
+         */
+        isEmail(mail) {
+            const regex = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
+            return regex.test(mail);
+        },
         //获取卡支付
         async onGetCard() {
             const options = {
@@ -285,9 +371,22 @@ export default {
         },
         //支付按钮
         async onPay() {
-            if(this.isActive == 'Bank' && this.elements == null){
+            if(this.isActive == 'Bank' && this.elements == null)return; //如果卡支付时Stripe没有加载出来，则不允许支付
+            if(this.product_loading){
+                this.$message.warning(this.$t('paying tips'));  //支付套餐信息获取中，请稍等
                 return;
             }
+            if(!this.emailInput) {
+                this.$message.warning(this.$t('email information first'));  //还未填写邮箱信息
+                return
+            }
+            if (!this.isEmail(this.emailInput)) {
+                this.$message.warning(this.$t('email format error'));  //邮箱格式错误
+                return
+            }
+            //下单的时候清除现有的轮询状态（微信支付的轮询）
+            this.onClearTimeout();
+
             let pay = this.payType.find(item => item.value === this.isActive);
             pay = pay ? pay.name : null;
             this.payLoading = true;
@@ -298,7 +397,6 @@ export default {
                 try {
                     const { error: submitError } = await this.elements.submit();
                     if (submitError) { // 处理验证异常
-                        console.log(submitError);
                         this.$message.error(this.$t('error pay'));
                         this.payLoading = false;
                         return;
@@ -314,7 +412,6 @@ export default {
                     // request_three_d_secure: "any"
                 });
                 if (paymentMethodError) {
-                    console.log('paymentMethodError =>', paymentMethodError);
                     this.$message.error(paymentMethodError.message);
                     this.payLoading = false;
                     return;
@@ -327,7 +424,6 @@ export default {
                     },
                 });
                 if (paymentMethodError) {
-                    console.log('paymentMethodError =>', paymentMethodError);
                     this.$message.error(paymentMethodError.message);
                     this.payLoading = false;
                     return;
@@ -344,10 +440,11 @@ export default {
                 // "currency": 'cny',
                 "payment_channel": 'stripe',
                 "payment_method": pay,
-                "payment_method_id": paymentMethodObj.id || ''
+                "payment_method_id": paymentMethodObj.id || '',
+                "email":this.emailInput
             }
             //请求后端下单接口
-            placeOrderApi(this.clientKey, param).then(res => {
+            placeOrderApi(this.common_headers, param).then(res => {
                 if (res.data.code == 100000) {
                     let { client_secret, cancel_url, success_url } = res.data.data;
                     let urlParams = new URLSearchParams(success_url.split('?')[1]);
@@ -357,6 +454,7 @@ export default {
                     });
                     jsonResult = {
                         ...jsonResult,
+                        redirect_url: this.transaction_info.redirect_url,
                         ...this.product_info
                     }
 
@@ -364,13 +462,11 @@ export default {
                         this.stripe.confirmCardPayment(client_secret)
                             .then((result)=> {
                                 this.payLoading = false;
-                                let { paymentIntent } = result;
-                                if (paymentIntent.status === 'succeeded') {
+                                if (result.error) {
+                                    this.$message.error(result.error.message);
+                                }else if (result.paymentIntent.status === 'succeeded') {
                                     this.$router.push({path: '/extension/extension-pay-success', query: jsonResult});
-                                } else if (paymentIntent.status === 'requires_action') {
-                                    
                                 }else{
-                                    // this.PayCompletionInfor = this.PayCompletionObj.error;
                                     this.$message.error(res.data.message);
                                 }
                             }).catch(() =>{
@@ -392,14 +488,14 @@ export default {
                         }).then((result) => {
                             this.payLoading = false;
                             let { paymentIntent } = result;
-                            if (paymentIntent.status === 'succeeded') {
+                            if (result.error) {
+                                    this.$message.error(result.error.message);
+                            }else if (paymentIntent.status === 'succeeded') {
                                 this.$router.push({path: '/extension/extension-pay-success', query: jsonResult});
-                            } else if (paymentIntent.status === 'requires_action') {
-                                
                             }else{
                                 this.$message.error(res.data.message);
                             }
-                        }).catch(() =>{
+                        }).catch(err =>{
                             this.payLoading = false;
                         })
                     } else if (this.isActive == 'WX') {
@@ -416,11 +512,13 @@ export default {
                                 this.$router.push({path: '/extension/extension-pay-success', query: jsonResult});
                             } else if (paymentIntent.status === 'requires_action') {
                                 this.wx_img = paymentIntent.next_action.wechat_pay_display_qr_code.image_data_url;
+                                this.dialogVisible = true;
+                                this.pollingNub = 60;
+                                this.onPaymentListApi(this.transaction_id, this.clientKey);
                             }else{
                                 this.$message.error(res.data.message);
                             }
                         }).catch(err => {
-                            console.log('err', err)
                             this.payLoading = false;
                         });
                     }
@@ -430,12 +528,22 @@ export default {
                     return;
                 }
             }).catch(err => {
-                console.log('err', err);
                 this.$message.error(this.$t('error pay'));
                 this.payLoading = false;
             })
         },
-    }
+        onClearTimeout() {
+            if (this.timer) {
+                clearTimeout(this.timer);
+                this.product_loading = false;
+                this.payLoading = false;
+                this.PaymentListNub = 0;
+            }
+        }
+    },
+    beforeDestroy() {
+        this.onClearTimeout();
+    },
 }
 </script>
 <style scoped lang="less">

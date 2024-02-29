@@ -118,6 +118,7 @@
 
 
     "pay failed": "Failed",
+    "pay success": "Pay Success",
     "pay success tip": "The receipt  has been sent to the email address filled in.\nYou can use this email address to verify your identity later,",
     "click to billing": "Click to the Billing Management page",
 
@@ -414,7 +415,7 @@
     "Cope with today":"Cope with today",
     "Payment":"Payment",
     "Contact email":"Contact email",
-    "Contact email tips":"Enter your contact email to receive payment receipts and other information, optional",
+    "Contact email tips":"Enter your contact email to receive payment receipts and other information",
     "PayPal tips":"PayPal payment will jump to open the PayPal page for verification and payment.",
     "zfb tips":"For Alipay payment, open the official Alipay page to log in and pay.",
     "wx tips":"After generating the QR code, use WeChat to scan the QR code to pay.",
@@ -428,7 +429,9 @@
     "Go to PayPal":"Go to PayPal",
     "Go to Alipay":"Go to Alipay",
     "Generate two-dimensional code":"Generate two-dimensional code",
-    "Enter card information":"Enter your credit card information here"
+    "Enter card information":"Enter your credit card information here",
+    "paying tips":"Please wait while the payment package information is being obtained",
+    "email information first":"Please fill in the email information first"
   },
   "zh-CN": {
     "Payment failed, reason for failure:": "支付失败，失败原因:",
@@ -831,7 +834,7 @@
     "Cope with today":"今日应付",
     "Payment":"付款",
     "Contact email":"联系邮箱",
-    "Contact email tips":"输入联系邮箱，以收取支付收据等信息，选填",
+    "Contact email tips":"输入联系邮箱，以收取支付收据等信息",
     "PayPal tips":"PayPal支付，会跳转打开PayPal页面进行验证并支付",
     "zfb tips":"支付宝支付，打开支付宝官方页面进行登录并支付",
     "wx tips":"生成二维码后，使用微信进行扫码支付",
@@ -859,6 +862,8 @@
     "Go to PayPal":"前往PayPal支付",
     "Go to Alipay":"前往支付宝",
     "Generate two-dimensional code":"生成二维码",
-    "Enter card information":"在此输入信用卡信息"
+    "Enter card information":"在此输入信用卡信息",
+    "paying tips":"支付套餐信息获取中，请稍等",
+    "email information first":"请先填写邮箱信息"
   }
 }
