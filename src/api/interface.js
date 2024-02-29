@@ -109,7 +109,7 @@ export const unsubscriptionDetailApi = (data) => instance.post(`/app/subscriptio
 // 客户相关
 export const customerListApi = (data) => instance.post('/app/customers/list', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 
-export const customerDetailApi = (data) => instance.post(`/app/customers/detail/${data.id}`, JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
+export const customerDetailApi = (id,data) => instance.post(`/app/customers/detail/${id}`, JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 
 export const dashBoardApi = (data) => instance.post('/dashboard/dashboard', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 
