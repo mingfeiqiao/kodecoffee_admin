@@ -152,6 +152,7 @@ export default {
       LOCAL_NAMES: {
         usd: "US Dollar",
         cny:"Chinese Yuan",
+        inr:"Indian Rupee"
       },
       is_multiple_currency_support: false,
       plan_type_obj: {
