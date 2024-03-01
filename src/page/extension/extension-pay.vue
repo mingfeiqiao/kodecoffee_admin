@@ -489,7 +489,7 @@ export default {
                             this.payLoading = false;
                             let { paymentIntent } = result;
                             if (result.error) {
-                                    this.$message.error(result.error.message);
+                                this.$message.error(result.error.message);
                             }else if (paymentIntent.status === 'succeeded') {
                                 this.$router.push({path: '/extension/extension-pay-success', query: jsonResult});
                             }else{
