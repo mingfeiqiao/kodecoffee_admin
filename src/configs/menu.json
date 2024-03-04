@@ -50,10 +50,6 @@
       "url": "/plans"
     },
     {
-      "title": "Extension Pay",
-      "url": "/extension-pay"
-    },
-    {
       "title": "Settings",
       "icon": "settings-icon",
       "url": "settings",
