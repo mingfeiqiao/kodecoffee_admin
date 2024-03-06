@@ -292,6 +292,7 @@ export default {
             }).catch(err =>{
                 console.log('err =>', err);
                 this.product_loading = false;
+                this.$message.error(err);
             })
         },
         /**
