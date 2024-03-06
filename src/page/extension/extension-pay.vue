@@ -40,7 +40,7 @@
                                     <p class="font-tips" v-if="product_info.desc">{{ product_info.desc }}</p>
                                 </div>
                             </div>
-                            <div style="text-align: right;">
+                            <div style="text-align: right;flex-shrink: 0;">
                                 <!-- <p style="margin-bottom: 7px;" v-html="$t('Free days Try').replace('{day}', '7')"></p>
                                 <p class="font-tips" v-html="$t('Free duration Amount').replace('{Amount}', product_info.amount ? product_info.amount / 100 : '')"></p> -->
                                 {{ product_info.currency ? product_info.currency.toUpperCase() : '' }} {{ product_info.amount ? product_info.amount / 100 : '' || '' }}
@@ -291,6 +291,8 @@ export default {
                 }
             }).catch(err =>{
                 console.log('err =>', err);
+                this.product_loading = false;
+                this.$message.error(err);
             })
         },
         /**
