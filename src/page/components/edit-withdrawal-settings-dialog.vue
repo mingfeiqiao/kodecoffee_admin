@@ -288,7 +288,7 @@ export default {
         callback(new Error(this.$t('The bank card number cannot be empty')));
       }
       value = value.replace(/\D/g, '');
-      if (!/^(\d{16}|\d{19})$/.test(value)) {
+      if (!(/^(\d{16}|\d{19})$/.test(value) || /^\d{11}$/.test(value))) {
         callback(new Error(this.$t('The bank card number format is incorrect')));
       }
       callback();
