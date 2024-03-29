@@ -19,10 +19,13 @@
                     </div> -->
                     <!-- 单次支付或循环订阅 -->
                     <div class="pay-title-font">
-                        <div><span class="font-blue">{{ product_info.currency ? product_info.currency.toUpperCase() : '' }}{{ product_info.amount ? product_info.amount / 100 : '' }}</span>
-                        <span v-if="product_info.interval">/ {{ $t(product_info.interval) }}</span></div>
-                        <div style="margin-bottom: 30px;"><span class="font-tips">{{ product_info.plan_type == 'one_time' ? $t('one_time') : $t('recurring')
-                        }}</span></div>
+                        <div><span class="font-blue">{{ product_info.currency ? product_info.currency.toUpperCase() : ''
+                                }}{{ product_info.amount ? product_info.amount / 100 : '' }}</span>
+                            <span v-if="product_info.interval">/ {{ $t(product_info.interval) }}</span>
+                        </div>
+                        <div style="margin-bottom: 30px;"><span class="font-tips">{{ product_info.plan_type ==
+                'one_time' ? $t('one_time') : $t('recurring')
+                                }}</span></div>
                     </div>
                 </div>
 
@@ -43,14 +46,16 @@
                             <div style="text-align: right;flex-shrink: 0;">
                                 <!-- <p style="margin-bottom: 7px;" v-html="$t('Free days Try').replace('{day}', '7')"></p>
                                 <p class="font-tips" v-html="$t('Free duration Amount').replace('{Amount}', product_info.amount ? product_info.amount / 100 : '')"></p> -->
-                                {{ product_info.currency ? product_info.currency.toUpperCase() : '' }} {{ product_info.amount ? product_info.amount / 100 : '' || '' }}
+                                {{ product_info.currency ? product_info.currency.toUpperCase() : '' }} {{
+                product_info.amount ? product_info.amount / 100 : '' || '' }}
                                 <span v-if="product_info.interval">/ {{ $t(product_info.interval) }}</span>
                             </div>
                         </div>
                         <div class="flex-box">
                             <p>{{ $t('Subtotal') }}</p>
-                            <b>{{ product_info.currency ? product_info.currency.toUpperCase() : '' }} {{ product_info.amount ? product_info.amount / 100 : '' || ''
-                            }}</b>
+                            <b>{{ product_info.currency ? product_info.currency.toUpperCase() : '' }} {{
+                product_info.amount ? product_info.amount / 100 : '' || ''
+            }}</b>
                         </div>
                         <!-- 添加优惠券 -->
                         <!-- <div class="add-coupon">{{ $t('Add coupon') }}</div> -->
@@ -60,8 +65,9 @@
                         </div> -->
                         <div class="flex-box" style="margin-top: 10px;">
                             <p>{{ $t('Cope with today') }}</p>
-                            <b>{{ product_info.currency ? product_info.currency.toUpperCase() : '' }} {{ product_info.amount ? product_info.amount / 100 : '' || ''
-                            }}</b>
+                            <b>{{ product_info.currency ? product_info.currency.toUpperCase() : '' }} {{
+                product_info.amount ? product_info.amount / 100 : '' || ''
+            }}</b>
                         </div>
                     </div>
                 </div>
@@ -78,6 +84,7 @@
                         <el-input v-model="emailInput" :placeholder="$t('Contact email tips')"></el-input>
                     </div>
                     <!-- 支付类型 -->
+                    <!--
                     <div class="pay-title">{{ $t('payment method') }}</div>
                     <div class="pay-type-box">
                         <div v-for="(item, index) in filteredArray" :key="index"
@@ -89,28 +96,42 @@
                             <p>{{ $t(item.name) }}</p>
                         </div>
                     </div>
+                    -->
                 </div>
-                <!-- 支付板块，银行卡需要引入板块，故此没写 -->
-                <div class="pay-change-box" v-if="filteredArray.length">
-                    <div v-if="isActive == 'BANK'" style="width: 100%;height: 100%;">
-                        <div style="color: #3D3D3D;margin:20px 0 5px 0;">{{ $t('Enter card information') }}</div>
-                        <!-- 引入 Stripe.js -->
-                        <!-- 创建卡片信息收集的表单 -->
+
+                <!-- 支付板块 -->
+                <div class="pay-change-box">
+                    <div style="display: flex;align-items: end;gap: 10px;margin-top: 20px;" v-loading="payLoading">
+                        <div v-if="isShowPaypal" class="CheckoutElement" @click="onPay('paypal')">
+                            <svg style="width: 100px;height: 45px;">
+                                <use xlink:href="#paypal-pay"></use>
+                            </svg>
+                        </div>
+                        <!-- 快速结账元素 -->
+                        <div id="express-checkout-element" style="width: 50%;"></div>
+                    </div>
+
+                    <!-- <div style="color: #3D3D3D;margin:20px 0 5px 0;">{{ $t('Enter card information') }}</div> -->
+                    <!-- 引入 Stripe.js -->
+                    <!-- 创建卡片信息收集的表单 -->
+                    <div style="width: 100%;height: 100%;margin-top: 20px;">
                         <form id="payment-form">
                             <!-- 这里添加用于收集卡片信息的字段，如卡号、过期日期、CVC等 -->
                             <!-- 用于容纳 Stripe.js 元素的容器 -->
                             <div id="card-element"></div>
                             <!-- 用于显示验证错误的元素 -->
                             <div id="card-errors" role="alert"></div>
-                            <!-- 提交按钮 -->
-                            <!-- <button type="submit">支付</button> -->
                         </form>
+                    </div>
+
+                    <!-- <div v-if="isActive == 'BANK'" style="width: 100%;height: 100%;">
+                        
                     </div>
                     <div v-if="isActive == 'PAYPAL'">{{ $t('PayPal tips') }}</div>
                     <div v-if="isActive == 'ZFB'">{{ $t('zfb tips') }}</div>
                     <div v-if="isActive == 'WX'" id="wxPay">
                         <span>{{ $t('wx tips') }}</span>
-                    </div>
+                    </div> -->
                 </div>
                 <!-- 支付按钮 -->
                 <div class="pay-btn-box" v-loading="payLoading">
@@ -121,27 +142,21 @@
             </div>
         </div>
         <div class="agreement-box" style="font-size: 12px;">
-            <div><b
-                    style="font-size: 14px;margin-right: 5px;">KodePay</b><span v-html="$t('extensions tips').replace('${name}', transaction_info.client_name || '')"></span>
+            <div><b style="font-size: 14px;margin-right: 5px;">KodePay</b><span
+                    v-html="$t('extensions tips').replace('${name}', transaction_info.client_name || '')"></span>
             </div>
             <div>Powered by <b>KodePay</b></div>
             <div class="protocol-manual" @click="onPolicyManualOpen()">{{ $t('Policy Manual') }}</div>
         </div>
 
-        <el-dialog
-            :title="$t('wechat')"
-            :visible.sync="dialogVisible"
-            width="30%"
-            :append-to-body="true"
-        >
-        <div style="text-align: center;">
-            <img :src="wx_img" alt="" style="width: 200px;height: 200px;">
-        </div>
-            
+        <el-dialog :title="$t('wechat')" :visible.sync="dialogVisible" width="30%" :append-to-body="true">
+            <div style="text-align: center;">
+                <img :src="wx_img" alt="" style="width: 200px;height: 200px;">
+            </div>
+
         </el-dialog>
     </div>
 </template>
-  
 <script>
 import languageChange from "../components/language-change.vue";
 import { paymentListApi, placeOrderApi, extensionUserInfo } from "../../api/interface";
@@ -154,7 +169,7 @@ export default {
                     name: 'card',
                     svg: "#bank-card",
                     text: 'pay by card',
-                    value: 'BANK'
+                    value: 'card'
                 },
                 {
                     name: 'paypal',
@@ -166,19 +181,20 @@ export default {
                     name: 'alipay',
                     svg: "#alipay",
                     text: 'Go to Alipay',
-                    value: 'ZFB'
+                    value: 'alipay'
                 },
                 {
                     name: 'wechat',
                     svg: "#wechat-pay",
                     text: 'Generate two-dimensional code',
-                    value: 'WX'
+                    value: 'wechat_pay'
                 }
             ],
-            isActive: 'BANK',
+            isActive: 'card',
             input: '',
             isShowOrderDetails: false,
             elements: null,
+            elements1: null,
             stripe: null,
             paymentElement: null,
             customer_id: '',
@@ -188,20 +204,21 @@ export default {
             product_info: {},
             elements: {},
             clientKey: '',
-            transaction_id:'',
+            transaction_id: '',
             wx_img: '',
-            product_loading:false,
-            filteredArray:[],
-            PayCompletionInfor:{},
-            payLoading:false,
-            timer:null,
+            product_loading: true,
+            filteredArray: [],
+            PayCompletionInfor: {},
+            payLoading: false,
+            timer: null,
             PaymentListNub: 0,
             dialogVisible: false,
             pollingNub: 0,
-            user_info:{},
-            common_headers:{},
-            emailInput:'',
-            emailShow:false
+            user_info: {},
+            common_headers: {},
+            emailInput: '',
+            emailShow: false,
+            isShowPaypal: false
         };
     },
     created() {
@@ -232,17 +249,18 @@ export default {
         this.onPaymentListApi(transaction_id, client_id);
     },
     methods: {
-        onPaymentListApi(transaction_id, client_id){
-            if(this.PaymentListNub >= this.pollingNub) {
-                clearTimeout(this.timer);
+        onPaymentListApi(transaction_id, client_id) {
+            if (this.PaymentListNub >= this.pollingNub) {
                 this.product_loading = false;
+                clearTimeout(this.timer);
                 this.PaymentListNub = 0;
-                this.$message.error(this.$t('error pay'));
+                this.$message.error(this.$t('Network fluctuations'));
                 return;
             }
             paymentListApi(client_id, transaction_id).then(result => {
                 this.product_loading = false;
-                if (result.data.code == 100000) {
+                let {data : {code, data}} = result;
+                if (code == 100000) {
                     const {
                         payment_config_info: {
                             card: {
@@ -251,23 +269,26 @@ export default {
                             },
                             available_payment_methods
                         }
-                    } = result.data.data;
+                    } = data;
+
                     this.stripe_public_key = stripe_public_key;
                     this.client_secret = client_secret;
 
-                    this.product_info = result.data.data.product_info;
-                    this.transaction_info = result.data.data.transaction_info;
+                    this.product_info = data.product_info;
+                    this.transaction_info = data.transaction_info;
+
+                    this.isShowPaypal = data.payment_config_info.available_payment_methods.indexOf('paypal') == -1 ? false : true;
 
                     // 如果是支付中状态，就开始轮询
-                    if(this.transaction_info.pay_status == 'confirming') {
+                    if (this.transaction_info.pay_status == 'confirming') {
                         //判断下，如果当前是获取支付状态，就添加loading
                         this.pollingNub == 10 ? this.product_loading = true : '';
                         this.timer = setTimeout(() => {
                             this.PaymentListNub++;
                             this.onPaymentListApi(transaction_id, client_id);
                         }, 5000);
-                    //  支付成功就直接跳转过去了
-                    }else if(this.transaction_info.pay_status == 'succeed') {
+                        //  支付成功就直接跳转过去了
+                    } else if (this.transaction_info.pay_status == 'succeed') {
                         let jsonResult = {
                             status: '1',
                             transaction_key: transaction_id,
@@ -275,22 +296,21 @@ export default {
                             redirect_url: this.transaction_info.redirect_url,
                             ...this.product_info
                         };
-                        this.$router.push({path: '/extension/extension-pay-success', query: jsonResult});
-                    //支付失败给提示语句
-                    }else if(this.transaction_info.pay_status == 'failed') {
+                        this.$router.push({ path: '/extension/extension-pay-success', query: jsonResult });
+                        //支付失败给提示语句
+                    } else if (this.transaction_info.pay_status == 'failed') {
                         this.$message.error(this.$t('error pay'));
                     }
                     // 如果是银行卡支付，就加载Stripe
-                    if(this.isActive == 'BANK'){
+                    if (this.isActive == 'card' && this.PaymentListNub <= 1) {
                         this.$nextTick(() => {
                             this.onGetCard();
                         })
                     }
                     // 筛选一下已经有的支付方式
-                    this.filteredArray = this.payType.filter(item => available_payment_methods.includes(item.name));
+                    // this.filteredArray = this.payType.filter(item => available_payment_methods.includes(item.name));
                 }
-            }).catch(err =>{
-                console.log('err =>', err);
+            }).catch(err => {
                 this.product_loading = false;
                 this.$message.error(err);
             })
@@ -298,18 +318,18 @@ export default {
         /**
          * 获取用户信息
          */
-        getUserInfo () {
+        getUserInfo() {
             this.common_headers = this.getCommonHeaders();
             extensionUserInfo(this.common_headers).then(res => {
                 let res_data = res.data;
-                    if (parseInt(res_data.code) === 100000) {
-                        this.user_info = res_data.userinfo;
-                        this.emailInput = this.user_info.email || '';
-                        if (!this.user_info.email) this.emailShow = true;
-                    } else {
+                if (parseInt(res_data.code) === 100000) {
+                    this.user_info = res_data.userinfo;
+                    this.emailInput = this.user_info.email || '';
+                    if (!this.user_info.email) this.emailShow = true;
+                } else {
                     if (parseInt(res_data.code) === 401) {
                         this.$message.warning(res_data.message)
-                    } 
+                    }
                 }
             });
         },
@@ -324,13 +344,13 @@ export default {
         //切换支付方式
         onChangePay(value) {
             // 如果正在支付中，不允许切换支付方式
-            if(this.payLoading) return;
+            if (this.payLoading) return;
             this.wx_img = '';
             this.isActive = value;
             //切换的时候清除现有的轮询状态(如果此时还在加载订单状态，就不清除轮询状态)
-            if(!this.product_loading) this.onClearTimeout();
+            if (!this.product_loading) this.onClearTimeout();
 
-            if (this.isActive == 'BANK') {
+            if (this.isActive == 'card') {
                 this.$nextTick(() => {
                     this.onGetCard();
                 })
@@ -345,7 +365,7 @@ export default {
             this.isShowOrderDetails = !this.isShowOrderDetails;
             document.body.style.setProperty('--OrderDetailsBox', this.isShowOrderDetails ? 'block' : 'none');
         },
-        onPolicyManualOpen(){
+        onPolicyManualOpen() {
             window.open('https://kodepay.io/privacy?utm_source=new_extension_pay', '_blank');
         },
         /**
@@ -359,26 +379,61 @@ export default {
         },
         //获取卡支付
         async onGetCard() {
-            const options = {
-                clientSecret: this.client_secret,
-            };
             this.stripe = Stripe(this.stripe_public_key);
-            this.elements = this.stripe.elements(options);
-            // Create and mount the Payment Element
-            this.paymentElement = this.elements.create('card', 
-                {theme: "stripe",}
-            );
+            const options = {
+                layout: {
+                    type: 'tabs',
+                    defaultCollapsed: false,
+                },
+                defaultValues: {
+                    billingDetails: {
+                        name: 'John Doe',
+                        email: 'john.doe@example.com',
+                        address: {
+                            city: 'New York',
+                            country: 'US',
+                            line1: '123 Main St',
+                            postal_code: '10001',
+                            state: 'NY'
+                        }
+                    }
+                }
+            };
+            this.elements = this.stripe.elements({
+                mode: 'payment',
+                currency: this.product_info.currency,
+                amount: this.product_info.amount,
+            });
+
+            this.paymentElement = this.elements.create('payment', options);
             this.paymentElement.mount("#card-element");
-            const form = document.getElementById('payment-form');
+
+            // 监听元素变化事件
+            this.paymentElement.on('change', (event) => {
+                try {
+                    this.isActive = event.value.type;
+                } catch (error) {
+                    console.log('error =>', error);
+                }
+            });
+
+
+            this.elements1 = this.stripe.elements({
+                mode: 'payment',
+                currency: this.product_info.currency,
+                amount: this.product_info.amount,
+            });
+            const expressCheckoutElement = this.elements1.create('expressCheckout');
+            expressCheckoutElement.mount('#express-checkout-element')
         },
         //支付按钮
-        async onPay() {
-            if(this.isActive == 'Bank' && this.elements == null)return; //如果卡支付时Stripe没有加载出来，则不允许支付
-            if(this.product_loading){
+        async onPay(type) {
+            if (this.isActive == 'card' && this.elements == null) return; //如果卡支付时Stripe没有加载出来，则不允许支付
+            if (this.product_loading) {
                 this.$message.warning(this.$t('paying tips'));  //支付套餐信息获取中，请稍等
                 return;
             }
-            if(!this.emailInput) {
+            if (!this.emailInput) {
                 this.$message.warning(this.$t('email information first'));  //还未填写邮箱信息
                 return
             }
@@ -388,62 +443,63 @@ export default {
             }
             //下单的时候清除现有的轮询状态（微信支付的轮询）
             this.onClearTimeout();
-
-            let pay = this.payType.find(item => item.value === this.isActive);
-            pay = pay ? pay.name : null;
+            let paymentID = null;
             this.payLoading = true;
-            let paymentMethodObj = null;
-            //如果下单方式为卡支付
-            if (this.isActive == 'BANK') {
-                //先看下表单验证是否通过，有没有正常显示
-                try {
-                    const { error: submitError } = await this.elements.submit();
-                    if (submitError) { // 处理验证异常
+            if (type !== 'paypal') {
+                //如果下单方式为卡支付
+                if (this.isActive == 'card') {
+                    //先看下表单验证是否通过，有没有正常显示
+                    try {
+                        const { error: submitError } = await this.elements.submit();
+                        if (submitError) { // 处理验证异常
+                            this.$message.error(this.$t('error pay'));
+                            this.payLoading = false;
+                            return;
+                        }
+                    } catch (error) {
                         this.$message.error(this.$t('error pay'));
+                        this.payLoading = false;
+                    }
+                    const { setupIntent } = await this.stripe.handleCardSetup(this.client_secret, this.paymentElement, {
+                        payment_method_data: {},
+                    })
+                    if (setupIntent) {
+                        paymentID = setupIntent.payment_method || '';
+                    }
+                } else if (this.isActive == 'alipay' || this.isActive == 'wechat_pay') {
+                    const { paymentMethod, error: paymentMethodError } = await this.stripe.createPaymentMethod(this.isActive == 'alipay' ? 'alipay' : 'wechat_pay', {
+                        billing_details: {
+                            name: 'Jenny Rosen',
+                        },
+                    });
+                    if (paymentMethodError) {
+                        this.$message.error(paymentMethodError.message);
                         this.payLoading = false;
                         return;
                     }
-                } catch (error) {
+                    paymentID = paymentMethod.id;
+                }
+                if (paymentID == null && type != 'paypal') {
+                    this.payLoading = false;
                     this.$message.error(this.$t('error pay'));
-                    this.payLoading = false;
-                }
-                // 获取支付方式ID
-                const { paymentMethod, error: paymentMethodError } = await this.stripe.createPaymentMethod({
-                    type: 'card',
-                    card: this.paymentElement,
-                    // request_three_d_secure: "any"
-                });
-                if (paymentMethodError) {
-                    this.$message.error(paymentMethodError.message);
-                    this.payLoading = false;
                     return;
                 }
-                paymentMethodObj = paymentMethod;
-            } else if (this.isActive == 'ZFB' || this.isActive == 'WX') {
-                const { paymentMethod, error: paymentMethodError } = await this.stripe.createPaymentMethod(this.isActive == 'ZFB' ? 'alipay' : 'wechat_pay', {
-                    billing_details: {
-                        name: 'Jenny Rosen',
-                    },
-                });
-                if (paymentMethodError) {
-                    this.$message.error(paymentMethodError.message);
-                    this.payLoading = false;
-                    return;
-                }
-                paymentMethodObj = paymentMethod;
-            }
-            if (paymentMethodObj.id == null) {
-                return;
+            } else {
+                pay = 'paypal'
             }
             let param = {
                 "transaction_id": this.transaction_info.transaction_id,
                 "product_id": this.product_info.product_id,
                 "currency": this.product_info.currency || '',
-                // "currency": 'cny',
-                "payment_channel": 'stripe',
-                "payment_method": pay,
-                "payment_method_id": paymentMethodObj.id || '',
-                "email":this.emailInput
+                "payment_channel": type == 'paypal' ? 'paypal' : 'stripe',
+                "payment_method": this.isActive,
+                "email": this.emailInput
+            }
+            if (type != 'paypal') {
+                param = {
+                    ...param,
+                    "payment_method_id": paymentID || '',
+                }
             }
             //请求后端下单接口
             placeOrderApi(this.common_headers, param).then(res => {
@@ -459,22 +515,24 @@ export default {
                         redirect_url: this.transaction_info.redirect_url,
                         ...this.product_info
                     }
-
-                    if (this.isActive == 'BANK') {
+                    if (type == 'paypal') {
+                        this.payLoading = false;
+                        window.open(res.data.data.client_secret);
+                    } else if (this.isActive == 'card') {
                         this.stripe.confirmCardPayment(client_secret)
-                            .then((result)=> {
+                            .then((result) => {
                                 this.payLoading = false;
                                 if (result.error) {
                                     this.$message.error(result.error.message);
-                                }else if (result.paymentIntent.status === 'succeeded') {
-                                    this.$router.push({path: '/extension/extension-pay-success', query: jsonResult});
-                                }else{
+                                } else if (result.paymentIntent.status === 'succeeded') {
+                                    this.$router.push({ path: '/extension/extension-pay-success', query: jsonResult });
+                                } else {
                                     this.$message.error(res.data.message);
                                 }
-                            }).catch(() =>{
+                            }).catch(() => {
                                 this.payLoading = false;
                             })
-                    } else if (this.isActive == 'ZFB') {
+                    } else if (this.isActive == 'alipay') {
                         this.stripe.confirmAlipayPayment(client_secret, {
                             'return_url': window.location.href,
                             // setup_future_usage: 'off_session',
@@ -492,15 +550,15 @@ export default {
                             let { paymentIntent } = result;
                             if (result.error) {
                                 this.$message.error(result.error.message);
-                            }else if (paymentIntent.status === 'succeeded') {
-                                this.$router.push({path: '/extension/extension-pay-success', query: jsonResult});
-                            }else{
+                            } else if (paymentIntent.status === 'succeeded') {
+                                this.$router.push({ path: '/extension/extension-pay-success', query: jsonResult });
+                            } else {
                                 this.$message.error(res.data.message);
                             }
-                        }).catch(err =>{
+                        }).catch(err => {
                             this.payLoading = false;
                         })
-                    } else if (this.isActive == 'WX') {
+                    } else if (this.isActive == 'wechat_pay') {
                         this.stripe.confirmWechatPayPayment(client_secret, {
                             payment_method_options: {
                                 wechat_pay: {
@@ -511,13 +569,13 @@ export default {
                             this.payLoading = false;
                             let { paymentIntent } = result;
                             if (paymentIntent.status === 'succeeded') {
-                                this.$router.push({path: '/extension/extension-pay-success', query: jsonResult});
+                                this.$router.push({ path: '/extension/extension-pay-success', query: jsonResult });
                             } else if (paymentIntent.status === 'requires_action') {
                                 this.wx_img = paymentIntent.next_action.wechat_pay_display_qr_code.image_data_url;
                                 this.dialogVisible = true;
                                 this.pollingNub = 60;
                                 this.onPaymentListApi(this.transaction_id, this.clientKey);
-                            }else{
+                            } else {
                                 this.$message.error(res.data.message);
                             }
                         }).catch(err => {
@@ -659,9 +717,17 @@ export default {
         .pay-change-box {
             height: 240px;
             width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        }
+
+        // 快速结账盒子元素
+        .CheckoutElement{
+            height: 45px;
+            width: 50%;
+            cursor: pointer;
+            background-color: #ffc439;
+            border-radius: 5px;
+            line-height: 45px;
+            text-align: center;
         }
     }
 
@@ -682,14 +748,16 @@ export default {
     text-decoration: underline;
     cursor: pointer;
 }
-.pay-completion-infor{
+
+.pay-completion-infor {
     text-align: center;
-    .pay-text{
+
+    .pay-text {
         font-size: 24px;
         margin: 18px 0 36px;
     }
-    
-    .pay-repeat{
+
+    .pay-repeat {
         width: 280px;
         height: 32px;
         line-height: 32px;
@@ -703,7 +771,7 @@ export default {
 }
 @media screen and (min-width:700px) {
     .extension-pay-content {
-        max-height: 650px;
+        max-height: 800px;
         color: #000;
         max-width: 880px;
         margin: auto;
@@ -717,7 +785,7 @@ export default {
     .extension-pay {
         display: flex;
         border: 1px solid;
-        height: 600px;
+        height: 665px;
     }
 
     // .agreement-box{
@@ -762,19 +830,20 @@ export default {
         }
     }
 
-    .pay-completion-infor{
+    .pay-completion-infor {
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
         width: 350px;
-    }    
+    }
 }
 
 @media screen and (max-width:700px) {
-    .pay-title-font{
+    .pay-title-font {
         text-align: center;
     }
+
     .try-box {
         margin: 0 auto;
         max-width: 160px;
@@ -809,6 +878,7 @@ export default {
     }
 
     .right-content-box {
+        height: 600px !important;
         padding: 30px 20px;
 
         .right-pay-title {
@@ -817,6 +887,10 @@ export default {
 
         .contact-email {
             margin-bottom: 5px;
+        }
+
+        .pay-change-box{
+            height: 450px !important;
         }
     }
 
@@ -838,12 +912,4 @@ export default {
         text-align: left;
     }
 }
-
-#card-element {
-  border-radius: 4px;
-  padding: 12px;
-  border: 1px solid rgba(50, 50, 93, 0.1);
-  width: 94%;
-}
-
 </style>

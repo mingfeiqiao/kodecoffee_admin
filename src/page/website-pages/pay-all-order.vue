@@ -489,7 +489,6 @@ export default {
         this.export_loading = false;
         if (res.data && res.data.code && parseInt(res.data.code) === 100000) {
           const csv_data = this.formatExportData(res.data.data)
-          console.log((csv_data))
           const header = [
             'payment amount',
             'currency',

@@ -13,20 +13,34 @@
             </span>
           </template>
         </el-table-column>
-        <el-table-column prop="client_name" :label="$t('Applied extension')" width="auto">
+        <el-table-column prop="client_name" :label="$t('Applied extension')" width="300">
           <template slot-scope="scope">
             <span v-if="scope.row.client_name">{{ scope.row.client_name }}</span>
             <span v-else>{{ $t('all') }}</span>
           </template>
         </el-table-column>
-        <el-table-column  :label="$t('status')" width="auto">
+        <el-table-column  :label="$t('status')" width="350">
           <template slot-scope="scope" v-if="scope.row.event_status_obj">
             <span :style="{'color': scope.row.event_status_obj.color }">
               {{$t( scope.row.event_status_obj.message)}}
             </span>
+            <p v-if="scope.row.event_status_obj.message == 'Failed'">
+              {{ scope.row.failed_message }}
+            </p>
           </template>
         </el-table-column>
         <el-table-column prop="event_time_format" :label="$t('Time')" width="auto">
+        </el-table-column>
+        <el-table-column type="expand">
+          <template slot-scope="props">
+            <div class="code-container">
+                <pre class="language-javascript">
+                  <code class="language-javascript">
+                    {{ props.row.event_request }}
+                  </code>
+                </pre>
+              </div>
+          </template>
         </el-table-column>
       </el-table>
       <div style="padding-top:12px;display: flex;align-items: center;justify-content: center;">
@@ -47,6 +61,8 @@
 <script>
 import {getWebHookEventLogsApi, getWebHookEventTypesApi} from "../../../api/interface";
 import {timestampToDateString} from "../../../utils/dateUtils";
+import Prism from 'prismjs';
+import 'prismjs/themes/prism.css';
 export default {
   data() {
     return {
@@ -136,10 +152,17 @@ export default {
     handleCurrentChange(val) {
       this.page = val;
       this.getWebHookLogs();
-    }
+    },
   }
 }
 </script>
 <style scoped lang="less">
+.code-container {
+  padding-bottom: 12px;
+  position: relative;
+}
+pre[class*="language-"] {
+  background-color: #F0F0F0;
+}
 
 </style>
