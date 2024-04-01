@@ -156,14 +156,14 @@
           <div class="custom-descriptions-container" style="display: flex;align-items: center;justify-content: center">
             <el-descriptions border :column="1"  class="custom-descriptions">
               <el-descriptions-item :label="$t('payout amount')">
-                <template slot="label">
+                <!-- <template slot="label">
                   <span style="color:#929292;">{{$t('payout amount')}}</span>
                   <span>
                     <el-tooltip class="item" :content="$t('The payout amount is rounded up for ease of calculation and financial processing. The remaining amount will be accumulated in subsequent withdrawals')" effect="light" placement="top"><i class="el-icon-info" style="color:#929292;"></i></el-tooltip>
                   </span>
-                </template>
+                </template> -->
                 <div class="withdraw-width">
-                  <span class="title-20"> {{balance.withdrawable_round_down_format}} </span>
+                  <span class="title-20"> {{balance.withdrawable_format}} </span>
                   <span style="color: #929292;">{{ $t('available') +' '+ balance.withdrawable_format}} </span>
                 </div>
               </el-descriptions-item>
@@ -276,13 +276,13 @@ export default {
         withdraw_type: this.balance_settings.withdraw_type,
         settle_currency: this.balance.currency,
         settle_amount: this.balance.left_amount,
-        real_settle_amount:Math.floor(this.balance.withdraw_amount),
+        real_settle_amount:this.balance.withdraw_amount,
         paypal_email: this.balance_settings.paypal_email,
         card_num: this.balance_settings.card_num,
         bank_name: this.balance_settings.bank_name,
         bank_account_hold_name: this.balance_settings.bank_account_hold_name,
         withdraw_currency: this.balance_settings.currency,
-        withdraw_amount: Math.floor(this.balance.withdraw_amount),
+        withdraw_amount: this.balance.withdraw_amount,
       };
       applyWithdrawApi(args).then(res => {
         if (!res.data) {

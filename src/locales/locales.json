@@ -425,6 +425,7 @@
     "Order details":"Order details",
     "extensions tips":"This transaction is handled by KodePay, the online distributor and merchant of record. The relevant data will be shared with [${name}] and it will complete the ordered product or service.",
     "error pay":"Order failed, please try again later",
+    "Network fluctuations":"Network fluctuations, please try again later",
     "pay by card":"Pay",
     "Go to PayPal":"Go to PayPal",
     "Go to Alipay":"Go to Alipay",
@@ -864,6 +865,7 @@
     "Generate two-dimensional code":"生成二维码",
     "Enter card information":"在此输入信用卡信息",
     "paying tips":"支付套餐信息获取中，请稍等",
+    "Network fluctuations":"网络波动，请稍后再试",
     "email information first":"请先填写邮箱信息"
   }
 }

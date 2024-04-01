@@ -5,7 +5,7 @@ export const gotoDocCenter = function (language) {
   if (language === this.ZH_CODE) {
     window.open('https://v0kc0b6j3jr.feishu.cn/wiki/IZ49wp8rWiWVUykkBBocfIf8nvd', '_blank');
   } else {
-    window.open('https://qb8b3069asp.larksuite.com/wiki/UL3SwgfOnivcyNka1Tfu6zxDsaf', '_blank');
+    window.open('https://qb8b3069asp.larksuite.com/wiki/ZCEGwuaEyiT43IkrNJ0uIeHyspf', '_blank');
   }
 }
 export const OpenCrispChat = function () {
