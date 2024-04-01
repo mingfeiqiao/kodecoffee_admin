@@ -36,8 +36,7 @@
                             <!-- 套餐详情 -->
                             <div class="plan-box-left">
                                 <div class="background-box"
-                                    v-if="product_info.icon"
-                                    :style="{ backgroundImage: product_info.icon ? 'url(https://kodepay-cdn.oss-us-west-1.aliyuncs.com/' + product_info.icon + ')' : '' }">
+                                    :style="{ backgroundImage: product_info.icon ? 'url(https://kodepay-cdn.oss-us-west-1.aliyuncs.com/' + product_info.icon + ')' : 'url(https://kodepay-cdn.oss-us-west-1.aliyuncs.com/common/images/logo%E7%99%BD%E8%89%B2_%E8%93%9D%E5%BA%95.png)' }">
                                 </div>
                                 <div>
                                     <p style="margin-bottom: 7px;">{{ product_info.name }}</p>
@@ -641,8 +640,9 @@ export default {
             .background-box {
                 width: 48px;
                 height: 48px;
-                background-color: #fff;
                 background-size: 100% 100%;
+                flex-shrink: 0;
+                border-radius: 8px;
             }
         }
 
