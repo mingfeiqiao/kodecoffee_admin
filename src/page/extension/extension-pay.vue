@@ -36,6 +36,7 @@
                             <!-- 套餐详情 -->
                             <div class="plan-box-left">
                                 <div class="background-box"
+                                    v-if="product_info.icon"
                                     :style="{ backgroundImage: product_info.icon ? 'url(https://kodepay-cdn.oss-us-west-1.aliyuncs.com/' + product_info.icon + ')' : '' }">
                                 </div>
                                 <div>
@@ -101,7 +102,7 @@
 
                 <!-- 支付板块 -->
                 <div class="pay-change-box">
-                    <div style="display: flex;align-items: end;gap: 10px;margin-top: 20px;" v-loading="payLoading">
+                    <div style="width: 98%;display: flex;align-items: end;gap: 10px;margin-top: 20px;" v-loading="payLoading">
                         <div v-if="isShowPaypal" class="CheckoutElement" @click="onPay('paypal')">
                             <svg style="width: 100px;height: 45px;">
                                 <use xlink:href="#paypal-pay"></use>
@@ -114,7 +115,7 @@
                     <!-- <div style="color: #3D3D3D;margin:20px 0 5px 0;">{{ $t('Enter card information') }}</div> -->
                     <!-- 引入 Stripe.js -->
                     <!-- 创建卡片信息收集的表单 -->
-                    <div style="width: 100%;height: 100%;margin-top: 20px;">
+                    <div style="width: 98%;max-height: 100%;min-height: 320px;margin-top: 20px;">
                         <form id="payment-form">
                             <!-- 这里添加用于收集卡片信息的字段，如卡号、过期日期、CVC等 -->
                             <!-- 用于容纳 Stripe.js 元素的容器 -->
@@ -299,6 +300,7 @@ export default {
                         this.$router.push({ path: '/extension/extension-pay-success', query: jsonResult });
                         //支付失败给提示语句
                     } else if (this.transaction_info.pay_status == 'failed') {
+                        this.dialogVisible = false;
                         this.$message.error(this.$t('error pay'));
                     }
                     // 如果是银行卡支付，就加载Stripe
@@ -452,7 +454,7 @@ export default {
                     try {
                         const { error: submitError } = await this.elements.submit();
                         if (submitError) { // 处理验证异常
-                            this.$message.error(this.$t('error pay'));
+                            this.$message.warning(submitError.message);
                             this.payLoading = false;
                             return;
                         }
@@ -460,9 +462,14 @@ export default {
                         this.$message.error(this.$t('error pay'));
                         this.payLoading = false;
                     }
-                    const { setupIntent } = await this.stripe.handleCardSetup(this.client_secret, this.paymentElement, {
+                    const { setupIntent, error } = await this.stripe.handleCardSetup(this.client_secret, this.paymentElement, {
                         payment_method_data: {},
                     })
+                    if(error){
+                        this.$message.error(error.message);
+                        this.payLoading = false;
+                        return;
+                    }
                     if (setupIntent) {
                         paymentID = setupIntent.payment_method || '';
                     }
@@ -484,15 +491,13 @@ export default {
                     this.$message.error(this.$t('error pay'));
                     return;
                 }
-            } else {
-                pay = 'paypal'
             }
             let param = {
                 "transaction_id": this.transaction_info.transaction_id,
                 "product_id": this.product_info.product_id,
                 "currency": this.product_info.currency || '',
                 "payment_channel": type == 'paypal' ? 'paypal' : 'stripe',
-                "payment_method": this.isActive,
+                "payment_method": this.isActive == 'wechat_pay'? 'wechat' : this.isActive,
                 "email": this.emailInput
             }
             if (type != 'paypal') {
@@ -715,8 +720,9 @@ export default {
         }
 
         .pay-change-box {
-            height: 240px;
+            max-height: 460px;
             width: 100%;
+            overflow-y: auto;
         }
 
         // 快速结账盒子元素
@@ -772,6 +778,7 @@ export default {
 @media screen and (min-width:700px) {
     .extension-pay-content {
         max-height: 800px;
+        overflow-y: auto;
         color: #000;
         max-width: 880px;
         margin: auto;
@@ -911,5 +918,29 @@ export default {
     .agreement-box>div:last-child {
         text-align: left;
     }
+}
+
+/* 美化整个滚动条 */
+::-webkit-scrollbar {
+  width: 3px; /* 设置滚动条的宽度 */
+  background-color: #f9f9f9; /* 滚动条的背景颜色 */
+}
+ 
+/* 美化滚动条轨道 */
+::-webkit-scrollbar-track {
+  background: #e1e1e1; /* 轨道的背景颜色 */
+  border-radius: 10px; /* 轨道的圆角大小 */
+}
+ 
+/* 美化滚动条的滑块 */
+::-webkit-scrollbar-thumb {
+  background-color: #c1c1c1; /* 滑块的背景颜色 */
+  border-radius: 10px; /* 滑块的圆角大小 */
+  border: 2px solid #ffffff; /* 滑块边框 */
+}
+ 
+/* 当滑块悬停或活动时的样式 */
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8; /* 悬停或活动状态下滑块的背景颜色 */
 }
 </style>
