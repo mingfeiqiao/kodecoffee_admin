@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-tabs v-model="active_order_type" @tab-click="handleClick">
-      <el-tab-pane v-for="(option, index) in order_option" :key="index" :label="$t(option.label)" :name="option.value">
+      <el-tab-pane :label="$t('All Orders')" name="all order">
         <div>
           <div>
             <div style="display: flex;flex-wrap:wrap">
@@ -120,6 +120,45 @@
           </div>
         </div>
       </el-tab-pane>
+      <el-tab-pane name="disputed">
+        <span slot="label"> {{ $t('Disputes') }}(10)</span>
+
+        <el-select size="small" multiple v-model="disputed_status" :placeholder="$t('select placeholder')" @visible-change="onBlur" @remove-tag="onDelTags">
+          <el-option
+            v-for="item in disputed_status_options"
+            :key="item.value"
+            :label="$t(item.label)"
+            :value="item.value">
+          </el-option>
+        </el-select>
+        <el-table
+          :data="tableData1"
+          style="width: 100%"
+        >
+          <el-table-column prop="q" :label="$t('Amount')">
+          </el-table-column>
+          <el-table-column prop="w" :label="$t('status')">
+            <template slot-scope="scope">
+              <div v-html="onTest(scope.row)"></div>
+            </template>
+          </el-table-column>
+          <el-table-column prop="e" :label="$t('Source Type')">
+          </el-table-column>
+          <el-table-column prop="r" :label="$t('customer')" min-width="150">
+          </el-table-column>
+          <el-table-column prop="t" :label="$t('Reason for Dispute')">
+          </el-table-column>
+          <el-table-column prop="y" :label="$t('create time')" min-width="150">
+          </el-table-column>
+          <el-table-column prop="u" :label="$t('Response Deadline')">
+          </el-table-column>
+          <el-table-column :label="$t('Operation')">
+            <template slot-scope="scope">
+              <span class="link" @click="openOrderDetail(scope.row.id)">{{ $t('detail') }}</span>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-tab-pane>
     </el-tabs>
   </div>
 </template>
@@ -170,6 +209,41 @@ export default {
         {
           label: "Renewal",
           value: "updated"
+        }
+      ],
+      disputed_status_options:[
+        {
+          label: "Pending",
+          value: "processed",
+          color: "#ff8f1f"
+        },
+        {
+          label: "Awaiting Review",
+          value: "created",
+          color: "#4bcccc"
+        },
+        {
+          label: "Won",
+          value: "updated",
+          color: "#00b578"
+        },
+        {
+          label: "Lost",
+          value: "updated1",
+          color: "#fa5151"
+        },
+      ],
+      disputed_status:[],
+      tableData1: [
+        {
+          q:'USD 99.99',
+          w:'processed',
+          e:'Strips卡',
+          r:'example@qq.com',
+          t:'欺诈',
+          y:'2024-04-07 10:00:00',
+          u:'已上线',
+          id:38272
         }
       ],
       plan_list:[],
@@ -748,6 +822,11 @@ export default {
       this.page = val;
       this.getTableData();
     },
+    onTest(value) {
+      let info = this.disputed_status_options.filter(item => item.value == value.w)[0];
+      let str = `<span style="color:${info.color}">${info.label}</span>`;
+      return str;
+    }
   },
 };
 </script>

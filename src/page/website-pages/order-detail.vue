@@ -68,6 +68,33 @@
         <el-descriptions-item :label="$t('extension')">{{ order_detail.client_name }}</el-descriptions-item>
         <el-descriptions-item :label="$t('order id')" >{{ order_detail.order_id }}</el-descriptions-item>
       </el-descriptions>
+      <div class="disputed-box" style="padding: 24px 0;border-top: 1px solid rgba(232, 232, 232, 1);border-bottom: 1px solid rgba(232, 232, 232, 1);">
+        <div class="disputed-box-title">{{ $t('Order Dispute') }}</div>
+        <div style="display: flex;margin-top: 20px;">
+          <div class="disputed-box-left">
+            <div>{{ $t('Dispute Amount') }}:</div>
+            <div>{{ $t('Reason') }}:</div>
+            <div>{{ $t('Dispute Time') }}:</div>
+            <div>{{ $t('Response Deadline') }}:</div>
+            <div>{{ $t('Dispute Fee') }}:</div>
+            <div>{{ $t('Remarks') }}:</div>
+            <div>ID:</div>
+            
+          </div>
+          <div class="disputed-box-right">
+            <div class="disputed-box-title">{{ $t('Regarding disputes') }}</div>
+            <ol>
+              <li>{{ $t('Regarding disputes 1') }}</li>
+              <li>{{ $t('Regarding disputes 2') }}</li>
+              <li>{{ $t('Regarding disputes 3') }}</li>
+            </ol>
+          </div>
+        </div>
+        <div class="disputed-box-btn">
+          <el-button type="primary" @click="dialogRefuteDispute = true">{{ $t('Refute Dispute') }}</el-button>
+          <el-button @click="dialogAcceptDispute = true">{{ $t('Accept dispute') }}</el-button>
+        </div>
+      </div>
       <div style="padding: 24px 0;border-top: 1px solid rgba(232, 232, 232, 1);border-bottom: 1px solid rgba(232, 232, 232, 1);" v-if="activities.length > 0">
         <div class="title-16">{{$t('Timeline')}}</div>
         <div style="padding-top: 24px">
@@ -170,6 +197,114 @@
         </el-form-item>
       </el-form>
     </el-dialog>
+
+    <el-dialog
+      :visible.sync="dialogAcceptDispute"
+      width="30%"
+    >
+      <p class="dispute-title"><i class="el-icon-warning" style="color: #faad14;font-size: 24px;"></i><span>{{ $t('Accept dispute refund') }}</span></p>
+      <p style="line-height: 24px;padding-left: 32px;">{{ $t('accepting dispute tips') }}</p>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogAcceptDispute = false">{{ $t('cancel') }}</el-button>
+        <el-button type="primary" @click="dialogAcceptDispute = false">{{ $t('Ok') }}</el-button>
+      </span>
+    </el-dialog>
+
+    <el-dialog
+      :visible.sync="dialogRefuteDispute"
+      width="35%"
+    >
+      <span slot="title" style="font-size: 18px;font-weight: 700;">{{ $t('Refute Dispute') }}</span>
+      <div>
+          <div class="dispute-top-box">
+            <span style="width: 20%;">{{ $t('Basic Description') }}:</span>
+            <el-input
+              type="textarea"
+              :rows="2"
+              :placeholder="$t('Please enter content')"
+              v-model="dispute_form.textarea">
+            </el-input>
+          </div>
+          <div style="font-size: 16px;font-weight: 600; margin-bottom: 10px;">{{ $t('Proof materials') }}</div>
+
+          <el-form ref="form" :model="dispute_form" label-width="80px" label-position="left">
+            <el-form-item :label="$t('Service Certificate')">
+              <el-upload
+                class="upload-demo"
+                action=""
+                :on-remove="handleRemove"
+                :before-upload="onFileServiceCertificate"
+              >
+                <el-button size="small" icon="el-icon-upload2">Upload</el-button>
+              </el-upload>
+            </el-form-item>
+            <el-form-item :label="$t('Customer Signature')">
+              <el-upload
+                class="upload-demo"
+                action=""
+                :on-remove="handleRemove"
+                :before-upload="onFileCustomerSignature"
+              >
+                <el-button size="small" icon="el-icon-upload2">Upload</el-button>
+              </el-upload>
+            </el-form-item>
+            <el-form-item :label="$t('Receipt')">
+              <el-upload
+                class="upload-demo"
+                action=""
+                :on-remove="handleRemove"
+                :before-upload="onFileReceipt"
+              >
+                <el-button size="small" icon="el-icon-upload2">Upload</el-button>
+              </el-upload>
+            </el-form-item>
+            <el-form-item :label="$t('Agreement Terms')">
+              <el-upload
+                class="upload-demo"
+                action=""
+                :on-remove="handleRemove"
+                :before-upload="onFileAgreementTerms"
+              >
+                <el-button size="small" icon="el-icon-upload2">Upload</el-button>
+              </el-upload>
+            </el-form-item>
+            <el-form-item :label="$t('Term Disclosure')">
+              <el-upload
+                class="upload-demo"
+                action=""
+                :on-remove="handleRemove"
+                :before-upload="onFileTermDisclosure"
+              >
+                <el-button size="small" icon="el-icon-upload2">Upload</el-button>
+              </el-upload>
+            </el-form-item>
+            <el-form-item :label="$t('Other')">
+              <el-upload
+                class="upload-demo"
+                action=""
+                :on-remove="handleRemove"
+                :before-upload="onFileOther"
+              >
+                <el-button size="small" icon="el-icon-upload2">Upload</el-button>
+              </el-upload>
+            </el-form-item>
+            <el-form-item :label="$t('Trial Log')">
+              <el-upload
+                class="upload-demo"
+                action=""
+                :on-remove="handleRemove"
+                :before-upload="onFileTrialLog"
+              >
+                <el-button size="small" icon="el-icon-upload2">Upload</el-button>
+              </el-upload>
+            </el-form-item>
+          </el-form>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogRefuteDispute = false">{{ $t('cancel') }}</el-button>
+        <el-button type="primary" @click="dialogRefuteDispute = false">{{ $t('Ok') }}</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -259,7 +394,13 @@ export default {
         {"label":'Other',"value": "Other"},
       ],
       rules:{},
-      lang:this.$i18n.locale
+      lang:this.$i18n.locale,
+      dialogAcceptDispute:false,
+      dialogRefuteDispute:false,
+      dispute_form:{
+        textarea:'',
+        name:''
+      }
     };
   },
   watch: {
@@ -491,6 +632,41 @@ export default {
         }
       });
     },
+    //服务证明
+    onFileServiceCertificate(file) {
+      console.log('服务证明 file =>', file);
+      return false; // 阻止上传动作
+    },
+    //客户签名文件
+    onFileCustomerSignature(file) {
+      console.log('客户签名文件 file =>', file);
+      return false; // 阻止上传动作
+    },
+    //收据文件
+    onFileReceipt(file) {
+      console.log('收据文件 file =>', file);
+      return false; // 阻止上传动作
+    },
+    //协议条款
+    onFileAgreementTerms(file) {
+      console.log('协议条款 file =>', file);
+      return false; // 阻止上传动作
+    },
+    //条款披露
+    onFileTermDisclosure(file) {
+      console.log('条款披露 file =>', file);
+      return false; // 阻止上传动作
+    },
+    //其他
+    onFileOther(file) {
+      console.log('其他 file =>', file);
+      return false; // 阻止上传动作
+    },
+    //试用日志
+    onFileTrialLog(file) {
+      console.log('试用日志 file =>', file);
+      return false; // 阻止上传动作
+    },
   },
   computed: {
     showBrand() {
@@ -548,5 +724,42 @@ export default {
   word-wrap: break-word;
   word-break: normal;
   height: 100px;
+}
+.disputed-box{
+  position: relative;
+  .disputed-box-title{
+    font-size: 16px;
+    font-weight: 700;
+  }
+  .disputed-box-left{
+    width: 50%;
+  }
+  .disputed-box-right{
+    line-height: 24px;
+    width: 50%;
+  }
+  .disputed-box-btn{
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+  }
+}
+.disputed-box-left >div{
+  margin-bottom: 20px;
+}
+.dispute-title{
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  gap: 10px;
+}
+.dispute-top-box{
+  display: flex;
+  border-bottom: 1px solid #F2F3F5;
+  padding-bottom: 20px;
+  margin-bottom: 10px;
+}
+::v-deep .el-dialog__title{
+  font-weight: 700;
 }
 </style>
