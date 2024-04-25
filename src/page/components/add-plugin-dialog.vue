@@ -6,14 +6,14 @@
           <div>{{ plugin_data.client_key }}</div>
         </el-form-item>
         <el-form-item :label="$t('name') + ':'" prop="name">
-          <el-input v-model="plugin_data.name" :placeholder="$t('extension name is required')">
+          <el-input v-model="plugin_data.name" :placeholder="$t('extension name is required')" maxlength="100">
           </el-input>
         </el-form-item>
         <el-form-item :label="$t('icon') + ':'" prop="icon">
           <img-upload :icon_url="plugin_data.icon" @iconUpSourceChange="iconUpSourceChange"></img-upload>
         </el-form-item>
         <el-form-item :label="$t('description') + ':'" prop="description">
-          <el-input type="textarea" v-model="plugin_data.description" :placeholder="$t('please input description')"></el-input>
+          <el-input type="textarea" v-model="plugin_data.description" :placeholder="$t('please input description')" maxlength="120"></el-input>
         </el-form-item>
         <el-form-item :label="$t('store address') + ':'" prop="store_address">
           <el-input v-model="plugin_data.store_address" :placeholder="$t('please input store address')"></el-input>

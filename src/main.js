@@ -31,6 +31,7 @@ Object.keys(globalMethods).forEach(methodName => {
 const i18n = new VueI18n({
   locale: localLang,
   fallbackLocale: localLang,
+  silentTranslationWarn: true,
   messages: {
     'zh-CN': Object.assign(messages["zh-CN"], zhLocale), // 中文语言包
     'en-US': Object.assign(messages['en-US'], enLocale) // 英文语言包

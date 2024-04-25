@@ -19,7 +19,9 @@
                     </div> -->
                     <!-- 单次支付或循环订阅 -->
                     <div><span class="font-blue">{{ params.currency ? params.currency.toUpperCase() : '' }}{{
-                        params.amount ? params.amount / 100 : '' }}</span></div>
+                        params.amount ? params.amount / 100 : '' }}</span>
+                        <span v-if="params.interval">/ {{ $t(params.interval) }}</span>    
+                    </div>
                     <div style="margin-bottom: 30px;"><span class="font-tips">{{ params.plan_type == 'one_time' ?
                         $t('one_time') : $t('recurring')
                     }}</span></div>
@@ -32,18 +34,19 @@
                             <!-- 套餐详情 -->
                             <div class="plan-box-left">
                                 <div class="background-box"
-                                    :style="{ backgroundImage: params.icon ? 'url(https://kodepay-cdn.oss-us-west-1.aliyuncs.com/' + params.icon + ')' : '' }">
+                                    :style="{ backgroundImage: params.icon ? 'url(https://kodepay-cdn.oss-us-west-1.aliyuncs.com/' + params.icon + ')' : 'url(https://kodepay-cdn.oss-us-west-1.aliyuncs.com/common/images/logo%E7%99%BD%E8%89%B2_%E8%93%9D%E5%BA%95.png)' }">
                                 </div>
                                 <div>
                                     <p style="margin-bottom: 7px;">{{ params.name }}</p>
                                     <p class="font-tips" v-if="params.desc">{{ params.desc }}</p>
                                 </div>
                             </div>
-                            <div style="text-align: right;">
+                            <div style="text-align: right;flex-shrink: 0;">
                                 <!-- <p style="margin-bottom: 7px;" v-html="$t('Free days Try').replace('{day}', '7')"></p>
                                 <p class="font-tips" v-html="$t('Free duration Amount').replace('{Amount}', params.amount ? params.amount / 100 : '')"></p> -->
                                 {{ params.currency ? params.currency.toUpperCase() : '' }} {{
                                     params.amount ? params.amount / 100 : '' || '' }}
+                                <span v-if="params.interval">/ {{ $t(params.interval) }}</span>
                             </div>
                         </div>
                         <div class="flex-box">
@@ -273,6 +276,7 @@ export default {
                 height: 48px;
                 background-color: #fff;
                 background-size: 100% 100%;
+                flex-shrink: 0;
             }
         }
 

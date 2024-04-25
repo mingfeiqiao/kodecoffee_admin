@@ -218,7 +218,8 @@ export default {
             common_headers: {},
             emailInput: '',
             emailShow: false,
-            isShowPaypal: false
+            isShowPaypal: false,
+            paymentMethodTypes:[]
         };
     },
     created() {
@@ -273,6 +274,8 @@ export default {
 
                     this.stripe_public_key = stripe_public_key;
                     this.client_secret = client_secret;
+                    this.paymentMethodTypes = available_payment_methods.map(method => method === 'wechat' ? 'wechat_pay' : method);
+                    this.paymentMethodTypes = this.paymentMethodTypes.filter(item => item != 'paypal');
 
                     this.product_info = data.product_info;
                     this.transaction_info = data.transaction_info;
@@ -386,24 +389,12 @@ export default {
                     type: 'tabs',
                     defaultCollapsed: false,
                 },
-                defaultValues: {
-                    billingDetails: {
-                        name: 'John Doe',
-                        email: 'john.doe@example.com',
-                        address: {
-                            city: 'New York',
-                            country: 'US',
-                            line1: '123 Main St',
-                            postal_code: '10001',
-                            state: 'NY'
-                        }
-                    }
-                }
             };
             this.elements = this.stripe.elements({
                 mode: 'payment',
                 currency: this.product_info.currency,
                 amount: this.product_info.amount,
+                paymentMethodTypes: this.paymentMethodTypes
             });
 
             this.paymentElement = this.elements.create('payment', options);
