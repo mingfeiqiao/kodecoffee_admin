@@ -141,12 +141,12 @@
               <div>{{ scope.row.amount_currency ? scope.row.amount_currency.toUpperCase() : '' }} {{ scope.row.amount_value / 100 }}</div>
             </template>
           </el-table-column>
-          <el-table-column prop="status" :label="$t('status')">
+          <el-table-column prop="status" :label="$t('status')" min-width="120">
             <template slot-scope="scope">
               <div v-if="scope.row.status" v-html="onTextStatus(scope.row)"></div>
             </template>
           </el-table-column>
-          <el-table-column prop="channel" :label="$t('Source Type')">
+          <el-table-column prop="channel" :label="$t('Source Type')" min-width="100">
           </el-table-column>
           <el-table-column prop="email" :label="$t('customer')" min-width="150">
             <template slot-scope="scope">
