@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-tabs v-model="active_order_type" @tab-click="handleClick">
-      <el-tab-pane v-for="(option, index) in order_option" :key="index" :label="$t(option.label)" :name="option.value">
+      <el-tab-pane :label="$t('All Orders')" name="all order">
         <div>
           <div>
             <div style="display: flex;flex-wrap:wrap">
@@ -120,6 +120,71 @@
           </div>
         </div>
       </el-tab-pane>
+      <el-tab-pane name="disputed">
+        <p slot="label"> {{ $t('Disputes') }} <span v-if="underReview.length">({{ underReview.length }})</span> </p>
+
+        <el-select size="small" multiple v-model="disputed_status" :placeholder="$t('select placeholder')" @visible-change="onBlur" @remove-tag="onDelTags">
+          <el-option
+            v-for="item in disputed_status_options"
+            :key="item.value"
+            :label="$t(item.label)"
+            :value="item.value">
+          </el-option>
+        </el-select>
+        <el-table
+          :data="disputeTableData"
+          style="width: 100%; margin-top: 20px;"
+          v-loading="disputLoading"
+        >
+          <el-table-column prop="amount_value" :label="$t('Amount')">
+            <template slot-scope="scope">
+              <div>{{ scope.row.amount_currency ? scope.row.amount_currency.toUpperCase() : '' }} {{ scope.row.amount_value / 100 }}</div>
+            </template>
+          </el-table-column>
+          <el-table-column prop="status" :label="$t('status')" min-width="120">
+            <template slot-scope="scope">
+              <div v-if="scope.row.status" v-html="onTextStatus(scope.row)"></div>
+            </template>
+          </el-table-column>
+          <el-table-column prop="channel" :label="$t('Source Type')" min-width="100">
+          </el-table-column>
+          <el-table-column prop="email" :label="$t('customer')" min-width="150">
+            <template slot-scope="scope">
+              {{ scope.row.extension_user.email }}
+            </template>
+          </el-table-column>
+          <el-table-column prop="reason" :label="$t('Reason for Dispute')" min-width="150">
+          </el-table-column>
+          <el-table-column prop="created_time" :label="$t('create time')" min-width="150">
+            <template slot-scope="scope">
+              <div v-if="scope.row.created_time">{{ formatCreatedTime(scope.row.created_time) }}</div>
+            </template>
+          </el-table-column>
+          <el-table-column prop="due_by" :label="$t('Response Deadline')" min-width="150">
+            <template slot-scope="scope">
+              <div v-if="scope.row.due_by">{{ formatCreatedTime(scope.row.due_by) }}</div>
+            </template>
+          </el-table-column>
+          <el-table-column :label="$t('Operation')">
+            <template slot-scope="scope">
+              <span class="link" @click="openDisputeDetail(scope.row)">{{ $t('detail') }}</span>
+            </template>
+          </el-table-column>
+        </el-table>
+
+        <div style="padding-top:12px;display: flex;align-items: center;justify-content: center;">
+          <el-pagination
+            background
+            @size-change="disputSizeChange"
+            @current-change="disputCurrentChange"
+            :current-page.sync="disputPage"
+            :page-sizes="[10,20]"
+            :page-size="disputSize"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="disputTotal">
+          </el-pagination>
+        </div>
+      </el-tab-pane>
     </el-tabs>
   </div>
 </template>
@@ -129,7 +194,7 @@ import SUBSCRIPTION_OPTIONS from "../../options/subscription_options.json";
 import CURRENCY_OPTIONS from "../../options/currency_options.json";
 import ORDER_OPTIONS from "../../options/order_options.json";
 import {timestampToDateString} from "../../utils/dateUtils";
-import {orderList, planFilterListApi, exportBillApi, pluginList} from "../../api/interface";
+import {orderList, planFilterListApi, exportBillApi, pluginList, disputeList} from "../../api/interface";
 import datePicker from "../components/date-picker.vue";
 export default {
   data() {
@@ -172,6 +237,30 @@ export default {
           value: "updated"
         }
       ],
+      disputed_status_options:[
+        {
+          label: "Pending",
+          value: "open",
+          color: "#ff8f1f"
+        },
+        {
+          label: "Awaiting Review",
+          value: "under_review",
+          color: "#4bcccc"
+        },
+        {
+          label: "Won",
+          value: "won",
+          color: "#00b578"
+        },
+        {
+          label: "Lost",
+          value: "lost",
+          color: "#fa5151"
+        },
+      ],
+      disputed_status:[],
+      disputeTableData: [],
       plan_list:[],
       plan_list_loading:false,
       client_list:[],
@@ -290,12 +379,18 @@ export default {
       },
       table_data:[],
       table_loading:false,
-      isDelTags:null
+      isDelTags:null,
+      disputTotal:0,
+      disputSize:10,
+      disputPage:1,
+      disputLoading:false,
+      underReview:0
     };
   },
   created() {
     this.getPluginList()
     this.getPlanList();
+    this.getDisputeList();
     this.table_data = this.getTableData();
     this.timezone = this.getUserTimezone();
     this.user_default_time_zone = this.timezone;
@@ -325,6 +420,27 @@ export default {
         this.client_list_loading = false;
         console.log(err);
       });
+    },
+    getDisputeList(){
+      let param = {
+        condition:this.disputed_status.length ? { status: this.disputed_status } : '',
+        order:{created_time: "desc"},
+        page:this.disputPage,
+        page_size:this.disputSize,
+      }
+      this.disputLoading = true;
+      disputeList(param).then(res =>{
+        let {data: {data, code, totalCount}} = res;
+        if(code == 100000){
+          this.disputeTableData = data;
+          this.disputTotal = totalCount || 0;
+          this.underReview = data.filter(item => item.status == 'open');
+        }
+        this.disputLoading = false;
+      }).catch(err => {
+        console.log('err =>', err);
+        this.disputLoading = false;
+      })
     },
     formatExportDataCsv (data) {
       const order_detail = this.formatOrderDetail(data);
@@ -550,6 +666,10 @@ export default {
       this.page = 1;
       this.page_size = 10;
       this.total = 0;
+
+      this.disputPage = 1;
+      this.disputSize = 10;
+      this.disputTotal = 0;
     },
     /**
      * tab切换
@@ -559,11 +679,16 @@ export default {
       this.resetPageParams();
       if (this.active_order_type === 'disputed') {
         this.condition.is_dispute = 1
+        this.getDisputeList();
+      }else{
+        this.getTableData();
       }
-      this.getTableData();
     },
     openOrderDetail (order_id) {
       this.$router.push({path: "/orders/detail/" + order_id});
+    },
+    openDisputeDetail(value) {
+      this.$router.push({path: `/orders/detail/${value.transaction_invoice_id}?disputeid=${value.id}`});
     },
     /**
      * 改变每页显示条数
@@ -584,7 +709,7 @@ export default {
     onBlur(event) {
       if(!event) {
         this.resetPageParams();
-        this.getTableData();
+        this.active_order_type == 'all order' ? this.getTableData() : this.getDisputeList();
       }
     },
     //移除多选框Tags触发，需要增加防抖事件。
@@ -593,7 +718,7 @@ export default {
       this.isDelTags = setTimeout(() => {
         this.isDelTags = null;
         this.resetPageParams();
-        this.getTableData();
+        this.active_order_type == 'all order' ? this.getTableData() : this.getDisputeList();
       }, 1000)
     },
     /**
@@ -731,6 +856,11 @@ export default {
       this.page_size = size;
       this.getTableData();
     },
+    disputSizeChange(size) {
+      this.resetPageParams();
+      this.disputSize = size;
+      this.getDisputeList();
+    },
     formatPrice (price, currency) {
       let symbol = '';
       for (const currency_key in CURRENCY_OPTIONS) {
@@ -748,6 +878,17 @@ export default {
       this.page = val;
       this.getTableData();
     },
+    disputCurrentChange(val) {
+      this.disputPage = val;
+      this.getDisputeList();
+    },
+    onTextStatus(value) {
+      if(value){
+        let info = this.disputed_status_options.filter(item => item.value == value.status)[0];
+        let str = `<span style="color:${info.color}">${this.$t(info.label)}</span>`;
+        return str;
+      }
+    }
   },
 };
 </script>

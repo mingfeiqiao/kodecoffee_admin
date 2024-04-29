@@ -68,6 +68,33 @@
         <el-descriptions-item :label="$t('extension')">{{ order_detail.client_name }}</el-descriptions-item>
         <el-descriptions-item :label="$t('order id')" >{{ order_detail.order_id }}</el-descriptions-item>
       </el-descriptions>
+      <div v-if="isShowDispute" class="disputed-box" style="padding: 24px 0;border-top: 1px solid rgba(232, 232, 232, 1);border-bottom: 1px solid rgba(232, 232, 232, 1);">
+        <div class="disputed-box-title">{{ $t('Order Dispute') }}</div>
+        <div style="display: flex;margin-top: 20px;">
+          <div class="disputed-box-left">
+            <div>{{ $t('Dispute Amount') }}: {{ dispute_detail.amount_value / 100 }} {{ dispute_detail.amount_currency ? dispute_detail.amount_currency.toUpperCase() : ''}}</div>
+            <div>{{ $t('Reason') }}: {{ dispute_detail.reason }}</div>
+            <div>{{ $t('Dispute Time') }}: {{ formatCreatedTime(dispute_detail.created_time) }}</div>
+            <div>{{ $t('Response Deadline') }}: {{ formatCreatedTime(dispute_detail.due_by) }}</div>
+            <div>{{ $t('Dispute Fee') }}: {{ dispute_detail.fee_value / 100  }} {{ dispute_detail.fee_currency ? dispute_detail.fee_currency.toUpperCase() : ''}}</div>
+            <!-- <div>{{ $t('Remarks') }}: </div> -->
+            <div>ID: {{ dispute_detail.dispute_id }}</div>
+            
+          </div>
+          <div class="disputed-box-right">
+            <div class="disputed-box-title">{{ $t('Regarding disputes') }}</div>
+            <ol>
+              <li>{{ $t('Regarding disputes 1') }}</li>
+              <li>{{ $t('Regarding disputes 2') }}</li>
+              <li>{{ $t('Regarding disputes 3') }}</li>
+            </ol>
+          </div>
+        </div>
+        <div class="disputed-box-btn">
+          <el-button type="primary" @click="dialogRefuteDispute = true" v-if="!is_paypal" :disabled="disabledRefute" key="Refute">{{ $t('Refute Dispute') }}</el-button>
+          <el-button @click="dialogAcceptDispute = true" :disabled="disabledAccept" key="Accept">{{ $t('Accept dispute') }}</el-button>
+        </div>
+      </div>
       <div style="padding: 24px 0;border-top: 1px solid rgba(232, 232, 232, 1);border-bottom: 1px solid rgba(232, 232, 232, 1);" v-if="activities.length > 0">
         <div class="title-16">{{$t('Timeline')}}</div>
         <div style="padding-top: 24px">
@@ -170,12 +197,120 @@
         </el-form-item>
       </el-form>
     </el-dialog>
+
+    <el-dialog
+      :visible.sync="dialogAcceptDispute"
+      width="30%"
+    >
+      <p class="dispute-title"><i class="el-icon-warning" style="color: #faad14;font-size: 24px;"></i><span>{{ $t('Accept dispute refund') }}</span></p>
+      <p style="line-height: 24px;padding-left: 32px;">{{ $t('accepting dispute tips') }}</p>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogAcceptDispute = false">{{ $t('cancel') }}</el-button>
+        <el-button type="primary" @click="onDialogAcceptDispute" v-loading="isAcceptLoading">{{ $t('Ok') }}</el-button>
+      </span>
+    </el-dialog>
+
+    <el-dialog
+      :visible.sync="dialogRefuteDispute"
+      width="35%"
+    >
+      <span slot="title" style="font-size: 18px;font-weight: 700;">{{ $t('Refute Dispute') }}</span>
+      <div>
+          <div class="dispute-top-box">
+            <span style="width: 20%;">{{ $t('Basic Description') }}:</span>
+            <el-input
+              type="textarea"
+              :rows="2"
+              :placeholder="$t('Please enter content')"
+              v-model="dispute_form.product_description">
+            </el-input>
+          </div>
+          <div style="font-size: 16px;font-weight: 600; margin-bottom: 10px;">{{ $t('Proof materials') }}</div>
+
+          <el-form ref="form" :model="dispute_form" label-width="80px" label-position="left">
+            <el-form-item :label="$t('Service Certificate')">
+              <el-upload
+                class="upload-demo"
+                action=""
+                :on-remove="handleRemove"
+                :before-upload="onFileServiceCertificate"
+              >
+                <el-button size="small" icon="el-icon-upload2">Upload</el-button>
+              </el-upload>
+            </el-form-item>
+            <el-form-item :label="$t('Customer Signature')">
+              <el-upload
+                class="upload-demo"
+                action=""
+                :on-remove="handleRemove"
+                :before-upload="onFileCustomerSignature"
+              >
+                <el-button size="small" icon="el-icon-upload2">Upload</el-button>
+              </el-upload>
+            </el-form-item>
+            <el-form-item :label="$t('Receipt')">
+              <el-upload
+                class="upload-demo"
+                action=""
+                :on-remove="handleRemove"
+                :before-upload="onFileReceipt"
+              >
+                <el-button size="small" icon="el-icon-upload2">Upload</el-button>
+              </el-upload>
+            </el-form-item>
+            <el-form-item :label="$t('Agreement Terms')" v-if="is_paypal">
+              <el-upload
+                class="upload-demo"
+                action=""
+                :on-remove="handleRemove"
+                :before-upload="onFileAgreementTerms"
+              >
+                <el-button size="small" icon="el-icon-upload2">Upload</el-button>
+              </el-upload>
+            </el-form-item>
+            <el-form-item :label="$t('Term Disclosure')" v-if="is_paypal">
+              <el-upload
+                class="upload-demo"
+                action=""
+                :on-remove="handleRemove"
+                :before-upload="onFileTermDisclosure"
+              >
+                <el-button size="small" icon="el-icon-upload2">Upload</el-button>
+              </el-upload>
+            </el-form-item>
+            <el-form-item :label="$t('Other')">
+              <el-upload
+                class="upload-demo"
+                action=""
+                :on-remove="handleRemove"
+                :before-upload="onFileOther"
+              >
+                <el-button size="small" icon="el-icon-upload2">Upload</el-button>
+              </el-upload>
+            </el-form-item>
+            <el-form-item :label="$t('Trial Log')">
+              <el-upload
+                class="upload-demo"
+                action=""
+                :on-remove="handleRemove"
+                :before-upload="onFileTrialLog"
+              >
+                <el-button size="small" icon="el-icon-upload2">Upload</el-button>
+              </el-upload>
+            </el-form-item>
+          </el-form>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogRefuteDispute = false">{{ $t('cancel') }}</el-button>
+        <el-button type="primary" @click="onDialogRefuteDispute" v-loading="isRefuteLoading">{{ $t('Ok') }}</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import ORDER_OPTIONS from "../../options/order_options.json";
-import {orderDetailApi, refundApi, unsubscriptionDetailApi} from "../../api/interface";
+import {orderDetailApi, refundApi, unsubscriptionDetailApi, refutedisputeStripe, acceptDisputeStripe, uploadFile, disputeDetails, acceptDisputePaypal } from "../../api/interface";
 import {timestampToDateString} from "../../utils/dateUtils";
 import CURRENCY_OPTIONS from "../../options/currency_options.json";
 export default {
@@ -233,6 +368,13 @@ export default {
         card_number:"",
         transaction_invoice_key: "",
       },
+      dispute_detail:{
+        amount_value:"",
+        created_time:"",
+        due_by:"",
+        reason:"",
+        id:"",
+      },
       activities: [],
       cost_detail: {
         settle_amount:"", // 结算货币的实际金额
@@ -246,7 +388,7 @@ export default {
       is_show_refund:false,
       is_support_unsubscribe:false,
       is_unsubscribe_checked:false,
-      is_paypal:false,
+      is_paypal:true,
       refund:{
         unsubscribe_immediately:'expiration',
         refund_reason:'Customer Request',
@@ -259,7 +401,24 @@ export default {
         {"label":'Other',"value": "Other"},
       ],
       rules:{},
-      lang:this.$i18n.locale
+      lang:this.$i18n.locale,
+      dialogAcceptDispute:false,
+      dialogRefuteDispute:false,
+      dispute_form:{
+        product_description:'', //描述
+        service_documentation:'', //服务证明
+        customer_signature:'',  //客户签名
+        receipt:'', //收据
+        uncategorized_file:'',  //其他
+        access_activity_log:'',  //试用日志
+        fee_value:''  //争议费用
+      },
+      dispute_id:'',
+      isShowDispute:false,
+      disabledRefute: true,
+      disabledAccept: true,
+      isAcceptLoading: false,
+      isRefuteLoading: false
     };
   },
   watch: {
@@ -268,6 +427,16 @@ export default {
     }
   },
   created() {
+    if(location.href.indexOf('?') != -1) {
+      let urlString = location.href.split('?')[1];
+      const [key, value] = urlString.split('=');
+      const params = {
+        [key]: value
+      };
+      this.dispute_id = params.disputeid;
+      this.isShowDispute = true;
+      this.onDisputeDetails();
+    }
     this.onOrderDetail();
   },
   methods: {
@@ -322,6 +491,7 @@ export default {
             this.activities = this.formatTimeLine(res.data.data)
             this.is_show_refund = res.data.data.pay_status === "succeed";
             this.is_paypal = res.data.data.pay_type === "paypal";
+            this.id = res.data.data.id;
             this.is_support_unsubscribe = this.isSupportUnSubscribe(res.data.data.transaction.order_status)
           } else {
             if (res && res.data && res.data.message) {
@@ -332,6 +502,20 @@ export default {
           console.log(err);
         });
       }
+    },
+    onDisputeDetails(){
+      disputeDetails(this.dispute_id).then(res => {
+        let {data :{data, code}} = res;
+        if(code == 100000){
+          this.dispute_detail = data;
+          if(data.status != 'open'){
+              this.disabledAccept = true;
+              this.disabledRefute = true;
+          }
+        }
+      }).catch(err =>{  
+        console.log('err =>', err);
+      })
     },
     isSupportUnSubscribe(transaction_order_status) {
       return transaction_order_status === 'created' || transaction_order_status === 'updated'
@@ -491,6 +675,123 @@ export default {
         }
       });
     },
+    //反驳争议
+    onDialogRefuteDispute(){
+      this.isRefuteLoading = true;
+      if(this.is_paypal){
+        //暂不做处理
+      }else{
+        let param = {};
+        for (let key in this.dispute_form) {
+            if (this.dispute_form[key]) {
+              param[key] = this.dispute_form[key];
+            }
+        }
+        refutedisputeStripe(this.id,param).then(res=>{
+          let {data :{code, message}} = res;
+          if(code == '100000') {
+            this.$message.success('Successful');
+            //关闭弹框
+            this.dialogRefuteDispute = false;
+            //接受争议和反驳争议按钮置灰
+            this.disabledAccept = true;
+            this.disabledRefute = true;
+          }else{
+            this.$message.warning(message)
+          }
+          //loading状态关闭
+          this.isRefuteLoading = false;
+        }).catch(err =>{
+          console.log('err =>', err);
+          this.isRefuteLoading = false;
+        })
+      }
+    },
+    //接受争议
+    onDialogAcceptDispute(){
+      this.isAcceptLoading = true;
+      //判断一下当前的支付类型
+      if(this.is_paypal){
+        acceptDisputePaypal(this.id).then(res=>{
+          let {data :{code, message}} = res;
+          if(code == '100000') {
+            this.dialogAcceptDispute = false;
+            this.disabledAccept = true;
+            this.disabledRefute = true;
+            this.$message.success('Successful');
+          }else{
+            this.$message.warning(message)
+          }
+          this.isAcceptLoading = false;
+        }).catch((err)=>{
+          console.log('err =>', err);
+          this.isAcceptLoading = false;
+        })
+      }else{
+        acceptDisputeStripe(this.id).then(res=>{
+          let {data :{code, message}} = res;
+          if(code == '100000') {
+            this.dialogAcceptDispute = false;
+            this.disabledAccept = true;
+            this.disabledRefute = true;
+            this.$message.success('Successful');
+          }else{
+            this.$message.warning(message)
+          }
+          this.isAcceptLoading = false;
+        }).catch((err)=>{
+          console.log('err =>', err);
+          this.isAcceptLoading = false;
+        })
+      }
+    },
+    //服务证明
+    async onFileServiceCertificate(file) {
+      this.dispute_form.service_documentation = await this.getIconUrl('plugin', file);
+      return false; // 阻止上传动作
+    },
+    //客户签名文件
+    async onFileCustomerSignature(file) {
+      this.dispute_form.customer_signature = await this.getIconUrl('dispute', file);
+      return false; // 阻止上传动作
+    },
+    //收据文件
+    async onFileReceipt(file) {
+      this.dispute_form.receipt = await this.getIconUrl('dispute', file);
+      return false; // 阻止上传动作
+    },
+    //协议条款
+    async onFileAgreementTerms(file) {
+      return false; // 阻止上传动作
+    },
+    //条款披露
+    async onFileTermDisclosure(file) {
+      return false; // 阻止上传动作
+    },
+    //其他
+    async onFileOther(file) {
+      this.dispute_form.uncategorized_file = await this.getIconUrl('dispute', file);
+      return false; // 阻止上传动作
+    },
+    //试用日志
+    async onFileTrialLog(file) {
+      this.dispute_form.access_activity_log = await this.getIconUrl('dispute', file);
+      return false; // 阻止上传动作
+    },
+    handleRemove(){
+
+    },
+    async getIconUrl(path, file) {
+      let response = await uploadFile({path: path, icon: file});
+      if (parseInt(response.data.code) === 100000) {
+        return response.data.data.url;
+      } else {
+        this.$message({
+          message: 'upload error',
+          type: 'error'
+        });
+      }
+    },
   },
   computed: {
     showBrand() {
@@ -548,5 +849,42 @@ export default {
   word-wrap: break-word;
   word-break: normal;
   height: 100px;
+}
+.disputed-box{
+  position: relative;
+  .disputed-box-title{
+    font-size: 16px;
+    font-weight: 700;
+  }
+  .disputed-box-left{
+    width: 50%;
+  }
+  .disputed-box-right{
+    line-height: 24px;
+    width: 50%;
+  }
+  .disputed-box-btn{
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+  }
+}
+.disputed-box-left >div{
+  margin-bottom: 20px;
+}
+.dispute-title{
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  gap: 10px;
+}
+.dispute-top-box{
+  display: flex;
+  border-bottom: 1px solid #F2F3F5;
+  padding-bottom: 20px;
+  margin-bottom: 10px;
+}
+::v-deep .el-dialog__title{
+  font-weight: 700;
 }
 </style>

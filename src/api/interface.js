@@ -97,6 +97,15 @@ export const updatePlan = (id, data) => instance.post(`/product/save/${id}`, JSO
 export const orderList = (data) => instance.post('/app/bill/list', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 // 订单退款
 export const refundApi = (data) => instance.post(`/app/bill/refund`, JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
+//反驳争议
+export const refutedisputeStripe = (id,data) => instance.post(`/app/bill/dispute/stripe/${id}`, JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
+//接受争议
+export const acceptDisputeStripe = (id) => instance.post(`/app/bill/dispute/stripe/${id}/close`, '', {headers: {'Content-Type' : 'application/json'}});
+export const acceptDisputePaypal = (id) => instance.post(`/app/bill/dispute/paypal/${id}/close`, '', {headers: {'Content-Type' : 'application/json'}});
+// 争议列表
+export const disputeList = (data) => instance.post(`/app/bill/dispute`, JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
+//争议详情
+export const disputeDetails = (id) => instance.post(`app/bill/dispute/${id}`, '', {headers: {'Content-Type' : 'application/json'}});
 
 export const subscriptionList = (data) => instance.post('/app/subscription/list', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 
