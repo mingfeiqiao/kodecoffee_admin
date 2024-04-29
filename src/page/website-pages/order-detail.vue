@@ -677,7 +677,7 @@ export default {
     },
     //反驳争议
     onDialogRefuteDispute(){
-      this.isRefuteLoading = true;
+      
       if(this.is_paypal){
         //暂不做处理
       }else{
@@ -687,6 +687,8 @@ export default {
               param[key] = this.dispute_form[key];
             }
         }
+        if(JSON.stringify(param) == "{}") return;
+        this.isRefuteLoading = true;
         refutedisputeStripe(this.id,param).then(res=>{
           let {data :{code, message}} = res;
           if(code == '100000') {
