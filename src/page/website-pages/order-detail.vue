@@ -508,9 +508,9 @@ export default {
         let {data :{data, code}} = res;
         if(code == 100000){
           this.dispute_detail = data;
-          if(data.status != 'open'){
-              this.disabledAccept = true;
-              this.disabledRefute = true;
+          if(data.status == 'open'){
+              this.disabledAccept = false;
+              this.disabledRefute = false;
           }
         }
       }).catch(err =>{  
