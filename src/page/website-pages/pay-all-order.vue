@@ -121,7 +121,7 @@
         </div>
       </el-tab-pane>
       <el-tab-pane name="disputed">
-        <span slot="label"> {{ $t('Disputes') }}({{ underReview.length }})</span>
+        <p slot="label"> {{ $t('Disputes') }} <span v-if="underReview.length">({{ underReview.length }})</span> </p>
 
         <el-select size="small" multiple v-model="disputed_status" :placeholder="$t('select placeholder')" @visible-change="onBlur" @remove-tag="onDelTags">
           <el-option
@@ -424,7 +424,7 @@ export default {
     getDisputeList(){
       let param = {
         condition:this.disputed_status.length ? { status: this.disputed_status } : '',
-        order:'',
+        order:{created_time: "desc"},
         page:this.disputPage,
         page_size:this.disputSize,
       }
@@ -679,8 +679,10 @@ export default {
       this.resetPageParams();
       if (this.active_order_type === 'disputed') {
         this.condition.is_dispute = 1
+        this.getDisputeList();
+      }else{
+        this.getTableData();
       }
-      this.getTableData();
     },
     openOrderDetail (order_id) {
       this.$router.push({path: "/orders/detail/" + order_id});

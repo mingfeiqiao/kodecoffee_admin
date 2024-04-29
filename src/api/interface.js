@@ -101,6 +101,7 @@ export const refundApi = (data) => instance.post(`/app/bill/refund`, JSON.string
 export const refutedisputeStripe = (id,data) => instance.post(`/app/bill/dispute/stripe/${id}`, JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 //接受争议
 export const acceptDisputeStripe = (id) => instance.post(`/app/bill/dispute/stripe/${id}/close`, '', {headers: {'Content-Type' : 'application/json'}});
+export const acceptDisputePaypal = (id) => instance.post(`/app/bill/dispute/paypal/${id}/close`, '', {headers: {'Content-Type' : 'application/json'}});
 // 争议列表
 export const disputeList = (data) => instance.post(`/app/bill/dispute`, JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 //争议详情

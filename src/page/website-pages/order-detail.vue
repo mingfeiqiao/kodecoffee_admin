@@ -76,8 +76,8 @@
             <div>{{ $t('Reason') }}: {{ dispute_detail.reason }}</div>
             <div>{{ $t('Dispute Time') }}: {{ formatCreatedTime(dispute_detail.created_time) }}</div>
             <div>{{ $t('Response Deadline') }}: {{ formatCreatedTime(dispute_detail.due_by) }}</div>
-            <div>{{ $t('Dispute Fee') }}:</div>
-            <div>{{ $t('Remarks') }}:</div>
+            <div>{{ $t('Dispute Fee') }}: {{ dispute_detail.fee_value / 100  }} {{ dispute_detail.fee_currency ? dispute_detail.fee_currency.toUpperCase() : ''}}</div>
+            <!-- <div>{{ $t('Remarks') }}: </div> -->
             <div>ID: {{ dispute_detail.dispute_id }}</div>
             
           </div>
@@ -91,8 +91,8 @@
           </div>
         </div>
         <div class="disputed-box-btn">
-          <el-button type="primary" @click="dialogRefuteDispute = true">{{ $t('Refute Dispute') }}</el-button>
-          <el-button @click="dialogAcceptDispute = true">{{ $t('Accept dispute') }}</el-button>
+          <el-button type="primary" @click="dialogRefuteDispute = true" v-if="!is_paypal" :disabled="disabledRefute" key="Refute">{{ $t('Refute Dispute') }}</el-button>
+          <el-button @click="dialogAcceptDispute = true" :disabled="disabledAccept" key="Accept">{{ $t('Accept dispute') }}</el-button>
         </div>
       </div>
       <div style="padding: 24px 0;border-top: 1px solid rgba(232, 232, 232, 1);border-bottom: 1px solid rgba(232, 232, 232, 1);" v-if="activities.length > 0">
@@ -206,7 +206,7 @@
       <p style="line-height: 24px;padding-left: 32px;">{{ $t('accepting dispute tips') }}</p>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogAcceptDispute = false">{{ $t('cancel') }}</el-button>
-        <el-button type="primary" @click="onDialogAcceptDispute">{{ $t('Ok') }}</el-button>
+        <el-button type="primary" @click="onDialogAcceptDispute" v-loading="isAcceptLoading">{{ $t('Ok') }}</el-button>
       </span>
     </el-dialog>
 
@@ -302,7 +302,7 @@
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogRefuteDispute = false">{{ $t('cancel') }}</el-button>
-        <el-button type="primary" @click="onDialogRefuteDispute">{{ $t('Ok') }}</el-button>
+        <el-button type="primary" @click="onDialogRefuteDispute" v-loading="isRefuteLoading">{{ $t('Ok') }}</el-button>
       </span>
     </el-dialog>
   </div>
@@ -310,7 +310,7 @@
 
 <script>
 import ORDER_OPTIONS from "../../options/order_options.json";
-import {orderDetailApi, refundApi, unsubscriptionDetailApi, refutedisputeStripe, acceptDisputeStripe, uploadFile, disputeDetails } from "../../api/interface";
+import {orderDetailApi, refundApi, unsubscriptionDetailApi, refutedisputeStripe, acceptDisputeStripe, uploadFile, disputeDetails, acceptDisputePaypal } from "../../api/interface";
 import {timestampToDateString} from "../../utils/dateUtils";
 import CURRENCY_OPTIONS from "../../options/currency_options.json";
 export default {
@@ -388,7 +388,7 @@ export default {
       is_show_refund:false,
       is_support_unsubscribe:false,
       is_unsubscribe_checked:false,
-      is_paypal:false,
+      is_paypal:true,
       refund:{
         unsubscribe_immediately:'expiration',
         refund_reason:'Customer Request',
@@ -410,10 +410,15 @@ export default {
         customer_signature:'',  //客户签名
         receipt:'', //收据
         uncategorized_file:'',  //其他
-        access_activity_log:''  //试用日志
+        access_activity_log:'',  //试用日志
+        fee_value:''  //争议费用
       },
       dispute_id:'',
-      isShowDispute:false
+      isShowDispute:false,
+      disabledRefute: true,
+      disabledAccept: true,
+      isAcceptLoading: false,
+      isRefuteLoading: false
     };
   },
   watch: {
@@ -503,6 +508,10 @@ export default {
         let {data :{data, code}} = res;
         if(code == 100000){
           this.dispute_detail = data;
+          if(data.status != 'open'){
+              this.disabledAccept = true;
+              this.disabledRefute = true;
+          }
         }
       }).catch(err =>{  
         console.log('err =>', err);
@@ -668,8 +677,9 @@ export default {
     },
     //反驳争议
     onDialogRefuteDispute(){
+      this.isRefuteLoading = true;
       if(this.is_paypal){
-
+        //暂不做处理
       }else{
         let param = {};
         for (let key in this.dispute_form) {
@@ -681,26 +691,57 @@ export default {
           let {data :{code, message}} = res;
           if(code == '100000') {
             this.$message.success('Successful');
+            //关闭弹框
             this.dialogRefuteDispute = false;
+            //接受争议和反驳争议按钮置灰
+            this.disabledAccept = true;
+            this.disabledRefute = true;
+          }else{
+            this.$message.warning(message)
           }
+          //loading状态关闭
+          this.isRefuteLoading = false;
+        }).catch(err =>{
+          console.log('err =>', err);
+          this.isRefuteLoading = false;
         })
       }
     },
     //接受争议
     onDialogAcceptDispute(){
-      console.log('接受争议');
+      this.isAcceptLoading = true;
       //判断一下当前的支付类型
       if(this.is_paypal){
-
-      }else{
-        acceptDisputeStripe(this.id).then(res=>{
-          this.dialogAcceptDispute = false;
+        acceptDisputePaypal(this.id).then(res=>{
           let {data :{code, message}} = res;
           if(code == '100000') {
+            this.dialogAcceptDispute = false;
+            this.disabledAccept = true;
+            this.disabledRefute = true;
             this.$message.success('Successful');
+          }else{
+            this.$message.warning(message)
           }
+          this.isAcceptLoading = false;
         }).catch((err)=>{
           console.log('err =>', err);
+          this.isAcceptLoading = false;
+        })
+      }else{
+        acceptDisputeStripe(this.id).then(res=>{
+          let {data :{code, message}} = res;
+          if(code == '100000') {
+            this.dialogAcceptDispute = false;
+            this.disabledAccept = true;
+            this.disabledRefute = true;
+            this.$message.success('Successful');
+          }else{
+            this.$message.warning(message)
+          }
+          this.isAcceptLoading = false;
+        }).catch((err)=>{
+          console.log('err =>', err);
+          this.isAcceptLoading = false;
         })
       }
     },
