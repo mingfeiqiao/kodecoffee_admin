@@ -1,8 +1,8 @@
 {
   "analyz": "NODE_ENV=production npm_config_report=true npm run build",
-  "name": "newproject",
+  "name": "kodecoffee_frontend",
   "version": "1.0.0",
-  "description": "新项目",
+  "description": "kodecoffee_frontend打赏",
   "author": "shl",
   "private": true,
   "scripts": {

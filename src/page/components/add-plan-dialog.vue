@@ -58,12 +58,12 @@
                <div style="max-width: 100px">
                  <el-select v-model="main_price_obj.price"  @change="priceChange">
                    <el-option
-                     v-for="item in app_price_options"
-                     :key="item.index"
-                     :label="item.amount"
-                     :value="item.amount">
+                     v-for="val in app_price_options"
+                     :key="val"
+                     :label="val"
+                     :value="val">
                      <span style="text-align: center">
-                       {{ item.amount }}
+                       {{ val }}
                      </span>
                    </el-option>
                  </el-select>
@@ -74,7 +74,7 @@
              </div>
            </div>
          </el-form-item>
-         <el-form-item>
+         <el-form-item v-if="0">
            <el-button type="primary" @click="setCurrencyOption">{{$t('set more currencies')}}</el-button>
            <div style="color: #929292;font-size: 12px">
              <span>{{$t('set more currencies tip')}}</span>
@@ -125,9 +125,9 @@
   </div>
 </template>
 <script>
-import imgUpload from "../components/img-upload.vue";
-import {addPlan, updatePlan, uploadFile} from "../../api/interface";
-import CURRENCY_OPTIONS from "../../options/currency_options.json";
+import imgUpload from "./img-upload.vue";
+import {addPlan, updatePlan, uploadFile} from "@/api/interface";
+import CURRENCY_OPTIONS from "@/options/currency_options.json";
 export default {
   data() {
     return {
@@ -135,7 +135,7 @@ export default {
       currency_options: [],
       multiple_selection: [],// 选中的数据
       unable_modify: false, // 是否不可修改
-      app_price_options:[],
+      app_price_options:[1, 2, 3, 5, 7, 9, 10, 20, 50, 100],
       interval_option: "monthly",
       interval_option_map: {"monthly": {interval:"month", interval_count:1}, "every quarter": {interval_count:3, interval: "month"}, "every day": {interval_count:1, interval:"day"}},
       interval_options:[
@@ -156,24 +156,24 @@ export default {
       },
       is_multiple_currency_support: false,
       plan_type_obj: {
-        type: 'recurring'
+        type: 'one_time'
       },
       plan_trial_obj: {
         is_trial: false,
         trial_days: 0
       },
       main_price_obj: {
-        price: 1.99,
+        price: 1,
         currency: 'usd',
         interval:"month",
         interval_count:1
       },
       other_price_obj: [],
       type_option: [
-        {
+       /* {
           label: 'recurring',
           value: 'recurring'
-        },
+        },*/
         {
           label: 'one time pay',
           value: 'one_time'
@@ -197,11 +197,23 @@ export default {
   components: {
     imgUpload
   },
-  created() {
-    if (this.$mode === this.MODECONFIG.SANDBOX.mode) {
-      this.interval_options.push({label:"every day", value:"every day"});
+  computed: {
+    rules () {
+      return {
+        plan_name: [
+          { required: true, message: this.$t('1-100 characters required'), trigger: 'blur', min: 1, max: 100 },
+          { validator: this.validateTrimmedField, trigger: 'blur'}
+        ],
+        plan_desc: [
+          { required: false,  trigger: 'blur', type: 'string', min: 0, max: 1000 },
+          { validator: this.validateTrimmedField, trigger: 'blur'}
+        ],
+
+      }
     }
-    this.app_price_options = this.OPTIONS.app_price_options;
+  },
+  created() {
+    // this.app_price_options = this.OPTIONS.app_price_options;
     if (this.chosen_plan_data && this.chosen_plan_data.plan_id) {
       this.plan = JSON.parse(JSON.stringify(this.chosen_plan_data))
       this.plan_type_obj = this.plan.plan_type_obj;
@@ -579,21 +591,6 @@ export default {
       }
     }
   },
-  computed: {
-    rules () {
-      return {
-        plan_name: [
-          { required: true, message: this.$t('1-100 characters required'), trigger: 'blur', min: 1, max: 100 },
-          { validator: this.validateTrimmedField, trigger: 'blur'}
-        ],
-        plan_desc: [
-          { required: false,  trigger: 'blur', type: 'string', min: 0, max: 1000 },
-          { validator: this.validateTrimmedField, trigger: 'blur'}
-        ],
-
-      }
-    }
-  }
 }
 </script>
 <style scoped lang="less">

@@ -2,9 +2,9 @@
   <div class="container">
     <div style="display: flex;width: 100%;flex-direction: row;align-items: center;justify-content: space-between;padding-bottom: 24px">
       <div style="display:flex;align-items: center;justify-content: center">
-        <div style="display: flex">
+<!--        <div style="display: flex">
           <device-filter :data="payment_modes" @change="paymentModeChange" :device="condition.type"></device-filter>
-        </div>
+        </div>-->
         <div>
           <div style="padding-left: 12px">
             <el-input size="small" :placeholder="$t('input placeholder')" v-model="condition.q" clearable @keyup.enter.native="search"  @clear="search">

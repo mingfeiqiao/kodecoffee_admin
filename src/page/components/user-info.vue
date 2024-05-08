@@ -8,11 +8,9 @@
         {{$t('Logout')}}
       </div>
       <div slot="reference" style="display: flex;align-items: center;cursor: pointer">
-        <el-image v-if="user_info.icon" style="width: 32px; height: 32px;border-radius: 50%;" :src="user_info.icon" fit="fill"></el-image>
-        <svg width="32" height="32">
-          <use xlink:href="#default-user-icon"></use>
-        </svg>
-        <div style="padding-left: 12px;width: 100px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;vertical-align: middle;">{{user_info.email}}</div>
+        <el-avatar :size="24" v-if="user_info.icon" :src="user_info.icon"></el-avatar>
+        <el-avatar :size="24" v-else> {{getUserAvatar}} </el-avatar>
+<!--        <div style="padding-left: 12px;width: 100px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;vertical-align: middle;">{{user_info.email}}</div>-->
       </div>
     </el-popover>
   </div>
@@ -23,6 +21,16 @@ export default {
   data () {
     return {
       user_info: {}
+    }
+  },
+  computed: {
+    getUserAvatar({user_info}) {
+      if(user_info.username) {
+        return user_info.username.slice(0,1)
+      } else {
+        return this.user_info.email.slice(0,2)
+      }
+
     }
   },
   created() {

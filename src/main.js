@@ -15,12 +15,7 @@ import * as globalMethods from './configs/common';
 Vue.prototype.$echarts = echarts
 Vue.prototype.URL = config.URL;
 Vue.prototype.API_URL = config.API_URL;
-Vue.prototype.MODECONFIG = config.MODECONFIG;
-if (window.location.pathname.startsWith(Vue.prototype.MODECONFIG.SANDBOX.basePath)) {
-  Vue.prototype.$mode = Vue.prototype.MODECONFIG.SANDBOX.mode;
-} else {
-  Vue.prototype.$mode = Vue.prototype.MODECONFIG.PRODUCTION.mode;
-}
+
 check_local_storage()
 Vue.use(VueI18n);
 const localLang = getLanguage();

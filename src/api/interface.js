@@ -3,11 +3,6 @@ import axios from "axios";
 import qs from "qs";
 import config from '../configs/config';
 let baseURL = config.API_URL;
-if (window.location.pathname.startsWith(config.MODECONFIG.SANDBOX.basePath)) {
-  baseURL = config.MODECONFIG.SANDBOX.apiURL;
-} else {
-  baseURL = config.MODECONFIG.PRODUCTION.apiURL;
-}
 // 创建一个axios实例
 const instance = axios.create({
   baseURL: baseURL, // 设置API的基础URL

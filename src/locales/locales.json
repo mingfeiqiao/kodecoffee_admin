@@ -463,7 +463,12 @@
     "Pending":"Pending",
     "Awaiting Review":"Awaiting Review",
     "Won":"Won",
-    "Lost":"Lost"
+    "Login":"Login",
+    "Become creator":"Become creator",
+    "Support creator":"Support creator",
+    "Num":"Num",
+    "Pay":"Pay",
+    "Encourage creator":"Write something to encourage the author"
   },
   "zh-CN": {
     "Payment failed, reason for failure:": "支付失败，失败原因:",
@@ -928,6 +933,11 @@
     "Lost":"已输",
     "Won":"已赢",
     "Awaiting Review":"等待审核",
-    "Pending":"待处理"
+    "Login":"登录",
+    "Become creator":"成为创作者",
+    "Support creator":"支持创作者",
+    "Num":"数量",
+    "Pay":"支付",
+    "Encourage creator":"捎给TA的话，鼓励作者"
   }
 }
