@@ -470,19 +470,20 @@
     "Num":"Num",
     "Pay":"Pay",
     "Encourage creator":"Write something to encourage the author",
+    "Creator Client Id": "Client Id",
     "Creator Profile photo": "Profile photo",
     "Profile Upload": "Upload",
     "Profile placeholder": "Support JPG, PNG, recommended 200*200 px",
     "Creator Name": "Name",
     "Creator placeholder": "Enter your unique nickname",
-    "Creator Product info": "youR creating?",
+    "Creator Product info": "your creating?",
     "Product info placeholder": "Music creation, painting, blogging, programming, or something else interesting!",
     "Creator About me": "About me",
     "About me placeholder": "Something about yourself and what you are doing~",
     "Creator Home link": "Home link",
     "Creator Home link share": "share",
     "Creator Cover Img": "Cover image",
-    "Creator Cover Img tips": "Click to Upload Cover image (optional)",
+    "Creator Cover Img tips": "<em>Click to Upload</em> Cover image (optional)",
     "Cover Img placeholder": "Support JPG, PNG, recommended size 1440*300, maximum 10M.",
     "Creator Save": "Save",
     "CopyShare": "Copy&share"
@@ -957,6 +958,7 @@
     "Num":"数量",
     "Pay":"支付",
     "Encourage creator":"捎给TA的话，鼓励作者",
+    "Creator Client Id": "创作者ID",
     "Creator Profile photo": "头像",
     "Profile Upload": "Upload",
     "Profile placeholder": "支持JPG、PNG格式，推荐 200*200 px",
@@ -969,9 +971,10 @@
     "Creator Home link": "主页地址",
     "Creator Home link share": "分享主页",
     "Creator Cover Img": "主页封面图",
-    "Creator Cover Img tips": "点击上传 主页封面图 （选填）",
+    "Creator Cover Img tips": "<em>点击上传</em> 主页封面图 （选填）",
     "Cover Img placeholder": "支持JPG、PNG格式 ，推荐尺寸1440*300，最大10M",
     "Creator Save": "保存",
-    "CopyShare": "复制分享"
+    "CopyShare": "复制分享",
+    "Quantity": "份数"
   }
 }

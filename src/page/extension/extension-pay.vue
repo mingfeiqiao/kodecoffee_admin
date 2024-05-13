@@ -64,10 +64,13 @@
                             <p>US {{ product_info.amount ? product_info.amount / 100 : '' }}</p>
                         </div> -->
                         <div class="flex-box" style="margin-top: 10px;">
+                            <p>{{ $t('Quantity') }}</p>
+                            <b>{{ product_info.quantity }}</b>
+                        </div>
+                        <div class="flex-box" style="margin-top: 10px;">
                             <p>{{ $t('Cope with today') }}</p>
-                            <b>{{ product_info.currency ? product_info.currency.toUpperCase() : '' }} {{
-                product_info.amount ? product_info.amount / 100 : '' || ''
-            }}</b>
+                            <b>{{ product_info.currency ? product_info.currency.toUpperCase() : '' }}
+                              {{transaction_info.amount / 100 }}</b>
                         </div>
                     </div>
                 </div>

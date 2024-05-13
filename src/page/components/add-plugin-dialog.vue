@@ -1,10 +1,10 @@
 <template>
-  <el-dialog :title="operationType === 'add' ? $t('create plugin') : $t('update plugin')"
+  <el-dialog :title="$t('Creator Info')"
              :visible.sync="dialog_form_visible" width="50%"
              :modal-append-to-body="false"
              :destroy-on-close="true">
     <el-form :model="plugin_data" :rules="rules" ref="pluginRuleForm" label-width="120px">
-      <el-form-item :label="$t('extension id') + ':'" prop="client_key" v-if="operationType !== 'add'">
+      <el-form-item :label="$t('Creator Client Id') + ':'" prop="client_key" v-if="operationType !== 'add'">
         <div>{{ plugin_data.client_key }}</div>
       </el-form-item>
       <el-form-item :label="$t('Creator Name') + ':'" prop="name">
@@ -14,8 +14,11 @@
       <el-form-item :label="$t('Creator Profile photo') + ':'" prop="icon">
         <img-upload :icon_url="plugin_data.icon" @iconUpSourceChange="iconUpSourceChange"></img-upload>
       </el-form-item>
-      <el-form-item :label="$t('Creator Product info') + ':'" prop="description">
-        <el-input type="textarea" v-model="plugin_data.description" :placeholder="$t('Product info placeholder')" maxlength="120"></el-input>
+      <el-form-item :label="$t('Creator Product info') + ':'" prop="on_working">
+        <el-input type="textarea" v-model="plugin_data.on_working" :placeholder="$t('Product info placeholder')" maxlength="120"></el-input>
+      </el-form-item>
+      <el-form-item :label="$t('Creator About me') + ':'" prop="description">
+        <el-input type="textarea" v-model="plugin_data.description" :placeholder="$t('About me placeholder')" maxlength="120"></el-input>
       </el-form-item>
       <el-form-item :label="$t('Creator Home link') + ':'" prop="store_address">
         <el-input :value="getShareLink" disabled>
@@ -23,7 +26,10 @@
           <el-button slot="append" type="text" @click="copyShareLink"><span id="copy_text" style="padding: 0 10px">{{$t('CopyShare')}}</span></el-button>
         </el-input>
       </el-form-item>
-      <el-form-item :label="$t('Simultaneously Online') + ':'"  prop="allow_online_user_limit_count">
+      <el-form-item :label="$t('Creator Cover Img') + ':'" prop="cover">
+        <img-upload-cover :icon_url="plugin_data.cover" @iconUpSourceChange="handleCoverSourceChange"></img-upload-cover>
+      </el-form-item>
+      <el-form-item :label="$t('Simultaneously Online') + ':'"  prop="allow_online_user_limit_count" v-if="0">
         <div style="display: flex;flex-direction: column">
           <div>
             <el-radio-group v-model="is_limit_user" @change="handleLimitChange">
@@ -49,15 +55,18 @@
 </template>
 <script>
 import Clipboard from "clipboard";
-import {addPlugin, uploadFile, updatePlugin} from "../../api/interface";
+import {addPlugin, uploadFile, updatePlugin} from "@/api/interface";
 import imgUpload from "./img-upload.vue";
+import imgUploadCover from "./img-upload-cover.vue";
 export default {
   data () {
     return {
+      cover_url: null,
+      cover_file: null,
       icon_file: null,
       is_limit_user:false,
       dialog_form_visible: false,
-      store_address: 'https://fronted.kodecoffee.com/home',
+      store_address: 'https://kodecoffee.com/vendors/home',
       plugin_data : {
         allow_online_user_limit_count:0,
       },
@@ -93,7 +102,8 @@ export default {
     }
   },
   components : {
-    imgUpload
+    imgUpload,
+    imgUploadCover
   },
   computed: {
     rules () {
@@ -208,6 +218,12 @@ export default {
           args.icon = icon;
         }
       }
+      if (this.cover_file) {
+        let cover = await this.getIconUrl('plugin', this.cover_file);
+        if (cover) {
+          args.cover = cover;
+        }
+      }
       if (!this.is_limit_user) {
         args.allow_online_user_limit_count = 0;
       }
@@ -245,6 +261,12 @@ export default {
       for (let key in this.plugin_data) {
         if (this.plugin_data[key] !== this.chosen_plugin_data[key]) {
           args[key] = this.plugin_data[key];
+        }
+      }
+      if (this.cover_file) {
+        let cover = await this.getIconUrl('plugin', this.cover_file);
+        if (cover) {
+          args.cover = cover;
         }
       }
       if (!this.is_limit_user) {
@@ -304,6 +326,9 @@ export default {
      */
     iconUpSourceChange(file) {
       this.icon_file = file;
+    },
+    handleCoverSourceChange(file) {
+      this.cover_file = file
     },
     copyShareLink(){
       let clipboard = new Clipboard('#copy_text', {

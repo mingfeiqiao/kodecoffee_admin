@@ -15,8 +15,8 @@
   </div>
 </template>
 <script>
+import {pluginList} from "@/api/interface";
 import pluginCard from "../components/plugin-card.vue";
-import {pluginList} from "../../api/interface";
 import addPluginDialog from "../components/add-plugin-dialog.vue";
 export default {
   data () {

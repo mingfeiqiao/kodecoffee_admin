@@ -40,43 +40,13 @@
                 <img :src="item.appImg">
               </div>
               <div style="text-align: center;">
-                <el-button class="el-button-orange el-button-tiny" @click="handlePay(item)">{{ $t('Support creator') }}</el-button>
+                <el-button class="el-button-orange el-button-tiny" @click="goDetail(item)">{{ $t('Support creator') }}</el-button>
               </div>
             </div>
           </div>
         </div>
       </el-col>
     </el-row>
-    <div class="creator-content" v-if="0">
-      <div class="creator-content-left">
-        <h5>正在创作</h5>
-        <p>我在写作业</p>
-        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid, aspernatur autem, dolorum inventore nulla odit pariatur placeat reprehenderit sit velit, voluptas voluptate! Aut consectetur enim harum hic nesciunt reprehenderit, similique.</p>
-      </div>
-      <div class="creator-content-right">
-        <div class="support-list">
-          <div class="support-item" v-for="i in 2" :key="i">
-            <div class="support-info">
-              <h5>请我喝杯奶茶</h5>
-              <div class="support-price">
-                <strong>￥5</strong>
-              </div>
-              <p>打赏说明</p>
-              <p>为爱发电</p>
-              <p>感谢支持，你好你是我的英雄!</p>
-            </div>
-            <div class="support-img-box">
-              <div class="support-img">
-                <img src="" alt="">
-              </div>
-              <div style="text-align: center;">
-                <el-button class="el-button-orange el-button-tiny" @click="goDetail">支持创作者</el-button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -223,12 +193,11 @@ export default {
       }
     },
     goDetail(item) {
-      this.$store.commit('setCurrentPlan', item);
-      this.$router.push(`/payCoffee?aid=${this.application_id}&cid=${this.client_id}&pid=${item.plan_code}`)
+      this.$router.push(`/payCoffee?name=${this.name}&pid=${item.prod_code}`)
     },
     handlePay(item) {
       // const origial_data= {user_id:8081320,order_id:367};
-      window.KodePay.open_payment_choose_page(item.prod_code, '',null, 800, 700);
+      window.KodePay.open_payment_choose_page(item.prod_code, 'usd',null, 800, 700);
     },
   },
 }

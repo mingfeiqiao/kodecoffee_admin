@@ -487,7 +487,7 @@ export function KodePay (application_id, client_id, mode = 'production') {
    * @returns {Promise<*>}
    */
   async function get_payment_choose_page_url (price_id, currency='', extra_info= null){
-    let body = {price_id: price_id, currency:currency};
+    let body = {price_id: price_id, currency:currency, quantity: extra_info.quantity};
     if (extra_info) {
       if (is_JSON_Object(extra_info)) {
         body.origin_data = extra_info;

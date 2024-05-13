@@ -2,7 +2,7 @@
  <el-container style="width: 100%;height: 100%">
    <el-header>
      <div class="header-fixed">
-       <a href="#/" class="header-logo">
+       <a :href="`/vendors/home?name=${$route.query.name}`" class="header-logo">
          <img class="pay-cup" src="@/assets/cup.png" alt="cup">
          <span>KodeCoffee</span>
        </a>

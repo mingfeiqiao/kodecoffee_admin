@@ -1,23 +1,26 @@
 <template>
-  <div class="main-container">
-    <h4>{{ $t('Support creator') }} {{projectData.name}}</h4>
+  <div class="main-container" v-if="isLoaded">
+    <h4>{{ $t('Support creator') }} {{client_info.name}}</h4>
     <div class="pay-box">
-      <h5>{{currentPlan.plan_name}}</h5>
+      <h5>{{productData.name}}</h5>
       <div class="pay-select">
         <img class="pay-cup" src="@/assets/cup.png" alt="cup">
-        <span class="pay-price">{{currentPlan.main_price_obj.price_format}}</span>
+        <span class="pay-price" v-if="productData.app_price_obj">{{productData.app_price_obj.price_format}}</span>
         <div class="pay-num-box">
           <span class="pay-label-num">{{ $t('Num') }}</span>
-          <div class="pay-num-item active">1</div>
-          <div class="pay-num-item">2</div>
-          <div class="pay-num-item">5</div>
+          <label class="pay-num-item"
+                 :class="{active: i === quantity}"
+                 v-for="i in quan" :key="i"
+                 @click="quantity = i"
+          >{{i}} <input type="radio" :value="i" style="display: none;"></label>
+<!--          <label class="pay-num-item">2</label>-->
 <!--          <input class="pay-num-input" type="text">-->
         </div>
       </div>
       <div class="pay-context">
-        <p>{{currentPlan.plan_desc}}</p>
+        <p>{{productData.plan_desc}}</p>
       </div>
-      <div class="pay-message">
+      <div class="pay-message" v-if="0">
         <el-input class="pay-message-input"
           type="textarea"
           :autosize="{ minRows: 4, maxRows: 6}"
@@ -25,7 +28,7 @@
         </el-input>
       </div>
       <div class="pay-button">
-        <el-button class="el-button-orange" @click="handlePay">{{ $t('Pay') }} $15</el-button>
+        <el-button class="el-button-orange" @click="handlePay">{{ $t('Pay') }} {{sumAmountPay}}</el-button>
       </div>
     </div>
   </div>
@@ -33,20 +36,37 @@
 
 <script>
 import {KodePay as KodePayFn} from "@/utils/kodepay-website";
-import {pluginList, planList} from "@/api/interface";
+import {getProductList, pluginList, priceList} from "@/api/interface";
+import CURRENCY_OPTIONS from "@/options/currency_options.json";
 export default {
   name: "PayCoffee",
   data() {
     return {
-      projectData: {},
-      applicationId: this.$route.query.aid,
-      clientId: this.$route.query.cid,
-      planId: this.$route.query.pid,
+      quantity: 1,
+      quan: [1, 2, 5],
+      isLoaded: false,
+      application_id: '',
+      client_id: '',
+      plan_id: '',
+      client_info: {},
+      productData: {},
+      name: '',
+      header: {
+        'Content-Type': 'application/json',
+        'client-name': ''
+      },
     }
   },
   created() {
-    this.getPluginList()
+    const {name, pid} = this.$route.query
     console.log(this.$route)
+    this.name = name
+    this.plan_id = pid
+    if(this.name) {
+      /*不需要登录授权*/
+      this.getProductList()
+      // this.getPlanList()
+    }
   },
   mounted() {
     this.injectKodepayScript()
@@ -57,67 +77,132 @@ export default {
         return this.$store.state.currentPlan;
       }
     },
+    sumAmountPay() {
+      const {app_price_obj} = this.productData
+      return app_price_obj.currency + ' ' + (app_price_obj.amount * this.quantity / 100)
+    },
   },
   methods: {
     injectKodepayScript() {
-      window.KODEPAY_APPLICATION_ID = this.applicationId; // application_id
-      window.KODEPAY_CLIENT_ID = this.clientId;//client_id
+      window.KODEPAY_APPLICATION_ID = this.application_id; // application_id
+      window.KODEPAY_CLIENT_ID = this.client_id;//client_id
       window.KODEPAY_ENV = 'production';//env，development 和  production
-      window.KodePay = KodePayFn(this.applicationId, this.clientId)
+      window.KodePay = KodePayFn(this.application_id, this.client_id)
+      console.log(this.application_id, this.client_id, 123)
     },
-    getPluginList() {
-      pluginList().then(res => {
-        if (parseInt(res.data.code) === 100000) {
-          let data = res.data.data;
-          data.forEach(item => {
-            if (item.icon) {
-              item.icon = 'https://kodepay-cdn.oss-us-west-1.aliyuncs.com/' + item.icon;
+    getProductList() {
+      this.header["client-name"] = this.name
+      const params = {
+        "condition": {},
+        "order": {},
+        "page": 1,
+        "page_size": 100
+      }
+      getProductList(this.header, params).then(res => {
+        const {client_info, application_info, product_list} = res.data
+        client_info.userHeadImg = 'https://kodepay-cdn.oss-us-west-1.aliyuncs.com/' + client_info.icon;
+        client_info.homeLink = client_info.url + '?name='+ client_info.name;
+        this.isLoaded = true
+        this.client_info  =client_info
+        this.client_id = client_info.id
+        this.application_id = application_info.id
+        this.handleProductPrice(product_list.list.filter(item => item.prod_code === this.plan_id))
+        if(this.application_id && this.client_id) {
+           this.injectKodepayScript()
+        }
+      })
+    },
+    handleProductPrice(list) {
+      list = list.map(item => {
+        item.appImg = 'https://kodepay-cdn.oss-us-west-1.aliyuncs.com/' + item.icon;
+        item.app_price = item.app_price.map(price_item => {
+          price_item.price_format =  this.formatPrice(price_item.amount, price_item.currency) || ""
+          return price_item
+        })
+        item.app_price_obj = item.app_price[0]
+        return item
+      })
+      this.productData = list[0]
+      console.log(list[0], 'list[0]')
+    },
+     formatPlanList (data) {
+      return data.map(item => {
+         return {
+           plan_id: item.id || "",
+           plan_code : item.prod_code || "",
+           plan_icon: item.icon ? "https://kodepay-cdn.oss-us-west-1.aliyuncs.com/" + item.icon : "",
+           plan_name: item.name || "",
+           plan_desc: item.desc || "",
+           plan_type_obj : this.formatPlanType(item.app_price) || null,
+           plan_trial_obj: {
+              is_trial: !!item.is_trial,
+              trial_days: item.trial_days
+           },
+           main_price_obj: this.formatMainPriceObj(item.app_price) || null,
+           other_price_obj: this.formatOtherPriceObj(item.app_price) || null,
+         }
+       })
+    },
+    formatPlanType (app_price) {
+      if (Array.isArray(app_price) && app_price.length > 0) {
+        const main_price = app_price[0];
+        return {
+          type: main_price.type || "",
+          interval: main_price.interval || "",
+          interval_count: main_price.interval_count || "",
+        }
+      }
+    },
+    formatOtherPriceObj (app_price) {
+      if (Array.isArray(app_price) && app_price.length > 0) {
+        const main_price = app_price[0];
+        if (!main_price.currency) {
+          return;
+        }
+        const app_price_currency = main_price.app_price_currency;
+        if (app_price_currency && Array.isArray(app_price_currency) && app_price_currency.length > 0) {
+          // 先把主币种的价格过滤掉
+          const other_price = app_price_currency.filter(item => {
+            return item.currency !== main_price.currency;
+          });
+          return other_price.map(item => {
+            return {
+              currency: item.currency || "",
+              price: item.amount || "",
+              price_format: this.formatPrice(item.amount, item.currency) || "",
             }
           });
-          this.projectData = data[0];
-        } else {
-          if (res && res.data && res.data.message) {
-            this.$message.warning(res.data.message)
-          }
         }
-      }).catch(err => {
-        console.log(err);
-      });
+      }
     },
-    getPlanList () {
-      let args = {
-        page: this.page,
-        page_size: this.page_size
-      };
-      let condition = {};
-      if (parseInt(this.condition.type) !== 1) {
-        condition.type = this.PAYMENT_REF[this.condition.type]
+    formatMainPriceObj (app_price) {
+      if (Array.isArray(app_price) && app_price.length > 0) {
+        const main_price = app_price[0];
+        return {
+          currency: main_price.currency || "",
+          price: main_price.amount || "",
+          interval: main_price.interval || "",
+          interval_count:main_price.interval_count,
+          price_format: this.formatPrice(main_price.amount, main_price.currency) || "",
+        };
       }
-      if (this.condition.q) {
-        condition.q = this.condition.q;
-      }
-      if (Object.keys(condition).length !== 0) {
-        args.condition = condition;
-      }
-      args.order = this.order;
-      this.plan_list = [];
-      this.table_loading = true;
-      planList(args).then(res => {
-        this.table_loading = false;
-        if (parseInt(res.data.code )=== 100000) {
-          this.plan_list = this.formatPlanList(res.data.data);
-          this.total = res.data.totalCount;
-        } else {
-          if (res && res.data && res.data.message) {
-            this.$message.warning(res.data.message)
-          }
+    },
+    formatPrice (price, currency) {
+      let symbol = '';
+      for (const currency_key in CURRENCY_OPTIONS) {
+        if (currency_key.toLowerCase() === currency) {
+          symbol = CURRENCY_OPTIONS[currency_key]['symbol'];
+          return `${symbol} ${price/100}`;
         }
-      }).catch(err => {
-        this.table_loading = false;
-      });
+      }
+    },
+    goDetail(item) {
+      this.$router.push(`/payCoffee?name=${this.name}&pid=${item.prod_code}`)
     },
     handlePay() {
-      // window.KodePay.open_payment_page(this.planId, origial_data, 800, 700);
+      // const origial_data= {user_id:8081320,order_id:367};
+      const {prod_code, app_price_obj} = this.productData
+      window.KodePay.open_payment_choose_page(prod_code, app_price_obj.currency,{quantity: this.quantity}, 800, 700);
     },
   },
 }
@@ -257,6 +342,7 @@ export default {
   }
   .pay-button{
     text-align: center;
+    margin-top: 20px;
     .el-button{
       padding: 8px 14px;
     }

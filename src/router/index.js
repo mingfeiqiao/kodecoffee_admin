@@ -114,12 +114,12 @@ const routes = [
     component:  () => import('@/page/extension/extension-pay-success.vue'),
   },
   {
-    path: '/home',
+    path: '',
     component: () => import('@/views/Layout.vue'),
     name: 'layout',
     children: [
       {
-        path: '',
+        path: 'home',
         component:  () => import('@/views/HomePage.vue'),
         name: 'homePage',
         meta: { breadcrumbLabel: 'HomePage' }
@@ -136,7 +136,7 @@ const routes = [
 
 const router = new Router({
   mode: 'history',
-  // base: '/vendors/',
+  base: '/vendors/',
   routes,
   strict: process.env.NODE_ENV !== 'production',
 });
