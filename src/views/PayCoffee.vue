@@ -1,21 +1,21 @@
 <template>
   <div class="main-container">
-    <h4>{{ $t('Support creator') }}小明</h4>
+    <h4>{{ $t('Support creator') }} {{projectData.name}}</h4>
     <div class="pay-box">
-      <h5>请你喝咖啡套餐</h5>
+      <h5>{{currentPlan.plan_name}}</h5>
       <div class="pay-select">
         <img class="pay-cup" src="@/assets/cup.png" alt="cup">
-        <span class="pay-price">$ 5</span>
+        <span class="pay-price">{{currentPlan.main_price_obj.price_format}}</span>
         <div class="pay-num-box">
           <span class="pay-label-num">{{ $t('Num') }}</span>
           <div class="pay-num-item active">1</div>
           <div class="pay-num-item">2</div>
           <div class="pay-num-item">5</div>
-          <input class="pay-num-input" type="text">
+<!--          <input class="pay-num-input" type="text">-->
         </div>
       </div>
       <div class="pay-context">
-        <p>（ 2024 悫 15 · 2024 ． 5 ． 14 〗 PSD 与 录 屏 文 件 各 位 好 ， 在 2024 ． 4 ． 15 ． 2024 ． 5 ． 14 日 期 内 ． 赞 助 v 丨 P3 ， 会 获 得 《 溺 水 》 《 林 中 》 《 叼 刀 》 《 落 花 》 的 psd 文 件 。 赞 助 v 丨 P4 ， 会 获 得 《 溺 水 》 《 林 中 》 《 叼 刀 》 《 落 花 》 的 psd 文 件 ， 以 及 《 溺 水 》 《 林 中 》 的 5 倍 速 录 屏 文 件 。 赞 助 v 丨 P5 ， 会 获 得 上 述 psd 、 5 倍 速 录 屏 文 件 ， 以 及 原 速 录 屏 文 件 。 * 《 叼 刀 》 、 《 落 花 》 没 有 录 屏 。</p>
+        <p>{{currentPlan.plan_desc}}</p>
       </div>
       <div class="pay-message">
         <el-input class="pay-message-input"
@@ -25,15 +25,101 @@
         </el-input>
       </div>
       <div class="pay-button">
-        <el-button class="el-button-orange">{{ $t('Pay') }} $15</el-button>
+        <el-button class="el-button-orange" @click="handlePay">{{ $t('Pay') }} $15</el-button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import {KodePay as KodePayFn} from "@/utils/kodepay-website";
+import {pluginList, planList} from "@/api/interface";
 export default {
-  name: "PayCoffee"
+  name: "PayCoffee",
+  data() {
+    return {
+      projectData: {},
+      applicationId: this.$route.query.aid,
+      clientId: this.$route.query.cid,
+      planId: this.$route.query.pid,
+    }
+  },
+  created() {
+    this.getPluginList()
+    console.log(this.$route)
+  },
+  mounted() {
+    this.injectKodepayScript()
+  },
+  computed: {
+    currentPlan: {
+      get() {
+        return this.$store.state.currentPlan;
+      }
+    },
+  },
+  methods: {
+    injectKodepayScript() {
+      window.KODEPAY_APPLICATION_ID = this.applicationId; // application_id
+      window.KODEPAY_CLIENT_ID = this.clientId;//client_id
+      window.KODEPAY_ENV = 'production';//env，development 和  production
+      window.KodePay = KodePayFn(this.applicationId, this.clientId)
+    },
+    getPluginList() {
+      pluginList().then(res => {
+        if (parseInt(res.data.code) === 100000) {
+          let data = res.data.data;
+          data.forEach(item => {
+            if (item.icon) {
+              item.icon = 'https://kodepay-cdn.oss-us-west-1.aliyuncs.com/' + item.icon;
+            }
+          });
+          this.projectData = data[0];
+        } else {
+          if (res && res.data && res.data.message) {
+            this.$message.warning(res.data.message)
+          }
+        }
+      }).catch(err => {
+        console.log(err);
+      });
+    },
+    getPlanList () {
+      let args = {
+        page: this.page,
+        page_size: this.page_size
+      };
+      let condition = {};
+      if (parseInt(this.condition.type) !== 1) {
+        condition.type = this.PAYMENT_REF[this.condition.type]
+      }
+      if (this.condition.q) {
+        condition.q = this.condition.q;
+      }
+      if (Object.keys(condition).length !== 0) {
+        args.condition = condition;
+      }
+      args.order = this.order;
+      this.plan_list = [];
+      this.table_loading = true;
+      planList(args).then(res => {
+        this.table_loading = false;
+        if (parseInt(res.data.code )=== 100000) {
+          this.plan_list = this.formatPlanList(res.data.data);
+          this.total = res.data.totalCount;
+        } else {
+          if (res && res.data && res.data.message) {
+            this.$message.warning(res.data.message)
+          }
+        }
+      }).catch(err => {
+        this.table_loading = false;
+      });
+    },
+    handlePay() {
+      // window.KodePay.open_payment_page(this.planId, origial_data, 800, 700);
+    },
+  },
 }
 </script>
 

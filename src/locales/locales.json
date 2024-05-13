@@ -1,6 +1,7 @@
 {
   "en-US": {
     "Dashboard": "Dashboard",
+    "Creator Info": "Creator Info",
     "All Orders": "Orders",
     "subscriptions": "Subscriptions",
     "Customers": "Customers",
@@ -468,7 +469,23 @@
     "Support creator":"Support creator",
     "Num":"Num",
     "Pay":"Pay",
-    "Encourage creator":"Write something to encourage the author"
+    "Encourage creator":"Write something to encourage the author",
+    "Creator Profile photo": "Profile photo",
+    "Profile Upload": "Upload",
+    "Profile placeholder": "Support JPG, PNG, recommended 200*200 px",
+    "Creator Name": "Name",
+    "Creator placeholder": "Enter your unique nickname",
+    "Creator Product info": "youR creating?",
+    "Product info placeholder": "Music creation, painting, blogging, programming, or something else interesting!",
+    "Creator About me": "About me",
+    "About me placeholder": "Something about yourself and what you are doing~",
+    "Creator Home link": "Home link",
+    "Creator Home link share": "share",
+    "Creator Cover Img": "Cover image",
+    "Creator Cover Img tips": "Click to Upload Cover image (optional)",
+    "Cover Img placeholder": "Support JPG, PNG, recommended size 1440*300, maximum 10M.",
+    "Creator Save": "Save",
+    "CopyShare": "Copy&share"
   },
   "zh-CN": {
     "Payment failed, reason for failure:": "支付失败，失败原因:",
@@ -684,6 +701,7 @@
 
     "Payments": "付款列表",
     "Dashboard": "仪表盘",
+    "Creator Info": "创作者简介",
     "All Orders": "全部订单",
     "Customers": "客户列表",
     "Extensions": "项目",
@@ -938,6 +956,22 @@
     "Support creator":"支持创作者",
     "Num":"数量",
     "Pay":"支付",
-    "Encourage creator":"捎给TA的话，鼓励作者"
+    "Encourage creator":"捎给TA的话，鼓励作者",
+    "Creator Profile photo": "头像",
+    "Profile Upload": "Upload",
+    "Profile placeholder": "支持JPG、PNG格式，推荐 200*200 px",
+    "Creator Name": "英文昵称",
+    "Creator placeholder": "昵称由字母和数字组成，保证唯一性",
+    "Creator Product info": "正在创作",
+    "Product info placeholder": "你正在创作的音乐创作，绘画，博客，编程，或者其他有意思的事情事情！",
+    "Creator About me": "个人介绍",
+    "About me placeholder": "向大家介绍一下你自己和你正在做的事情~",
+    "Creator Home link": "主页地址",
+    "Creator Home link share": "分享主页",
+    "Creator Cover Img": "主页封面图",
+    "Creator Cover Img tips": "点击上传 主页封面图 （选填）",
+    "Cover Img placeholder": "支持JPG、PNG格式 ，推荐尺寸1440*300，最大10M",
+    "Creator Save": "保存",
+    "CopyShare": "复制分享"
   }
 }

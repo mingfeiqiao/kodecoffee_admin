@@ -8,7 +8,7 @@
        </a>
        <div class="header-right">
         <language-change></language-change>
-        <el-button class="el-button-orange" size="mini" v-if="isLogin">{{ $t('Become creator') }}</el-button>
+        <el-button class="el-button-orange" size="mini" v-if="isLoginIn" @click="goVendors('/creator-info')">{{ $t('Become creator') }}</el-button>
         <el-button style="color: #3D3D3D;" type="text" @click="goLogin" v-else>{{ $t('Login') }}</el-button>
        </div>
      </div>
@@ -31,12 +31,25 @@ export default {
   },
   data() {
     return {
-      isLogin: false
+      user_info: null,
     }
+  },
+  computed: {
+   isLoginIn: {
+    get() {
+      return this.$store.getters.isLoginIn;
+    }
+   }
+  },
+  created() {
+    this.user_info = localStorage.getItem(this.$mode + 'userInfo') ? JSON.parse(localStorage.getItem(this.$mode + 'userInfo')) : {};
   },
   methods: {
     goLogin() {
       window.location.href = `${this.URL}/user/login`;
+    },
+    goVendors(url) {
+      this.$router.push(url)
     },
   },
 }

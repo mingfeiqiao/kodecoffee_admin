@@ -2,7 +2,7 @@ import Vue from "vue";
 import axios from "axios";
 import qs from "qs";
 import config from '../configs/config';
-let baseURL = config.API_URL;
+let baseURL = baseURL = config.MODECONFIG.PRODUCTION.apiURL;
 // 创建一个axios实例
 const instance = axios.create({
   baseURL: baseURL, // 设置API的基础URL
@@ -30,7 +30,7 @@ instance.interceptors.response.use(
           localStorage.removeItem(Vue.prototype.$mode + 'applicationKey');
           localStorage.removeItem(Vue.prototype.$mode + 'userInfo')
           localStorage.removeItem(Vue.prototype.$mode + 'token');
-          window.location.href = 'https://kodepay.io/user/login';
+          // window.location.href = 'https://kodecoffee.com/user/login';
         }, 5000);
       }
       return Promise.reject(error);
@@ -60,7 +60,7 @@ export const getOptions = () => {
   return fetch('https://kodepay-cdn.oss-us-west-1.aliyuncs.com/config/options.json');
 };
 export const zbUserInfo = () => {
-  return instance.get('https://kodepay.io/user/v2/userinfo');
+  return instance.get('https://kodecoffee.com/user/v2/userinfo');
 };
 export const postUserInfo = data => {
   const formData = qs.stringify(data);
@@ -84,6 +84,10 @@ export const addPlan = data => instance.post('/product/save', data);
 export const planList = data => {
   data = JSON.stringify(data);
   return instance.post('/product/list', data, {headers: {'Content-Type' : 'application/json'}});
+}
+export const priceList = data => {
+  data = JSON.stringify(data);
+  return instance.post('/extension/product/list', data, {headers: {'Content-Type' : 'application/json'}});
 }
 export const exportBillApi = data => instance.post('/app/bill/export-bill', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 export const planFilterListApi = data =>instance.post('/product/plan-filter-list', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
@@ -196,4 +200,9 @@ export const attributeFprApi = data => instance.post('/api/attribute-fpr', JSON.
 export const addExtensionShareApi = data => instance.post('/extension-share/add', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 export const extensionShareListApi = data => instance.post('/extension-share/list', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 
+/*创作者页面无登录请求*/
+export const getProductList = (headers, data) => {
+  data = JSON.stringify(data);
+  return instance.post('/extension/home/info', data, {headers ,method: 'POST'});
+}
 export default instance;

@@ -9,6 +9,8 @@ const store = new Vuex.Store({
   state: {
     isLoginIn: false, // 初始登录状态
     guide_step:0,
+    clientId: '',
+    currentPlan: null,
   },
   getters: {
     isLoginIn(state) {
@@ -24,7 +26,13 @@ const store = new Vuex.Store({
     },
     setGuideStep(state, step) {
       state.guide_step = step;
-    }
+    },
+    setClientId(state, pid) {
+      state.clientId = pid
+    },
+    setCurrentPlan(state, data) {
+      state.currentPlan = data
+    },
   },
 });
 

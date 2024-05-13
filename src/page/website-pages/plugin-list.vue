@@ -1,7 +1,7 @@
 <template>
   <div style="flex-wrap: wrap; display: flex;">
     <div  class="card" >
-      <el-card :body-style="{padding: '0px',width: '300px',height:'150px'}" shadow="hover">
+      <el-card :body-style="{padding: '0px',width: '300px',height:'150px'}" shadow="hover" v-if="plugin_list.length === 0">
         <div style="display: flex;justify-content: center;align-items: center;height: 100%" @click="operatePluginCard({}, 'add')">
           {{$t('add plugin')}}
         </div>

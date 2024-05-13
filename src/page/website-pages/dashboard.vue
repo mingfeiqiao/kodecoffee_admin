@@ -156,16 +156,12 @@ export default {
     }
   },
   mounted() {
-    this.guide_step = this.$store.state.guide_step;
-    if (false) {
-      this.toGuide();
-    } else {
-      this.setDefaultTime();
-      this.initEchartsInstance();
-      this.getData();
-      this.updateShortcuts();
-      window.addEventListener('resize', this.changeSize);
-    }
+    console.log('dashboard')
+    this.setDefaultTime();
+    this.initEchartsInstance();
+    this.getData();
+    this.updateShortcuts();
+    window.addEventListener('resize', this.changeSize);
   },
   created() {
     this.getPluginList();

@@ -6,8 +6,13 @@
       "icon": "dashboard-icon"
     },
     {
+      "title": "Creator Info",
+      "url": "creator-info",
+      "icon": "dashboard-icon"
+    },
+    {
       "title": "All Orders",
-      "url": "order",
+      "url": "orders",
       "icon": "payment-list-icon"
     },
     {

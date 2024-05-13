@@ -1,49 +1,54 @@
 <template>
-  <div>
-    <el-dialog :title="operationType === 'add' ? $t('create plugin') : $t('update plugin')" :visible.sync="dialog_form_visible" width="50%" :modal-append-to-body="false" :destroy-on-close="true">
-      <el-form :model="plugin_data" :rules="rules" ref="pluginRuleForm" label-width="120px">
-        <el-form-item :label="$t('extension id') + ':'" prop="client_key" v-if="operationType !== 'add'">
-          <div>{{ plugin_data.client_key }}</div>
-        </el-form-item>
-        <el-form-item :label="$t('name') + ':'" prop="name">
-          <el-input v-model="plugin_data.name" :placeholder="$t('extension name is required')" maxlength="100">
-          </el-input>
-        </el-form-item>
-        <el-form-item :label="$t('icon') + ':'" prop="icon">
-          <img-upload :icon_url="plugin_data.icon" @iconUpSourceChange="iconUpSourceChange"></img-upload>
-        </el-form-item>
-        <el-form-item :label="$t('description') + ':'" prop="description">
-          <el-input type="textarea" v-model="plugin_data.description" :placeholder="$t('please input description')" maxlength="120"></el-input>
-        </el-form-item>
-        <el-form-item :label="$t('store address') + ':'" prop="store_address">
-          <el-input v-model="plugin_data.store_address" :placeholder="$t('please input store address')"></el-input>
-        </el-form-item>
-        <el-form-item :label="$t('Simultaneously Online') + ':'"  prop="allow_online_user_limit_count">
-          <div style="display: flex;flex-direction: column">
-            <div>
-              <el-radio-group v-model="is_limit_user" @change="handleLimitChange">
-                <el-radio :label="false">{{$t('No Limit')}}</el-radio>
-                <el-radio :label="true">{{$t('Limit')}}</el-radio>
-              </el-radio-group>
-            </div>
-            <div style="color: #929292">{{$t('Allow the number of simultaneous logins on different devices for the same account')}}</div>
-            <div v-if="is_limit_user">
-              <el-input-number v-model="plugin_data.allow_online_user_limit_count" size="small" :min="1" :max="20" :step="1">
-              </el-input-number>
-            </div>
+  <el-dialog :title="operationType === 'add' ? $t('create plugin') : $t('update plugin')"
+             :visible.sync="dialog_form_visible" width="50%"
+             :modal-append-to-body="false"
+             :destroy-on-close="true">
+    <el-form :model="plugin_data" :rules="rules" ref="pluginRuleForm" label-width="120px">
+      <el-form-item :label="$t('extension id') + ':'" prop="client_key" v-if="operationType !== 'add'">
+        <div>{{ plugin_data.client_key }}</div>
+      </el-form-item>
+      <el-form-item :label="$t('Creator Name') + ':'" prop="name">
+        <el-input v-model="plugin_data.name" :placeholder="$t('Creator placeholder')" maxlength="100">
+        </el-input>
+      </el-form-item>
+      <el-form-item :label="$t('Creator Profile photo') + ':'" prop="icon">
+        <img-upload :icon_url="plugin_data.icon" @iconUpSourceChange="iconUpSourceChange"></img-upload>
+      </el-form-item>
+      <el-form-item :label="$t('Creator Product info') + ':'" prop="description">
+        <el-input type="textarea" v-model="plugin_data.description" :placeholder="$t('Product info placeholder')" maxlength="120"></el-input>
+      </el-form-item>
+      <el-form-item :label="$t('Creator Home link') + ':'" prop="store_address">
+        <el-input :value="getShareLink" disabled>
+<!--          <el-button slot="append" icon="el-icon-search"></el-button>-->
+          <el-button slot="append" type="text" @click="copyShareLink"><span id="copy_text" style="padding: 0 10px">{{$t('CopyShare')}}</span></el-button>
+        </el-input>
+      </el-form-item>
+      <el-form-item :label="$t('Simultaneously Online') + ':'"  prop="allow_online_user_limit_count">
+        <div style="display: flex;flex-direction: column">
+          <div>
+            <el-radio-group v-model="is_limit_user" @change="handleLimitChange">
+              <el-radio :label="false">{{$t('No Limit')}}</el-radio>
+              <el-radio :label="true">{{$t('Limit')}}</el-radio>
+            </el-radio-group>
           </div>
-        </el-form-item>
-        <div style="display: flex;justify-content:flex-end">
-          <el-button type="primary" size="small" @click="submitForm('pluginRuleForm')" :loading="btn_loading">
-            {{ operationType === 'add' ? $t('create') : $t('update') }}
-          </el-button>
-          <el-button @click="resetForm('pluginRuleForm')" size="small">{{ $t('Reset') }}</el-button>
+          <div style="color: #929292">{{$t('Allow the number of simultaneous logins on different devices for the same account')}}</div>
+          <div v-if="is_limit_user">
+            <el-input-number v-model="plugin_data.allow_online_user_limit_count" size="small" :min="1" :max="20" :step="1">
+            </el-input-number>
+          </div>
         </div>
-      </el-form>
-    </el-dialog>
-  </div>
+      </el-form-item>
+      <div style="display: flex;justify-content:flex-end">
+        <el-button type="primary" size="small" @click="submitForm('pluginRuleForm')" :loading="btn_loading">
+          {{ operationType === 'add' ? $t('create') : $t('update') }}
+        </el-button>
+<!--        <el-button @click="resetForm('pluginRuleForm')" size="small">{{ $t('Reset') }}</el-button>-->
+      </div>
+    </el-form>
+  </el-dialog>
 </template>
 <script>
+import Clipboard from "clipboard";
 import {addPlugin, uploadFile, updatePlugin} from "../../api/interface";
 import imgUpload from "./img-upload.vue";
 export default {
@@ -52,6 +57,7 @@ export default {
       icon_file: null,
       is_limit_user:false,
       dialog_form_visible: false,
+      store_address: 'https://fronted.kodecoffee.com/home',
       plugin_data : {
         allow_online_user_limit_count:0,
       },
@@ -96,12 +102,15 @@ export default {
           { required: true, message: this.$t('1-100 characters required'), trigger: 'blur'},
           { validator: this.validateTrimmedField, trigger: 'blur'}
         ],
-        store_address: [
+        store_address123: [
           { message: this.$t('please input valid URL'), trigger: 'blur', type:  'url'},
           { validator: this.validateTrimmedField, trigger: 'blur'}
         ],
       }
-    }
+    },
+    getShareLink() {
+      return this.plugin_data.store_address + '?name=' + this.plugin_data.name||''
+    },
   },
   watch : {
     visible(newValue) {
@@ -192,6 +201,7 @@ export default {
      */
     async addPluginData () {
       let args = this.plugin_data;
+      args.store_address = this.store_address;
       if (this.icon_file) {
         let icon = await this.getIconUrl('plugin', this.icon_file);
         if (icon) {
@@ -247,6 +257,7 @@ export default {
         }
       }
       args.client_key = this.chosen_plugin_data.client_key;
+      args.store_address = this.store_address;
       this.btn_loading = true;
       updatePlugin(args).then(res => {
         this.btn_loading = false;
@@ -293,7 +304,29 @@ export default {
      */
     iconUpSourceChange(file) {
       this.icon_file = file;
-    }
+    },
+    copyShareLink(){
+      let clipboard = new Clipboard('#copy_text', {
+        text: () => {
+          return this.getShareLink
+        }
+      })
+      clipboard.on('success', e => {
+        this.$message({
+          message: this.$t('copy success'),
+          type: 'success'
+        })
+        clipboard.destroy() // 释放内存
+      })
+      clipboard.on('error', e => {
+        // 不支持复制
+        this.$message({
+          message:  this.$t('browser not support copy'),
+          type: 'warning'
+        })
+        clipboard.destroy() // 释放内存
+      })
+    },
   }
 }
 </script>

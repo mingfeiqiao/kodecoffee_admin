@@ -141,7 +141,7 @@ export default {
     // Crisp.configure('29c69934-5e71-4ba8-9eff-d80342cdd79e');
     // Crisp.chat.show();
     // Vue.prototype.$Crisp = Crisp;
-    //this.loginOrRegisterUser();
+    // this.loginOrRegisterUser();
     this.test();
     // this.initOptions();
     this.currentMenu = this.$route.path; // 初始化当前路由路径
@@ -152,33 +152,26 @@ export default {
       res.data = {
         "code": 100000,
         "message": "success",
-        "product_id": 70,
-        "product_mark": 70,
+        "product_id": 102,
+        "product_mark": 101,
         "userinfo": {
-          // "user_id": 113,
-          // "user_id":"2964976", // 志天的账号
-          // "user_id":2900983,
-          // "user_id":2840846,
-          // "user_id":"2857824",
-          // "user_id":"2843847",
-          "user_id":"2840846",
-          // "user_id":"2840846",// 王涵, han wang
-          // "user_id":"2912918",// 王涵 wangjack
-          "email": "ligoogel1918@gmail.com",
-          "username": "李谷歌",
-          "created_at": "2023-05-29 20:27:01",
-          "phone_number": ""
+            "user_id": 8081320,
+            "email": "runninglei@gmail.com",
+            "username": "Running V",
+            "created_at": "2024-05-08 20:11:44",
+            "phone_number": "",
+            "utm_active_code": ""
         },
         "payinfo": {
-          "is_subscribed": "0",
-          "plan_start": "",
-          "plan_end": "",
-          "plan_price": "",
-          "plan_name": "No Plan",
-          "plan_date": "No upcoming payments",
-          "is_recurly": "0",
-          "channel": "0",
-          "status": "0"
+            "is_subscribed": "0",
+            "plan_start": "",
+            "plan_end": "",
+            "plan_price": "",
+            "plan_name": "No Plan",
+            "plan_date": "No upcoming payments",
+            "is_recurly": "0",
+            "channel": "0",
+            "status": "0"
         }
       };
       this.handleResult(res);
@@ -193,8 +186,8 @@ export default {
         this.handleResult(res);
       }).catch( err => {
         this.$message.error(this.$t('Login failed. Please try logging in again'));
-        console.log(err);
-      });
+        // window.location.href = `${this.URL}/user/login`;
+      })
     },
     handleResult(res) {
       const data = res.data
@@ -227,7 +220,7 @@ export default {
         }
       } else {
         this.$message.error(this.$t('Login failed. Please try logging in again'));
-        // window.location.href = `${this.URL}/user/login`;
+        window.location.href = `${this.URL}/user/login`;
       }
     },
     /**
@@ -251,33 +244,6 @@ export default {
       }).catch(err => {
         console.log(err);
       });
-    },
-    initModeOrUrl () {
-      let guide_step = localStorage.getItem('guideStep') || 0
-      if (guide_step === 4) {
-        localStorage.setItem('guideStep', '4');
-        this.$store.commit('setGuideStep', 4);
-        this.is_guide_loading_finish = true;
-      } else {
-        let last_user_info = localStorage.getItem(this.$mode + 'userInfo');// 获取上次登录的用户信息
-        last_user_info = JSON.parse(last_user_info);
-        fetch(`${this.MODECONFIG.SANDBOX.apiURL}/guide-step/search-guide-step`,{
-          'method':'POST',
-          'headers':{
-            'Content-Type':'application/json'
-          },
-          'body':JSON.stringify({'zb_user_id': last_user_info.zbase_user_id})
-        }).then(res => {
-          return res.json();
-        }).then(res => {
-          const guide_step = res && res.data && res.data.step ? res.data.step : 0;
-          localStorage.setItem('guideStep', guide_step);
-          this.$store.commit('setGuideStep', guide_step);
-          this.is_guide_loading_finish = true;
-        }).catch(err => {
-          console.log(err)
-        });
-      }
     },
     collapseChange(collapse) {
       this.isCollapse = !!collapse;
