@@ -11,6 +11,7 @@ const store = new Vuex.Store({
     guide_step:0,
     clientId: '',
     currentPlan: null,
+    userInfo: null,
   },
   getters: {
     isLoginIn(state) {
@@ -32,6 +33,9 @@ const store = new Vuex.Store({
     },
     setCurrentPlan(state, data) {
       state.currentPlan = data
+    },
+    setUserInfo(state, data) {
+      state.userInfo = data
     },
   },
 });

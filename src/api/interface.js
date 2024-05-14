@@ -30,7 +30,7 @@ instance.interceptors.response.use(
           localStorage.removeItem(Vue.prototype.$mode + 'applicationKey');
           localStorage.removeItem(Vue.prototype.$mode + 'userInfo')
           localStorage.removeItem(Vue.prototype.$mode + 'token');
-          // window.location.href = 'https://kodecoffee.com/user/login';
+          window.location.href = 'https://kodecoffee.com/user/login';
         }, 5000);
       }
       return Promise.reject(error);
@@ -57,10 +57,10 @@ instance.interceptors.request.use(
 );
 
 export const getOptions = () => {
-  return fetch('https://kodepay-cdn.oss-us-west-1.aliyuncs.com/config/options.json');
+  return fetch(config.GLOBAL_URL + '/fixed_files/files/coffee_price_options.json');
 };
 export const zbUserInfo = () => {
-  return instance.get('https://kodecoffee.com/user/v2/userinfo');
+  return instance.get(config.URL + '/user/v2/userinfo');
 };
 export const postUserInfo = data => {
   const formData = qs.stringify(data);
@@ -151,6 +151,7 @@ export const updateWebHookEventApi = (id,data) => instance.post(`/notifications/
 export const deleteWebHookEventApi = (id) =>  instance.post(`/notifications/delete-webhooks/${id}`, null, {headers: {'Content-Type' : 'application/json'}})
 export const getWebHookEventLogsApi = data => instance.post('/notifications/webhooks-logs', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}})
 export const setGuideStepApi = data => instance.post('/guide-step/update-guide-step', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}})
+export const getGuideStepApi = data => instance.post('/guide-step/search-guide-step', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}})
 export const makeOrderApi = (headers, data) => instance.post('/api/extension/make-order',data,{headers})
 export const extensionCancelSubscription = (headers, data) => {
   headers['Content-Type'] = 'application/json';

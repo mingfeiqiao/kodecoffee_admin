@@ -10,6 +10,12 @@ const routes = [
     redirect: 'dashboard',
     children: [
       {
+        path: 'guide-step',
+        component:  () => import('@/page/website-pages/guide-step.vue'),
+        name: 'guideStep',
+        meta: { breadcrumbLabel: 'Guide Step' },
+      },
+      {
         path: 'creator-info',
         component:  () => import('@/page/website-pages/plugin-list.vue'),
         name: 'creatorInfo',

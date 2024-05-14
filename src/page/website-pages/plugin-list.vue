@@ -39,6 +39,9 @@ export default {
             if (item.icon) {
               item.icon = 'https://kodepay-cdn.oss-us-west-1.aliyuncs.com/' + item.icon;
             }
+            if (item.cover) {
+              item.cover = 'https://kodepay-cdn.oss-us-west-1.aliyuncs.com/' + item.cover;
+            }
           });
           this.plugin_list = data;
         } else {

@@ -486,7 +486,19 @@
     "Creator Cover Img tips": "<em>Click to Upload</em> Cover image (optional)",
     "Cover Img placeholder": "Support JPG, PNG, recommended size 1440*300, maximum 10M.",
     "Creator Save": "Save",
-    "CopyShare": "Copy&share"
+    "CopyShare": "Copy&share",
+    "Quantity": "Quantity",
+    "Work Info": "Work Info",
+    "Tips reward": "Tips reward",
+    "Guide Step": "Guide Step",
+    "Create Plan Combo": "Create Plan Combo",
+    "Finish": "Finish",
+    "Congratulations Creator": "Congratulations on becoming a creator",
+    "Your Homepage": "Your personal homepage is:",
+    "click link": "click the link",
+    "Start tipping": "start tipping",
+    "Guide Step Context 1": "You can modify it in the left menu bar 【Creator Profile】 [Payment Package]",
+    "Guide Step Context 2": "You can also view your account information in other menu bars on the left"
   },
   "zh-CN": {
     "Payment failed, reason for failure:": "支付失败，失败原因:",
@@ -975,6 +987,18 @@
     "Cover Img placeholder": "支持JPG、PNG格式 ，推荐尺寸1440*300，最大10M",
     "Creator Save": "保存",
     "CopyShare": "复制分享",
-    "Quantity": "份数"
+    "Quantity": "份数",
+    "Work Info": "作品介绍",
+    "Tips reward": "打赏说明",
+    "Guide Step": "新手引导",
+    "Create Plan Combo": "创建打赏套餐",
+    "Finish": "完成",
+    "Congratulations Creator": "恭喜您成为创作者",
+    "Your Homepage": "您的个人主页是:",
+    "click link": "点击链接",
+    "Start tipping": "开启打赏吧！",
+    "Guide Step Context 1": "您可以在左侧菜单栏【创作者简介】【支付套餐】修改",
+    "Guide Step Context 2": "您还可以在左侧其他菜单栏查看您的账户信息"
+
   }
 }
