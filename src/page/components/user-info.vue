@@ -16,7 +16,7 @@
   </div>
 </template>
 <script>
-import {loginOut} from "../../api/interface";
+import {loginOut} from "@/api/interface";
 export default {
   data () {
     return {
@@ -25,10 +25,10 @@ export default {
   },
   computed: {
     getUserAvatar({user_info}) {
-      if(user_info.username) {
-        return user_info.username.slice(0,1)
+      if(user_info.account_name) {
+        return user_info.account_name.slice(0,1)
       } else {
-        return this.user_info.email.slice(0,2)
+        return user_info.email.slice(0,2)
       }
 
     }

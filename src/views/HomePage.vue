@@ -19,7 +19,7 @@
     <el-row :gutter="10">
       <el-col :sm="24" :md="12">
         <div class="creator-content-left">
-          <h5>作品介绍</h5>
+          <h5>{{$t("Work Info")}}</h5>
           <p>{{client_info.description}}</p>
         </div>
       </el-col>
@@ -27,12 +27,11 @@
         <div class="support-list">
           <div class="support-item" v-for="item in product_list" :key="item.plan_id">
             <div class="support-info">
-              <h5>{{item.name}}</h5>
+              <h4>{{item.name}}</h4>
               <div class="support-price">
                 <strong v-for="price_item in item.app_price" :key="price_item.id">{{price_item.price_format}}</strong>
               </div>
-              <p>打赏说明</p>
-              <p>为爱发电</p>
+              <h4>{{$t("Tips reward")}}</h4>
               <p>{{item.desc}}</p>
             </div>
             <div class="support-img-box">
@@ -282,11 +281,15 @@ export default {
       .support-img{
         max-width: 120px;
         width: 100%;
+        height: 100%;
         //padding-bottom: 60%;
         border-radius: 5px;
         //background: #ccc;
         border: 1px dashed #dedede;
         margin-bottom: 40px;
+        img{
+          width: 100%;
+        }
       }
     }
   }

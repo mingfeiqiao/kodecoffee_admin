@@ -205,7 +205,6 @@ export default {
             client_secret: '',
             transaction_info: {},
             product_info: {},
-            elements: {},
             clientKey: '',
             transaction_id: '',
             wx_img: '',

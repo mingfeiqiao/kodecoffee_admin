@@ -93,6 +93,7 @@
 </template>
 <script>
 import menuList from '@/configs/menu.json'
+import OPTIONS from '@/options/coffee_price_options.json'
 import headTop from "./AdminHeadTop.vue";
 import { Crisp } from "crisp-sdk-web";
 import breadCrumb from "@/page/components/bread-crumb.vue";
@@ -143,7 +144,7 @@ export default {
     // Vue.prototype.$Crisp = Crisp;
     // this.loginOrRegisterUser();
     this.test();
-    // this.initOptions();
+    this.initOptions();
     this.currentMenu = this.$route.path; // 初始化当前路由路径
   },
   methods: {
@@ -265,6 +266,7 @@ export default {
         Vue.prototype.OPTIONS = res;
         this.is_option_load = true;
       }).catch(err => {
+        Vue.prototype.OPTIONS = OPTIONS;
         console.log(err);
       })
     }
