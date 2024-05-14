@@ -16,7 +16,7 @@
   <el-form-item :label="$t('Creator About me') + ':'" prop="description">
     <el-input type="textarea" v-model="plugin_data.description" :placeholder="$t('About me placeholder')" maxlength="120"></el-input>
   </el-form-item>
-  <el-form-item :label="$t('Creator Home link') + ':'" prop="store_address">
+  <el-form-item :label="$t('Creator Home link') + ':'" prop="store_address" v-if="plugin_data.store_address && plugin_data.name">
     <el-input :value="getShareLink" disabled>
 <!--          <el-button slot="append" icon="el-icon-search"></el-button>-->
       <el-button slot="append" type="text" @click="copyShareLink"><span id="copy_text" style="padding: 0 10px">{{$t('CopyShare')}}</span></el-button>

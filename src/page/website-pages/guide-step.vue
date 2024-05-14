@@ -40,7 +40,6 @@ export default {
   data() {
     return {
       homeLink: '',
-      activeStep: 0,
       steps: [
         {title: 'Creator Info'},
         {title: 'Create Plan Combo'},
@@ -49,21 +48,29 @@ export default {
       pluginData: null,
     }
   },
-  mounted() {
-    console.log(this.$store.state, 'this.$store.state')
-    getGuideStepApi({zb_user_id: this.$store.state.userInfo.zbase_user_id}).then(res => {
-      const {data} = res.data
-      this.activeStep = data.step || 1
-      if(data.step === 3) {
-        this.getPluginList()
-      }
-    })
+  computed: {
+    activeStep: {
+      get() {
+        return this.$store.state.guide_step
+      },
+      set(value) {
+        this.$store.commit('setGuideStep', value);
+      },
+    },
+  },
+  created() {
+    if(this.activeStep >= 3) {
+      this.getPluginList()
+    }
   },
   methods: {
     operateSuccess() {
       setGuideStepApi({step: this.activeStep + 1, status:1}).then(res => {
          if (res.data && res.data.code && parseInt(res.data.code) === 100000) {
-           this.activeStep++;
+           this.activeStep += 1;
+          /* if(this.activeStep >= 3) {
+             this.$store.commit('setGuideStep', this.activeStep)
+           }*/
          }
       })
     },

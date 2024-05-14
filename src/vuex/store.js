@@ -8,7 +8,7 @@ Vue.use(Vuex);
 const store = new Vuex.Store({
   state: {
     isLoginIn: false, // 初始登录状态
-    guide_step:0,
+    guide_step:3,
     clientId: '',
     currentPlan: null,
     userInfo: null,
@@ -17,7 +17,7 @@ const store = new Vuex.Store({
     isLoginIn(state) {
       return state.isLoginIn;
     },
-    guide_step(state){
+    guideStep(state){
       return state.guide_step;
     }
   },

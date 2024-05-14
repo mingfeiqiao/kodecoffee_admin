@@ -8,7 +8,7 @@
        </a>
        <div class="header-right">
         <language-change></language-change>
-        <el-button class="el-button-orange" size="mini" v-if="isLoginIn" @click="goVendors('/creator-info')">{{ $t('Become creator') }}</el-button>
+        <el-button class="el-button-orange" size="mini" v-if="isLoginIn" @click="goVendors('/guide-step')">{{ $t('Become creator') }}</el-button>
         <el-button style="color: #3D3D3D;" type="text" @click="goLogin" v-else>{{ $t('Login') }}</el-button>
        </div>
      </div>

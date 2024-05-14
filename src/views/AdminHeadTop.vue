@@ -11,9 +11,8 @@
       </div>
     </div>
     <div style="display: flex;align-items: center">
-      <div>
-        <language-change></language-change>
-      </div>
+      <el-button type="primary" style="padding: 5px 10px; font-size: 14px; margin-right: 20px;" @click="$router.replace('/guide-step')" v-if="activeStep < 3">{{$t("Guide Step")}}</el-button>
+      <language-change></language-change>
      <div style="margin-left: 20px;">
        <user-info></user-info>
      </div>
@@ -32,6 +31,11 @@ export default {
       is_finish_guide: false,
     }
   },
+  computed: {
+    activeStep() {
+      return this.$store.state.guide_step
+    },
+  },
   components: {
     userInfo,
     languageChange
@@ -44,7 +48,7 @@ export default {
     collapseChange: {
       type: Function,
       default: () => {}
-    }
+    },
   },
   created() {
     // this.init()

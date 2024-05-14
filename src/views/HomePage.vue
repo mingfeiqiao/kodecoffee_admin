@@ -61,6 +61,11 @@ export default {
       client_id: '',
       projectData: {},
       client_info: {},
+      client_info_default: {
+        "description": "",
+        "icon": "https://kodecoffee-global.zingfront.com/fixed_files/img/default_head.png",
+        "cover": "https://kodecoffee-global.zingfront.com/fixed_files/img/william-warby-ld4wZGqlLF4-unsplash.jpg",
+      },
       product_list: [],
       name: '',
       header: {
@@ -97,10 +102,12 @@ export default {
       }
       getProductList(this.header, params).then(res => {
         const {client_info, application_info, product_list} = res.data
-        client_info.userHeadImg = 'https://kodepay-cdn.oss-us-west-1.aliyuncs.com/' + client_info.icon;
         client_info.homeLink = client_info.url + '?name='+ client_info.name;
 
-        this.client_info  =client_info
+        client_info.userHeadImg = client_info.icon ? this.OSS_URL + client_info.icon : this.client_info_default.icon;
+        client_info.homeCover = client_info.cover ? this.OSS_URL + client_info.cover : this.client_info_default.cover;
+
+        this.client_info = client_info
         this.client_id = client_info.id
         this.application_id = application_info.id
         this.handleProductPrice(product_list.list)

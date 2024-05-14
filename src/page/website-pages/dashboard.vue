@@ -57,7 +57,7 @@
 <script>
 import DashboardCard from "../components/dashboard-card.vue";
 import CURRENCY_OPTIONS from "@/options/currency_options.json";
-import {dashBoardApi, pluginList, getGuideStepApi} from "@/api/interface";
+import {dashBoardApi, pluginList} from "@/api/interface";
 
 export default {
   components: {DashboardCard},
@@ -165,12 +165,6 @@ export default {
   },
   created() {
     this.getPluginList();
-    getGuideStepApi({zb_user_id: this.$store.state.userInfo.zbase_user_id}).then(res => {
-      const {data} = res.data
-      if(data.step < 3) {
-        this.$router.replace('/guide-step')
-      }
-    })
   },
   methods: {
     getPluginList() {

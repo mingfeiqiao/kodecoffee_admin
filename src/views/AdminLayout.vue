@@ -1,6 +1,6 @@
 <template>
   <el-container style="width: 100%;height: 100%">
-    <el-aside :width="isCollapse ? '64px' : '180px'"  ref="sidebar"  class="sidebar">
+    <el-aside :width="isCollapse ? '64px' : '180px'"  ref="sidebar"  class="sidebar" v-if="activeStep >= 3">
       <el-menu :default-active="currentMenu" :collapse="isCollapse" router style="height: 100%; bottom: 0;"
                background-color="#001529"
                text-color="#FFF"
@@ -15,7 +15,7 @@
         </el-menu-item>
         <template v-for="menu of MENU">
           <template v-if="menu.children">
-            <el-submenu :index="menu.url" >
+            <el-submenu :index="menu.url">
               <template slot="title">
                 <svg width="18" height="18" style="padding-right: 8px" fill="#fff">
                   <use :xlink:href="'#' + menu.icon"></use>
@@ -54,7 +54,7 @@
       <el-header style="padding: 0;margin: 0;height: auto;border-bottom: 1px solid rgba(232, 232, 232, 1);background-color: #ffffff">
         <head-top @collapseChange="collapseChange" :collapse="isCollapse"></head-top>
       </el-header>
-      <div style="padding: 16px 24px" v-if="$route.name !== 'dashboard'">
+      <div style="padding: 16px 24px" v-if="!['dashboard', 'guideStep'].includes($route.name)">
         <div class="breadcrumb">
           <el-breadcrumb separator="/">
             <el-breadcrumb-item>
@@ -97,7 +97,7 @@ import OPTIONS from '@/options/coffee_price_options.json'
 import headTop from "./AdminHeadTop.vue";
 import { Crisp } from "crisp-sdk-web";
 import breadCrumb from "@/page/components/bread-crumb.vue";
-import {getOptions, postUserInfo, zbUserInfo} from "@/api/interface";
+import {getOptions, postUserInfo, zbUserInfo, getGuideStepApi} from "@/api/interface";
 import Vue from "vue";
 export default {
   name: "AdminLayout",
@@ -137,20 +137,23 @@ export default {
         this.$store.commit('setLoginStatus', value);
       },
     },
+    activeStep() {
+      return this.$store.state.guide_step
+    },
   },
   created() {
     // Crisp.configure('29c69934-5e71-4ba8-9eff-d80342cdd79e');
     // Crisp.chat.show();
     // Vue.prototype.$Crisp = Crisp;
-    // this.loginOrRegisterUser();
-    this.test();
+    this.loginOrRegisterUser();
+    // this.test();
     this.initOptions();
     this.currentMenu = this.$route.path; // 初始化当前路由路径
   },
   methods: {
     test() {
       const res = {};
-      res.data = {
+      res.data123 = {
         "code": 100000,
         "message": "success",
         "product_id": 102,
@@ -175,6 +178,31 @@ export default {
             "status": "0"
         }
       };
+      res.data = {
+        "code": 100000,
+        "message": "success",
+        "product_id": 102,
+        "product_mark": 101,
+        "userinfo": {
+            "user_id": 8127367,
+            "email": "1140353684@qq.com",
+            "username": "",
+            "created_at": "2024-05-14 01:08:50",
+            "phone_number": "",
+            "utm_active_code": ""
+        },
+        "payinfo": {
+            "is_subscribed": "0",
+            "plan_start": "",
+            "plan_end": "",
+            "plan_price": "",
+            "plan_name": "No Plan",
+            "plan_date": "No upcoming payments",
+            "is_recurly": "0",
+            "channel": "0",
+            "status": "0"
+        }
+    }
       this.handleResult(res);
     },
     /**
@@ -219,6 +247,9 @@ export default {
         } else { // 如果没有上次登录的信息，那么基本可以认为用户第一次登录，需要注册
           this.userLogin(k_user_info);
         }
+        if(user_info.user_id) {
+          this.getGuideStep(user_info.user_id)
+        }
       } else {
         this.$message.error(this.$t('Login failed. Please try logging in again'));
         window.location.href = `${this.URL}/user/login`;
@@ -245,6 +276,15 @@ export default {
       }).catch(err => {
         console.log(err);
       });
+    },
+    getGuideStep(zb_user_id) {
+       getGuideStepApi({zb_user_id}).then(res => {
+          const {data} = res.data
+          this.$store.commit('setGuideStep', data.step)
+          if(data.step < 3) {
+            this.$router.replace('/guide-step')
+          }
+        })
     },
     collapseChange(collapse) {
       this.isCollapse = !!collapse;
