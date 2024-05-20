@@ -66,6 +66,7 @@ export default {
 </script>
 <style scoped>
 /deep/ .el-upload {
+  width: 100%;
   border: 1px solid #dcdfe6;
   border-radius: 6px;
   cursor: pointer;

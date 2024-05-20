@@ -68,9 +68,10 @@ export default {
       setGuideStepApi({step: this.activeStep + 1, status:1}).then(res => {
          if (res.data && res.data.code && parseInt(res.data.code) === 100000) {
            this.activeStep += 1;
-          /* if(this.activeStep >= 3) {
+           if(this.activeStep >= 3) {
              this.$store.commit('setGuideStep', this.activeStep)
-           }*/
+             this.getPluginList()
+           }
          }
       })
     },
@@ -87,8 +88,8 @@ export default {
             }
           });
           this.pluginData = data[0];
-          const {name, store_address} = data[0]
-          this.homeLink = store_address + '?name' + name
+          const {uniq_name, store_address} = data[0]
+          this.homeLink = store_address + uniq_name
         } else {
           if (res && res.data && res.data.message) {
             this.$message.warning(res.data.message)

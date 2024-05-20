@@ -7,6 +7,10 @@
       <el-form-item :label="$t('Creator Client Id') + ':'" prop="client_key" v-if="operationType !== 'add'">
         <div>{{ plugin_data.client_key }}</div>
       </el-form-item>
+      <el-form-item :label="$t('Creator Home link') + ':'" prop="uniq_name">
+        <el-link :underline="false" :href="getShareLink" target="_blank">{{getShareLink}}</el-link>
+        <el-button type="text" @click="copyShareLink"><span id="copy_text" style="padding: 0 10px">{{$t('CopyShare')}}</span></el-button>
+      </el-form-item>
       <el-form-item :label="$t('Creator Name') + ':'" prop="name">
         <el-input v-model="plugin_data.name" :placeholder="$t('Creator placeholder')" maxlength="100">
         </el-input>
@@ -19,12 +23,6 @@
       </el-form-item>
       <el-form-item :label="$t('Creator About me') + ':'" prop="description">
         <el-input type="textarea" v-model="plugin_data.description" :placeholder="$t('About me placeholder')" maxlength="120"></el-input>
-      </el-form-item>
-      <el-form-item :label="$t('Creator Home link') + ':'" prop="store_address">
-        <el-input :value="getShareLink" disabled>
-<!--          <el-button slot="append" icon="el-icon-search"></el-button>-->
-          <el-button slot="append" type="text" @click="copyShareLink"><span id="copy_text" style="padding: 0 10px">{{$t('CopyShare')}}</span></el-button>
-        </el-input>
       </el-form-item>
       <el-form-item :label="$t('Creator Cover Img') + ':'" prop="cover">
         <img-upload-cover :icon_url="plugin_data.cover" @iconUpSourceChange="handleCoverSourceChange"></img-upload-cover>
@@ -66,8 +64,9 @@ export default {
       icon_file: null,
       is_limit_user:false,
       dialog_form_visible: false,
-      store_address: 'https://kodecoffee.com/vendors/home',
+      store_address: this.URL+'/i/',
       plugin_data : {
+        uniq_name: 'RunningV',
         allow_online_user_limit_count:0,
       },
       btn_loading:false
@@ -119,7 +118,7 @@ export default {
       }
     },
     getShareLink() {
-      return this.plugin_data.store_address + '?name=' + this.plugin_data.name||''
+      return this.plugin_data.store_address + this.plugin_data.uniq_name||''
     },
   },
   watch : {
@@ -280,6 +279,7 @@ export default {
       }
       args.client_key = this.chosen_plugin_data.client_key;
       args.store_address = this.store_address;
+      args.uniq_name = 'RunningV'
       this.btn_loading = true;
       updatePlugin(args).then(res => {
         this.btn_loading = false;

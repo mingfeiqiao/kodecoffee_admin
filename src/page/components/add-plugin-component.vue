@@ -3,8 +3,20 @@
   <el-form-item :label="$t('Creator Client Id') + ':'" prop="client_key" v-if="operationType !== 'add'">
     <div>{{ plugin_data.client_key }}</div>
   </el-form-item>
+  <el-form-item :label="$t('Creator Home link') + ':'" prop="uniq_name" v-if="operationType === 'add'">
+    <el-input  v-model="plugin_data.uniq_name" :placeholder="$t('Creator placeholder')" style="width: 500px;" minlength="6" maxlength="100">
+      <template slot="prepend">{{store_address}}</template>
+<!--          <el-button slot="append" icon="el-icon-search"></el-button>-->
+    </el-input>
+  </el-form-item>
+  <el-form-item :label="$t('Creator Home link') + ':'" prop="uniq_name" v-else>
+    <el-input  :value="store_address+plugin_data.uniq_name" style="max-width: 500px;" minlength="6" maxlength="100">
+<!--          <el-button slot="append" icon="el-icon-search"></el-button>-->
+      <el-button slot="append" type="text" @click="copyShareLink"><span id="copy_text" style="padding: 0 10px">{{$t('CopyShare')}}</span></el-button>
+    </el-input>
+  </el-form-item>
   <el-form-item :label="$t('Creator Name') + ':'" prop="name">
-    <el-input v-model="plugin_data.name" :placeholder="$t('Creator placeholder')" style="width: 200px;" maxlength="100">
+    <el-input v-model="plugin_data.name" :placeholder="$t('Creator Name placeholder')" style="width: 200px;" maxlength="100">
     </el-input>
   </el-form-item>
   <el-form-item :label="$t('Creator Profile photo') + ':'" prop="icon">
@@ -15,12 +27,6 @@
   </el-form-item>
   <el-form-item :label="$t('Creator About me') + ':'" prop="description">
     <el-input type="textarea" v-model="plugin_data.description" :placeholder="$t('About me placeholder')" maxlength="120"></el-input>
-  </el-form-item>
-  <el-form-item :label="$t('Creator Home link') + ':'" prop="store_address" v-if="plugin_data.store_address && plugin_data.name">
-    <el-input :value="getShareLink" disabled>
-<!--          <el-button slot="append" icon="el-icon-search"></el-button>-->
-      <el-button slot="append" type="text" @click="copyShareLink"><span id="copy_text" style="padding: 0 10px">{{$t('CopyShare')}}</span></el-button>
-    </el-input>
   </el-form-item>
   <el-form-item :label="$t('Creator Cover Img') + ':'" prop="cover">
     <img-upload-cover :icon_url="plugin_data.cover" @iconUpSourceChange="handleCoverSourceChange"></img-upload-cover>
@@ -60,8 +66,10 @@ export default {
       icon_file: null,
       is_limit_user:false,
       dialog_form_visible: false,
-      store_address: 'https://kodecoffee.com/vendors/home',
+      store_address: this.URL+'/i/',
       plugin_data : {
+        uniq_name: '',
+        name: '',
         allow_online_user_limit_count:0,
       },
       btn_loading:false
@@ -102,9 +110,9 @@ export default {
   computed: {
     rules () {
       return {
-        name: [
-          { required: true, message: this.$t('1-100 characters required'), trigger: 'blur'},
-          { validator: this.validateTrimmedField, trigger: 'blur'}
+        uniq_name: [
+          { required: true, message: this.$t('6-100 characters required'), trigger: 'blur'},
+          { validator: this.validateUniqueNameField, trigger: 'blur'}
         ],
         store_address123: [
           { message: this.$t('please input valid URL'), trigger: 'blur', type:  'url'},
@@ -168,6 +176,14 @@ export default {
         }
       }
       console.log(this.plugin_data.allow_online_user_limit_count);
+    },
+    validateUniqueNameField(rule, value, callback) {
+      const reg = /^(?=.*[a-z])[a-z][a-z0-9]{5,99}$/
+      if(reg.test(value)) {
+        callback()
+      } else {
+        callback(new Error('主页名称由小写英文字母开头，可包含数字，长度6-100'));
+      }
     },
     validateTrimmedField(rule, value, callback) {
       if (value && value.trim() === '') {
