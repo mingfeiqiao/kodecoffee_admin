@@ -2,33 +2,33 @@
   "menu": [
     {
       "title": "Dashboard",
-      "url": "dashboard",
+      "url": "/dashboard",
       "icon": "dashboard-icon"
     },
     {
       "title": "Creator Info",
-      "url": "creator-info",
+      "url": "/creator-info",
       "icon": "dashboard-icon"
     },
     {
       "title": "All Orders",
-      "url": "orders",
+      "url": "/orders",
       "icon": "payment-list-icon"
     },
     {
       "title": "Customers",
       "icon": "custom-list-icon",
-      "url": "customers"
+      "url": "/customers"
     },
     {
       "title": "Plans",
       "icon": "subscription-list-icon",
-      "url": "plans"
+      "url": "/plans"
     },
     {
       "title": "Balance Settings",
       "icon": "settings-icon",
-      "url": "balance-settings"
+      "url": "/balance-settings"
     }
   ]
 }
