@@ -69,7 +69,6 @@ export default {
          if (res.data && res.data.code && parseInt(res.data.code) === 100000) {
            this.activeStep += 1;
            if(this.activeStep >= 3) {
-             this.$store.commit('setGuideStep', this.activeStep)
              this.getPluginList()
            }
          }

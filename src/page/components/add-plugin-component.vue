@@ -28,6 +28,9 @@
   <el-form-item :label="$t('Creator About me') + ':'" prop="description">
     <el-input type="textarea" v-model="plugin_data.description" :placeholder="$t('About me placeholder')" maxlength="120"></el-input>
   </el-form-item>
+  <el-form-item :label="$t('Creator Project Link') + ':'" prop="external_link">
+    <el-input type="text" v-model="plugin_data.external_link" :placeholder="$t('Project Link placeholder')" maxlength="120"></el-input>
+  </el-form-item>
   <el-form-item :label="$t('Creator Cover Img') + ':'" prop="cover">
     <img-upload-cover :icon_url="plugin_data.cover" @iconUpSourceChange="handleCoverSourceChange"></img-upload-cover>
   </el-form-item>
@@ -71,6 +74,7 @@ export default {
         uniq_name: '',
         name: '',
         allow_online_user_limit_count:0,
+        external_link: '',
       },
       btn_loading:false
     }
@@ -117,6 +121,9 @@ export default {
         store_address123: [
           { message: this.$t('please input valid URL'), trigger: 'blur', type:  'url'},
           { validator: this.validateTrimmedField, trigger: 'blur'}
+        ],
+        external_link: [
+          { message: this.$t('please input valid URL'), trigger: 'blur', type:  'url'},
         ],
       }
     },

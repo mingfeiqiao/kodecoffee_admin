@@ -30,7 +30,7 @@ instance.interceptors.response.use(
           localStorage.removeItem(Vue.prototype.$mode + 'applicationKey');
           localStorage.removeItem(Vue.prototype.$mode + 'userInfo')
           localStorage.removeItem(Vue.prototype.$mode + 'token');
-          window.location.href = 'https://kodecoffee.com/user/login';
+          window.location.href = config.URL + '/user/login';
         }, 5000);
       }
       return Promise.reject(error);

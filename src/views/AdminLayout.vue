@@ -280,7 +280,7 @@ export default {
     getGuideStep(zb_user_id) {
        getGuideStepApi({zb_user_id}).then(res => {
           const {data} = res.data
-          this.$store.commit('setGuideStep', data.step)
+          this.$store.commit('setGuideStep', data.step||1)
           if(data.step < 3) {
             this.$router.replace('/guide-step')
           }
