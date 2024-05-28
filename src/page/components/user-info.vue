@@ -28,9 +28,9 @@ export default {
       if(user_info.account_name) {
         return user_info.account_name.slice(0,1)
       } else {
+        user_info.email = user_info.email || ''
         return user_info.email.slice(0,2)
       }
-
     }
   },
   created() {

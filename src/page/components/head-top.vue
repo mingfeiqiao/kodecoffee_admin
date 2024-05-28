@@ -29,7 +29,7 @@
       <div>
         <language-change></language-change>
       </div>
-     <div style="margin-left: 20px;">
+     <div style="margin: 0 20px;">
        <user-info></user-info>
      </div>
     </div>
