@@ -12,8 +12,7 @@ const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin');
 // const WebpackAliyunOss = require('webpack-aliyun-oss');
 // const oss = require('./cdn')
 
-const env = process.env.NODE_ENV === 'testing' ? require('../config/test.env') : config.build.env;
-
+const env = process.env.NODE_ENV === 'production' ? config.build.env : config.dev.env;
 const webpackConfig = merge(baseWebpackConfig, {
 	module: {
 		rules: utils.styleLoaders({

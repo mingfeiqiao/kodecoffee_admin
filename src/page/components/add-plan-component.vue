@@ -11,7 +11,7 @@
      </div>
      <div style="padding-left: 50px;">
        <el-form-item :label="$t('icon')">
-         <img-upload :icon_url="plan.plan_icon" @iconUpSourceChange="iconUpSourceChange"></img-upload>
+         <img-upload :limit="{size:5,ratio:'1x1', message: $t('Profile placeholder')}" :icon_url="plan.plan_icon" @iconUpSourceChange="iconUpSourceChange"></img-upload>
        </el-form-item>
      </div>
    </div>
