@@ -16,7 +16,10 @@
         </el-input>
       </el-form-item>
       <el-form-item :label="$t('Creator Profile photo') + ':'" prop="icon">
-        <img-upload :icon_url="plugin_data.icon" @iconUpSourceChange="iconUpSourceChange"></img-upload>
+        <div style="display: flex;align-items: center;">
+          <img-upload :limit="{size:5,ratio:'1x1', message: $t('Profile placeholder')}" style="width: 101px;" :icon_url="plugin_data.icon" @iconUpSourceChange="iconUpSourceChange"></img-upload>
+          <span style="margin-left: 10px;color: #101010;font-size: 12px;">{{$t('Profile placeholder')}}</span>
+        </div>
       </el-form-item>
       <el-form-item :label="$t('Creator Product info') + ':'" prop="on_working">
         <el-input type="textarea" v-model="plugin_data.on_working" :placeholder="$t('Product info placeholder')" maxlength="120"></el-input>
@@ -28,7 +31,7 @@
         <el-input type="text" v-model="plugin_data.external_link" :placeholder="$t('Project Link placeholder')" maxlength="120"></el-input>
       </el-form-item>
       <el-form-item :label="$t('Creator Cover Img') + ':'" prop="cover">
-        <img-upload-cover :icon_url="plugin_data.cover" @iconUpSourceChange="handleCoverSourceChange"></img-upload-cover>
+        <img-upload-cover :limit="{size:5,ratio:'1140x200', message: $t('Cover Img placeholder')}"  :icon_url="plugin_data.cover" @iconUpSourceChange="handleCoverSourceChange"></img-upload-cover>
       </el-form-item>
       <el-form-item :label="$t('Simultaneously Online') + ':'"  prop="allow_online_user_limit_count" v-if="0">
         <div style="display: flex;flex-direction: column">

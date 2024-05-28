@@ -50,8 +50,18 @@ export default {
     handleBeforeUpload(file) {
       // 上传前的钩子函数
       this.file = file; // 保存文件对象
-      this.image_url = URL.createObjectURL(file); // 使用本地预览图片
-      this.$emit('iconUpSourceChange', file);
+      const {size, ratio, message} = this.$attrs.limit
+      const isJPG = true;
+      const isLt2M = file.size / 1024 / 1024 < size;
+      /* if (!isJPG) {
+        this.$message.error('上传头像图片只能是 JPG 格式!');
+      } */
+      if (!isLt2M) {
+        this.$message.error(message);
+      } else {
+        this.image_url = URL.createObjectURL(file); // 使用本地预览图片
+        this.$emit('iconUpSourceChange', file);
+      }
       return false; // 阻止上传动作
     },
     handleUploadSuccess(response) {
@@ -65,6 +75,9 @@ export default {
 };
 </script>
 <style scoped>
+/deep/ .el-upload .el-upload-dragger{
+  width: 100%;
+}
 /deep/ .el-upload {
   width: 100%;
   border: 1px solid #dcdfe6;
