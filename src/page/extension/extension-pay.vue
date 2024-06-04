@@ -395,7 +395,7 @@ export default {
             this.elements = this.stripe.elements({
                 mode: 'payment',
                 currency: this.product_info.currency,
-                amount: this.product_info.amount,
+                amount: this.transaction_info.amount,
                 paymentMethodTypes: this.paymentMethodTypes
             });
 
@@ -415,7 +415,7 @@ export default {
             this.elements1 = this.stripe.elements({
                 mode: 'payment',
                 currency: this.product_info.currency,
-                amount: this.product_info.amount,
+                amount: this.transaction_info.amount,
             });
             const expressCheckoutElement = this.elements1.create('expressCheckout');
             expressCheckoutElement.mount('#express-checkout-element')
