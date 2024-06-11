@@ -10,7 +10,7 @@
                class="el-menu-vertical-demo"
       >
         <el-menu-item style="height: 64px;cursor: default;">
-          <img src="@/assets/cup.png" alt="kodecoffee" style="width: 30px;height: 30px">
+          <img src="@/assets/logo-500x500-black-new.png" alt="kodecoffee" style="width: 30px;height: 30px">
           <span slot="title" style="color: #fff">KodeCoffee</span>
         </el-menu-item>
         <template v-for="menu of MENU">
@@ -79,8 +79,8 @@
         <el-tooltip placement="top" effect="light">
           <div slot="content" style="text-align: center;width: 200px;font-size: 14px;">
             <p style="color: #3D3D3D;font-weight: 700;margin-bottom: 16px;">{{ $t('technical support') }}</p>
-            <img style="width: 150px;height: 150px;" src="http://saasbox.uncledesk.com/wp-content/uploads/2024/01/KodeLab_WeChat.png"><p style="margin-bottom: 25px;">微信扫码</p>
-            <img style="width: 150px;height: 150px;" src="http://saasbox.uncledesk.com/wp-content/uploads/2024/01/KodeLab_WhatsApp.png"><p style="margin-bottom: 25px;">WhatsApp <el-link type="primary" href="https://api.whatsapp.com/send/?phone=15309888116&text&type=phone_number&app_absent=0">{{ $t('Start conversation') }}</el-link></p>
+            <img style="width: 150px;height: 150px;" src="https://kodepay-global.zingfront.com/common/images/wechat_kode.png"><p style="margin-bottom: 25px;">微信扫码</p>
+            <img style="width: 150px;height: 150px;" src="https://kodepay-global.zingfront.com/common/images/whatsapp_kode.png"><p style="margin-bottom: 25px;">WhatsApp <el-link type="primary" href="https://api.whatsapp.com/send/?phone=18824305729&text&type=phone_number&app_absent=0">{{ $t('Start conversation') }}</el-link></p>
           </div>
           <div>
             <img src="http://saasbox.uncledesk.com/wp-content/uploads/2024/01/容器-1-1.png" alt="Technical Support" style="height: 24px;width: 24px;">

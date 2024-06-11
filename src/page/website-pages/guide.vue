@@ -162,11 +162,11 @@ function paySuccessCallBack(user_info, status) {
         <div class="Cash_withdrawal_note">{{ $t('coupon 10') }}</div>
         <div class="WeChat_box">
           <div>
-            <p>WeChat</p><img class="img_box" src="http://saasbox.uncledesk.com/wp-content/uploads/2024/01/KodeLab_WeChat.png">
+            <p>WeChat</p><img class="img_box" src="https://kodepay-global.zingfront.com/common/images/wechat_kode.png">
             <el-button v-if="$i18n.locale == 'en-US'" type="primary" size="small" @click="dialogTableVisible = true">Scan to get</el-button>
           </div>
           <div>
-            <p>WhatsApp</p><img class="img_box" src="http://saasbox.uncledesk.com/wp-content/uploads/2024/01/KodeLab_WhatsApp.png">
+            <p>WhatsApp</p><img class="img_box" src="https://kodepay-global.zingfront.com/common/images/whatsapp_kode.png">
             <el-button v-if="$i18n.locale == 'en-US'" @click="onClickWhats" type="primary" size="small">Click to get</el-button>
           </div>
         </div>
@@ -333,7 +333,7 @@ export default {
       this.$router.push({path: '/dashboard'});
     },
     onClickWhats(){
-      window.open('https://api.whatsapp.com/send/?phone=15309888116&text&type=phone_number&app_absent=0');
+      window.open('https://api.whatsapp.com/send/?phone=18824305729&text&type=phone_number&app_absent=0');
     },
     setLocalStorageGuideStep (step) {
       localStorage.setItem('guideStep', step);
