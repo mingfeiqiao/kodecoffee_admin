@@ -14,9 +14,9 @@
     </template>
     <template v-else>
       <i class="el-icon-upload"></i>
-      <div class="el-upload__text" v-html="$t('Creator Cover Img tips')"></div>
+      <div class="el-upload__text" style="color: #606266;" v-html="$t('Creator Cover Img tips')"></div>
     </template>
-    <div class="el-upload__tip" slot="tip">{{$t("Cover Img placeholder")}}</div>
+    <div class="el-upload__tip" style="color: #606266;" slot="tip">{{$t("Cover Img placeholder")}}</div>
   </el-upload>
 </template>
 

@@ -36,12 +36,12 @@
                   </svg>
                 </div>
                 <div class="column_right">
-                  <div style="padding-left:10px;text-align: left;">
-                    <div>
-                      <ellipsis-text :text="scope.row.plan_name" :max_width="230"></ellipsis-text>
+                  <div style="padding-left:10px;text-align: left;width: 100%;">
+                    <div class="text-overflow-ellipsis">
+                      {{scope.row.plan_name}}
                     </div>
-                    <div style="color: #929292">
-                      <ellipsis-text :text="scope.row.plan_desc" :max_width="230"></ellipsis-text>
+                    <div class="text-overflow-ellipsis" style="color: #929292">
+                      {{scope.row.plan_desc}}
                     </div>
                   </div>
                 </div>
@@ -462,5 +462,13 @@ export default {
   width: calc(100% - 44px);
   align-items: center;
   padding-top: 7px;
+  .text-overflow-ellipsis {
+    /* 溢出隐藏 */
+    overflow: hidden;
+    /* 文本溢出部分用省略号表示 */
+    text-overflow: ellipsis;
+    /* 强制单行显示 */
+    white-space: nowrap;
+  }
 }
 </style>

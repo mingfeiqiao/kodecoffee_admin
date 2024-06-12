@@ -1,6 +1,6 @@
 <template>
 <el-form :model="plugin_data" :rules="rules" ref="pluginRuleForm" label-width="120px">
-  <el-form-item :label="$t('Creator Client Id') + ':'" prop="client_key" v-if="operationType !== 'add'">
+  <el-form-item :label="$t('Creator Client Id') + ':'" prop="client_key" v-if="false">
     <div>{{ plugin_data.client_key }}</div>
   </el-form-item>
   <el-form-item :label="$t('Creator Home link') + ':'" prop="uniq_name" v-if="operationType === 'add'">
@@ -10,7 +10,7 @@
     </el-input>
   </el-form-item>
   <el-form-item :label="$t('Creator Home link') + ':'" prop="uniq_name" v-else>
-    <el-input  :value="store_address+plugin_data.uniq_name" style="max-width: 500px;" minlength="6" maxlength="100">
+    <el-input class="home-link" disabled :value="store_address+plugin_data.uniq_name" style="max-width: 500px;" minlength="6" maxlength="100">
 <!--          <el-button slot="append" icon="el-icon-search"></el-button>-->
       <el-button slot="append" type="text" @click="copyShareLink"><span id="copy_text" style="padding: 0 10px">{{$t('CopyShare')}}</span></el-button>
     </el-input>
@@ -53,8 +53,8 @@
     </div>
   </el-form-item>
   <div style="text-align: center;">
-    <el-button type="primary" size="small" @click="submitForm('pluginRuleForm')" :loading="btn_loading">
-      {{$t('Next Step')}}
+    <el-button style="width: 30%;" type="primary" @click="submitForm('pluginRuleForm')" :loading="btn_loading">
+      {{ operationType === 'add' ? $t('Next Step') : $t('update') }}
     </el-button>
   </div>
 </el-form>
@@ -83,6 +83,10 @@ export default {
     }
   },
   props: {
+    pluginObj: {
+      type: Object,
+      default: null
+    },
     operationType: {
       type: String,
       default: 'add'

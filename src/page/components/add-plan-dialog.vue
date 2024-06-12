@@ -5,10 +5,10 @@
        <div style="display:flex;align-items: center;justify-content: space-between; ">
          <div style="min-width: 250px;">
            <el-form-item :label="$t('name')" prop="plan_name">
-             <el-input v-model="plan.plan_name" :placeholder="$t('plan name placeholder')" style="width: 300px"></el-input>
+             <el-input :maxlength="50" v-model="plan.plan_name" :placeholder="$t('plan name placeholder')" style="width: 300px"></el-input>
            </el-form-item>
            <el-form-item :label="$t('description')" prop="plan_desc">
-             <el-input type="textarea" v-model="plan.plan_desc" :placeholder="$t('plan description placeholder')" style="width: 300px"></el-input>
+             <el-input :maxlength="200" type="textarea" v-model="plan.plan_desc" :placeholder="$t('plan description placeholder')" style="width: 300px"></el-input>
            </el-form-item>
          </div>
          <div>

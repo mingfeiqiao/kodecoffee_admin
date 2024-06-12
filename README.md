@@ -32,6 +32,12 @@ https://kodecoffee-global.zingfront.com
 
 
 ## 代码发布方式
-1.  本地打包npm run build
+#### 正式环境:
+1.  本地打包npm run build:prod
 2. static/index 上传到OSS/kodecoffee-fronted跟路径
 3. static整个文件上传到OSS/kodecoffee-cdn跟路径
+#### 测试环境:
+1. config/index dev配置 ```assetsPublicPath: 'https://dev.kodecoffee.com/vendors/',```
+2. 本地打包npm run build:dev
+3. static文件替换kodecoffee_vendors项目 /app/static 全部文件
+4. jsm拉代码  ```docker restart 78d599353a00```

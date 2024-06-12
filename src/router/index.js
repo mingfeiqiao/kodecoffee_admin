@@ -17,7 +17,7 @@ const routes = [
       },
       {
         path: 'creator-info',
-        component:  () => import('@/page/website-pages/plugin-list.vue'),
+        component:  () => import('@/page/website-pages/creator-info.vue'),
         name: 'creatorInfo',
         meta: { breadcrumbLabel: 'Creator Info' },
       },
