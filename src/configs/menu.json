@@ -2,23 +2,18 @@
   "menu": [
     {
       "title": "Dashboard",
-      "url": "dashboard",
+      "url": "/dashboard",
       "icon": "dashboard-icon"
     },
     {
-      "title": "Payments",
-      "url": "payments",
-      "icon": "payment-list-icon",
-      "children": [
-        {
-          "title": "All Orders",
-          "url": "/orders"
-        },
-        {
-          "title": "Subscriptions",
-          "url": "/subscriptions"
-        }
-      ]
+      "title": "Creator Info",
+      "url": "/creator-info",
+      "icon": "dashboard-icon"
+    },
+    {
+      "title": "All Orders",
+      "url": "/orders",
+      "icon": "payment-list-icon"
     },
     {
       "title": "Customers",
@@ -26,47 +21,14 @@
       "url": "/customers"
     },
     {
-      "title": "Extensions",
-      "icon": "plugin-list-icon",
-      "children": [
-        {
-          "title": "Extension List",
-          "url": "/extensions"
-        },
-        {
-          "title": "Extension Virality",
-          "url": "/extension-virality"
-        },
-        {
-          "title": "Extension Commission",
-          "url": "/extension-commission"
-        }
-      ],
-      "url": "/extensions"
-    },
-    {
       "title": "Plans",
       "icon": "subscription-list-icon",
       "url": "/plans"
     },
     {
-      "title": "Settings",
+      "title": "Balance Settings",
       "icon": "settings-icon",
-      "url": "settings",
-      "children": [
-        {
-          "title": "Balance Settings",
-          "url": "/balance-settings"
-        },
-        {
-          "title": "Developer Settings",
-          "url": "/developer-settings"
-        },
-        {
-          "title": "Payment Channel Settings",
-          "url": "/payment-channel-settings"
-        }
-      ]
+      "url": "/balance-settings"
     }
   ]
 }

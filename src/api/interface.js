@@ -2,12 +2,7 @@ import Vue from "vue";
 import axios from "axios";
 import qs from "qs";
 import config from '../configs/config';
-let baseURL = config.API_URL;
-if (window.location.pathname.startsWith(config.MODECONFIG.SANDBOX.basePath)) {
-  baseURL = config.MODECONFIG.SANDBOX.apiURL;
-} else {
-  baseURL = config.MODECONFIG.PRODUCTION.apiURL;
-}
+let baseURL = baseURL = config.MODECONFIG.PRODUCTION.apiURL;
 // 创建一个axios实例
 const instance = axios.create({
   baseURL: baseURL, // 设置API的基础URL
@@ -35,7 +30,7 @@ instance.interceptors.response.use(
           localStorage.removeItem(Vue.prototype.$mode + 'applicationKey');
           localStorage.removeItem(Vue.prototype.$mode + 'userInfo')
           localStorage.removeItem(Vue.prototype.$mode + 'token');
-          window.location.href = 'https://kodepay.io/user/login';
+          window.location.href = config.URL + '/user/login';
         }, 5000);
       }
       return Promise.reject(error);
@@ -62,10 +57,10 @@ instance.interceptors.request.use(
 );
 
 export const getOptions = () => {
-  return fetch('https://kodepay-cdn.oss-us-west-1.aliyuncs.com/config/options.json');
+  return fetch(config.GLOBAL_URL + '/fixed_files/files/coffee_price_options.json');
 };
 export const zbUserInfo = () => {
-  return instance.get('https://kodepay.io/user/v2/userinfo');
+  return instance.get(config.URL + '/user/v2/userinfo');
 };
 export const postUserInfo = data => {
   const formData = qs.stringify(data);
@@ -89,6 +84,10 @@ export const addPlan = data => instance.post('/product/save', data);
 export const planList = data => {
   data = JSON.stringify(data);
   return instance.post('/product/list', data, {headers: {'Content-Type' : 'application/json'}});
+}
+export const priceList = data => {
+  data = JSON.stringify(data);
+  return instance.post('/extension/product/list', data, {headers: {'Content-Type' : 'application/json'}});
 }
 export const exportBillApi = data => instance.post('/app/bill/export-bill', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 export const planFilterListApi = data =>instance.post('/product/plan-filter-list', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
@@ -152,6 +151,7 @@ export const updateWebHookEventApi = (id,data) => instance.post(`/notifications/
 export const deleteWebHookEventApi = (id) =>  instance.post(`/notifications/delete-webhooks/${id}`, null, {headers: {'Content-Type' : 'application/json'}})
 export const getWebHookEventLogsApi = data => instance.post('/notifications/webhooks-logs', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}})
 export const setGuideStepApi = data => instance.post('/guide-step/update-guide-step', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}})
+export const getGuideStepApi = data => instance.post('/guide-step/search-guide-step', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}})
 export const makeOrderApi = (headers, data) => instance.post('/api/extension/make-order',data,{headers})
 export const extensionCancelSubscription = (headers, data) => {
   headers['Content-Type'] = 'application/json';
@@ -201,4 +201,9 @@ export const attributeFprApi = data => instance.post('/api/attribute-fpr', JSON.
 export const addExtensionShareApi = data => instance.post('/extension-share/add', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 export const extensionShareListApi = data => instance.post('/extension-share/list', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 
+/*创作者页面无登录请求*/
+export const getProductList = (headers, data) => {
+  data = JSON.stringify(data);
+  return instance.post('/extension/home/info', data, {headers ,method: 'POST'});
+}
 export default instance;

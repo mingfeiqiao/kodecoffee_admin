@@ -15,17 +15,13 @@
         <div style="padding: 0 12px;">
           <div>
             <div class="text-container">
-              <el-tooltip :content="data.name">
-                <div class="text-content">{{ data.name }}</div>
-              </el-tooltip>
+              <div class="text-content">{{ data.name }}</div>
             </div>
           </div>
           <div>
             <div class="text-container">
               <div style="display: flex;align-items: center">
-                <el-tooltip :content="data.client_key">
-                  <div class="text-content">{{ data.client_key }}</div>
-                </el-tooltip>
+                <div class="text-content">{{ data.client_key }}</div>
                 <svg width="16" height="16" @click="copy(data.client_key)" style="cursor: pointer;padding-left: 8px" id="copy_text">
                   <use xlink:href="#copy">
                   </use>
@@ -35,9 +31,7 @@
           </div>
           <div>
             <div class="text-container">
-              <el-tooltip :content="data.description">
-                <div class="text-content">{{ data.description }}</div>
-              </el-tooltip>
+              <div class="text-content">{{ data.description }}</div>
           </div>
         </div>
       </div>

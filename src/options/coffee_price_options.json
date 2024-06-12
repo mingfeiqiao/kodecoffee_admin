@@ -1,0 +1,74 @@
+{
+    "app_price_options": [
+        {
+            "currency": "usd",
+            "amount": 1,
+            "app_price_currency": [
+                {
+                    "currency": "usd",
+                    "amount": 1
+                }
+            ]
+        },
+        {
+            "currency": "usd",
+            "amount": 2,
+            "app_price_currency": [
+                {
+                    "currency": "usd",
+                    "amount": 2
+                }
+            ]
+        },
+        {
+            "currency": "usd",
+            "amount": 3,
+            "app_price_currency": [
+                {
+                    "currency": "usd",
+                    "amount": 3
+                }
+            ]
+        },
+        {
+            "currency": "usd",
+            "amount": 5,
+            "app_price_currency": [
+                {
+                    "currency": "usd",
+                    "amount": 5
+                }
+            ]
+        },
+        {
+            "currency": "usd",
+            "amount": 10,
+            "app_price_currency": [
+                {
+                    "currency": "usd",
+                    "amount": 10
+                }
+            ]
+        },
+        {
+            "currency": "usd",
+            "amount": 20,
+            "app_price_currency": [
+                {
+                    "currency": "usd",
+                    "amount": 20
+                }
+            ]
+        },
+        {
+            "currency": "usd",
+            "amount": 50,
+            "app_price_currency": [
+                {
+                    "currency": "usd",
+                    "amount": 50
+                }
+            ]
+        }
+    ]
+}

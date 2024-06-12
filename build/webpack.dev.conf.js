@@ -25,7 +25,7 @@ module.exports = merge(baseWebpackConfig, {
 		new webpack.NoEmitOnErrorsPlugin(),
 		new HtmlWebpackPlugin({
 			filename: 'index.html',
-      favicon: './src/assets/favicon.ico',
+      		favicon: './src/assets/favicon.ico',
 			template: 'index.html',
 			inject: true
 		}),

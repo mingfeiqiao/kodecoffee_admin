@@ -1,6 +1,6 @@
 <template>
-  <el-container style="width: 100%;height: 100%" v-if="is_guide_loading_finish">
-    <el-aside :width="isCollapse ? '64px' : '256px'"  ref="sidebar"  class="sidebar">
+  <el-container style="width: 100%;height: 100%">
+    <el-aside :width="isCollapse ? '64px' : '180px'"  ref="sidebar"  class="sidebar" v-if="activeStep >= 3">
       <el-menu :default-active="currentMenu" :collapse="isCollapse" router style="height: 100%; bottom: 0;"
                background-color="#001529"
                text-color="#FFF"
@@ -9,17 +9,13 @@
                @open="handleOpen" @close="handleClose"
                class="el-menu-vertical-demo"
       >
-        <el-menu-item index="top" style="height: 64px;">
-          <div v-if="isCollapse" >
-            <img src="../assets/logo-101.png" alt="kodepay" style="width: 30px;height: 30px">
-          </div>
-          <div v-else style="display: flex; align-items: center; justify-content: center; height: 100%;">
-            <img src="../assets/logo.png" alt="kodepay" style="width: 200px; height: 30px;">
-          </div>
+        <el-menu-item style="height: 64px;cursor: default;">
+          <img src="@/assets/logo-500x500-black-new.png" alt="kodecoffee" style="width: 30px;height: 30px">
+          <span slot="title" style="color: #fff">KodeCoffee</span>
         </el-menu-item>
         <template v-for="menu of MENU">
           <template v-if="menu.children">
-            <el-submenu :index="menu.url" >
+            <el-submenu :index="menu.url">
               <template slot="title">
                 <svg width="18" height="18" style="padding-right: 8px" fill="#fff">
                   <use :xlink:href="'#' + menu.icon"></use>
@@ -46,19 +42,19 @@
             </el-menu-item>
           </template>
         </template>
-        <el-menu-item @click="gotoDocCenter($i18n.locale)" >
+<!--        <el-menu-item @click="gotoDocCenter($i18n.locale)" >
           <svg width="18" height="18" style="padding-right: 8px" fill="#fff">
             <use xlink:href="#help-center"></use>
           </svg>
           <span slot="title">{{$t('document and help')}}</span>
-        </el-menu-item>
+        </el-menu-item>-->
       </el-menu>
     </el-aside>
     <el-container ref="content">
       <el-header style="padding: 0;margin: 0;height: auto;border-bottom: 1px solid rgba(232, 232, 232, 1);background-color: #ffffff">
         <head-top @collapseChange="collapseChange" :collapse="isCollapse"></head-top>
       </el-header>
-      <div style="padding: 16px 24px" v-if="$route.name !== 'dashboard'">
+      <div style="padding: 16px 24px" v-if="!['dashboard', 'guideStep'].includes($route.name)">
         <div class="breadcrumb">
           <el-breadcrumb separator="/">
             <el-breadcrumb-item>
@@ -71,10 +67,8 @@
         </div>
       </div>
       <el-main v-if="isLoginIn " style="padding: 24px; background-color: #f0f0f0;height: 100%" >
-        <div v-if="$route.name !== 'dashboard'" style="min-height: calc(100% - 48px);">
-          <div style="background-color: #ffffff;padding: 24px;min-height: calc(100% - 48px);" >
-            <router-view v-if="is_option_load"></router-view>
-          </div>
+        <div v-if="$route.name !== 'dashboard'" style="background-color: #ffffff;padding: 24px;min-height: calc(100% - 48px);">
+          <router-view></router-view>
         </div>
         <div v-else>
           <router-view></router-view>
@@ -98,14 +92,15 @@
   </el-container>
 </template>
 <script>
-import menuList from '../configs/menu.json'
-import headTop from "./components/head-top.vue";
+import menuList from '@/configs/menu.json'
+import OPTIONS from '@/options/coffee_price_options.json'
+import headTop from "./AdminHeadTop.vue";
 import { Crisp } from "crisp-sdk-web";
-import breadCrumb from "./components/bread-crumb.vue";
-import {getOptions, postUserInfo, zbUserInfo} from "../api/interface";
+import breadCrumb from "@/page/components/bread-crumb.vue";
+import {getOptions, postUserInfo, zbUserInfo, getGuideStepApi} from "@/api/interface";
 import Vue from "vue";
-import axios from "axios";
 export default {
+  name: "AdminLayout",
   data () {
     return {
       MENU: menuList.menu,
@@ -142,21 +137,14 @@ export default {
         this.$store.commit('setLoginStatus', value);
       },
     },
+    activeStep() {
+      return this.$store.state.guide_step
+    },
   },
   created() {
     // Crisp.configure('29c69934-5e71-4ba8-9eff-d80342cdd79e');
     // Crisp.chat.show();
     // Vue.prototype.$Crisp = Crisp;
-    let last_mode = localStorage.getItem('lastMode');
-    if (last_mode) {
-      if (this.$mode !== last_mode) {
-        if (last_mode === this.MODECONFIG.PRODUCTION.mode) {
-          window.location.href = this.MODECONFIG.PRODUCTION.baseURL;
-        } else if (last_mode === this.MODECONFIG.SANDBOX.mode) {
-          window.location.href = this.MODECONFIG.SANDBOX.baseURL;
-        }
-      }
-    }
     this.loginOrRegisterUser();
     // this.test();
     this.initOptions();
@@ -165,38 +153,56 @@ export default {
   methods: {
     test() {
       const res = {};
+      res.data123 = {
+        "code": 100000,
+        "message": "success",
+        "product_id": 102,
+        "product_mark": 101,
+        "userinfo": {
+            "user_id": 8081320,
+            "email": "runninglei@gmail.com",
+            "username": "Running V",
+            "created_at": "2024-05-08 20:11:44",
+            "phone_number": "",
+            "utm_active_code": ""
+        },
+        "payinfo": {
+            "is_subscribed": "0",
+            "plan_start": "",
+            "plan_end": "",
+            "plan_price": "",
+            "plan_name": "No Plan",
+            "plan_date": "No upcoming payments",
+            "is_recurly": "0",
+            "channel": "0",
+            "status": "0"
+        }
+      };
       res.data = {
         "code": 100000,
         "message": "success",
-        "product_id": 70,
-        "product_mark": 70,
+        "product_id": 102,
+        "product_mark": 101,
         "userinfo": {
-          "user_id": 113,
-          // "user_id":"2964976", // 志天的账号
-          // "user_id":2900983,
-          // "user_id":2840846,
-          // "user_id":"2857824",
-          // "user_id":"2843847",
-          // "user_id":"2840846",
-          // "user_id":"2840846",// 王涵, han wang
-          // "user_id":"2912918",// 王涵 wangjack
-          "email": "ligoogel1918@gmail.com",
-          "username": "李谷歌",
-          "created_at": "2023-05-29 20:27:01",
-          "phone_number": ""
+            "user_id": 8127367,
+            "email": "1140353684@qq.com",
+            "username": "",
+            "created_at": "2024-05-14 01:08:50",
+            "phone_number": "",
+            "utm_active_code": ""
         },
         "payinfo": {
-          "is_subscribed": "0",
-          "plan_start": "",
-          "plan_end": "",
-          "plan_price": "",
-          "plan_name": "No Plan",
-          "plan_date": "No upcoming payments",
-          "is_recurly": "0",
-          "channel": "0",
-          "status": "0"
+            "is_subscribed": "0",
+            "plan_start": "",
+            "plan_end": "",
+            "plan_price": "",
+            "plan_name": "No Plan",
+            "plan_date": "No upcoming payments",
+            "is_recurly": "0",
+            "channel": "0",
+            "status": "0"
         }
-      };
+    }
       this.handleResult(res);
     },
     /**
@@ -209,14 +215,13 @@ export default {
         this.handleResult(res);
       }).catch( err => {
         this.$message.error(this.$t('Login failed. Please try logging in again'));
-        console.log(err);
-      });
+        // window.location.href = `${this.URL}/user/login`;
+      })
     },
     handleResult(res) {
-      const { data } = res || {};
-      const { code = 0 } = data || {};
-      const { userinfo = {} } = data || {};
-      if (parseInt(code) === 100000) {
+      const data = res.data
+      const userinfo = data.userinfo || {}
+      if (+data.code === 100000) {
         if (!res.data.userinfo) { // 如果没有用户信息，就跳转到登录页面(这里可能是zbase出了问题)
           this.$message.error(this.$t('Login failed. Please try logging in again'));
           window.location.href = `${this.URL}/user/login`;
@@ -237,10 +242,13 @@ export default {
             this.userLogin(k_user_info);
           } else {// 如果上次登录的用户和这次登录的用户一致，那么就不需要重新登录
             this.$store.commit('setLoginStatus', true);
-            this.initModeOrUrl()
+            // this.initModeOrUrl()
           }
         } else { // 如果没有上次登录的信息，那么基本可以认为用户第一次登录，需要注册
           this.userLogin(k_user_info);
+        }
+        if(user_info.user_id) {
+          this.getGuideStep(user_info.user_id)
         }
       } else {
         this.$message.error(this.$t('Login failed. Please try logging in again'));
@@ -259,7 +267,7 @@ export default {
         if (parseInt(code) === 100000) {
           localStorage.setItem(this.$mode + 'userInfo', JSON.stringify(user_info));
           this.$store.commit('setLoginStatus', true); // 修改这一行
-          this.initModeOrUrl()
+          // this.initModeOrUrl()
         } else {
           if (message) {
             this.$message.warning(res.data.message)
@@ -269,32 +277,14 @@ export default {
         console.log(err);
       });
     },
-    initModeOrUrl () {
-      let guide_step = localStorage.getItem('guideStep') || 0
-      if (guide_step === 4) {
-        localStorage.setItem('guideStep', '4');
-        this.$store.commit('setGuideStep', 4);
-        this.is_guide_loading_finish = true;
-      } else {
-        let last_user_info = localStorage.getItem(this.$mode + 'userInfo');// 获取上次登录的用户信息
-        last_user_info = JSON.parse(last_user_info);
-        fetch(`${this.MODECONFIG.SANDBOX.apiURL}/guide-step/search-guide-step`,{
-          'method':'POST',
-          'headers':{
-            'Content-Type':'application/json'
-          },
-          'body':JSON.stringify({'zb_user_id': last_user_info.zbase_user_id})
-        }).then(res => {
-          return res.json();
-        }).then(res => {
-          const guide_step = res && res.data && res.data.step ? res.data.step : 0;
-          localStorage.setItem('guideStep', guide_step);
-          this.$store.commit('setGuideStep', guide_step);
-          this.is_guide_loading_finish = true;
-        }).catch(err => {
-          console.log(err)
-        });
-      }
+    getGuideStep(zb_user_id) {
+       getGuideStepApi({zb_user_id}).then(res => {
+          const {data} = res.data
+          this.$store.commit('setGuideStep', data.step||1)
+          if(data.step < 3) {
+            this.$router.replace('/guide-step')
+          }
+        })
     },
     collapseChange(collapse) {
       this.isCollapse = !!collapse;
@@ -316,6 +306,7 @@ export default {
         Vue.prototype.OPTIONS = res;
         this.is_option_load = true;
       }).catch(err => {
+        Vue.prototype.OPTIONS = OPTIONS;
         console.log(err);
       })
     }

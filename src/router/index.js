@@ -1,200 +1,148 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import dashboard from '../page/website-pages/dashboard.vue';
-import payAllOrder from '../page/website-pages/pay-all-order.vue';
-import paySubscription from '../page/website-pages/pay-subscription.vue';
-import pluginList from '../page/website-pages/plugin-list.vue';
-import productList from '../page/website-pages/plan-list.vue';
-import userList from '../page/website-pages/user-list.vue';
-import mainMenu from "../page/main-menu.vue";
-import subscriptionDetail from "../page/website-pages/subscription-detail.vue";
-import OrderDetail from "../page/website-pages/order-detail.vue";
-import balanceSettings from "../page/website-pages/balance-settings.vue";
-import DeveloperSettings from "../page/website-pages/developer-settings.vue";
-import paymentChannelSettings from "../page/website-pages/payment-channel-settings.vue";
-import paySubscriptionLayout from "../page/website-pages/pay-subscription-layout.vue";
-import payAllOrderLayout from "../page/website-pages/pay-all-order-layout.vue";
-
-import extensionLogin from '../page/extension/extension-login.vue';
-import extensionPayManage from "../page/extension/extension-pay-manage.vue";
-import extensionPayStatus from "../page/extension/extension-pay-status.vue";
-import extensionSessionExpiredPrompt from "../page/extension/extension-session-expired-prompt.vue";
-import userLayout from "../page/website-pages/user-layout.vue";
-import userDetail from "../page/website-pages/user-detail.vue";
-import guide from "../page/website-pages/guide.vue";
-import extensionValidateEmail from "../page/extension/extension-validate-email.vue";
-import ShareRedirect from "../page/extension/share-redirect.vue";
-import extensionWelcome from "../page/extension/extension-welcome.vue";
-import shareExtension from "../page/website-pages/share-extension.vue";
-import chosenPayment from "../page/extension/chosen-payment.vue";
-import extensionCommission from "../page/website-pages/extension-commission.vue";
-import extensionPay from "../page/extension/extension-pay.vue";
-import extensionPaySuccess from "../page/extension/extension-pay-success.vue";
 
 Vue.use(Router);
 const routes = [
   {
     path: '/',
-    redirect: '/dashboard',
-  },
-  {
-    path: '/',
-    component: mainMenu,
+    component: () => import('@/views/AdminLayout.vue'),
+    name: 'vendors',
+    redirect: 'dashboard',
     children: [
       {
-        path: 'dashboard',
-        component: dashboard,
-        name: 'dashboard',
-        meta: { breadcrumbLabel: 'Dashboard' }
+        path: 'guide-step',
+        component:  () => import('@/page/website-pages/guide-step.vue'),
+        name: 'guideStep',
+        meta: { breadcrumbLabel: 'Guide Step' },
       },
       {
-        path: 'guide',
-        component: guide,
-        name: 'guide',
-        meta: { breadcrumbLabel: 'Guide' }
+        path: 'creator-info',
+        component:  () => import('@/page/website-pages/creator-info.vue'),
+        name: 'creatorInfo',
+        meta: { breadcrumbLabel: 'Creator Info' },
+      },
+      {
+        path: 'dashboard',
+        component:  () => import('@/page/website-pages/dashboard.vue'),
+        name: 'dashboard',
+        meta: { breadcrumbLabel: 'Dashboard' },
       },
       {
         path: 'orders',
-        component: payAllOrderLayout,
-        name: 'orders',
-        meta: { breadcrumbLabel: 'Orders' },
+        component:  () => import('@/page/website-pages/user-layout.vue'),
+        name: 'order',
+        meta: { breadcrumbLabel: 'All Orders' },
         children: [
-          {
-            path: '/',
-            component: payAllOrder,
-          },
-          {
-            path: 'detail/:id',
-            component: OrderDetail,
-            name: 'orders-detail',
-            meta: { breadcrumbLabel: 'Order Detail' }
-          },
+            {
+              path: '',
+              component:  () => import('@/page/website-pages/pay-all-order.vue'),
+            },
+            {
+              path: 'detail/:id',
+              component:  () => import('@/page/website-pages/order-detail.vue'),
+              name: 'orders-detail',
+              meta: { breadcrumbLabel: 'Order Detail' }
+            },
         ]
       },
-      {
-        path: 'subscriptions',
-        component: paySubscriptionLayout,
-        name: 'subscriptions',
-        meta: { breadcrumbLabel: 'Subscriptions' },
-        children: [
-          {
-            path: '/',
-            component: paySubscription,
-          },
-          {
-            path: 'detail/:id',
-            name: 'subscriptions-detail',
-            component: subscriptionDetail,
-            meta: { breadcrumbLabel: 'Subscription Detail' }
-          },
-        ]
-      },
-      {
+     {
         path: 'customers',
-        component: userLayout,
+        component:  () => import('@/page/website-pages/user-layout.vue'),
         name: 'customers',
         meta: { breadcrumbLabel: 'Customers' },
         children: [
           {
-            path: '/',
-            component: userList,
+            path: '',
+            component:  () => import('@/page/website-pages/user-list.vue'),
+
           },
           {
             path: 'detail/:id',
             name: 'customer-detail',
-            component: userDetail,
+            component:  () => import('@/page/website-pages/user-detail.vue'),
             meta: { breadcrumbLabel: 'Customer Detail' }
           },
         ]
       },
-      {
-        path: 'extensions',
-        component: pluginList,
-        name: 'extensions',
-        meta: { breadcrumbLabel: 'Extensions' }
-      },
-      {
-        path:'extension-commission',
-        component: extensionCommission,
-        name: 'extension-commission',
-        meta: { breadcrumbLabel: 'Extension Commission' }
-      },
-      {
-        path:'extension-virality',
-        component: shareExtension,
-        name: 'extension-virality',
-        meta: { breadcrumbLabel: 'Extension Virality' }
-      },
+
       {
         path: 'plans',
-        component: productList,
+        component:  () => import('@/page/website-pages/plan-list.vue'),
         name: 'plans',
         meta: { breadcrumbLabel: 'Plans' }
       },
       {
         path: 'balance-settings',
-        component: balanceSettings,
+        component:  () => import('@/page/website-pages/balance-settings.vue'),
         name: 'balance-settings',
         meta: { breadcrumbLabel: 'Balance Settings' }
-      },
-      {
-        path: 'developer-settings',
-        component: DeveloperSettings,
-        name: 'developer-settings',
-        meta: { breadcrumbLabel: 'Developer Settings' }
-      },
-      {
-        path: 'payment-channel-settings',
-        component: paymentChannelSettings,
-        name: 'payment-channel-settings',
-        meta: { breadcrumbLabel: 'Payment Channel Settings' }
       }
     ]
   },
   {
     path: '/extension/login',
-    component: extensionLogin
+    component:  () => import('@/page/extension/extension-login.vue'),
   },
   {
     path: '/extension/email-validate',
-    component: extensionValidateEmail
+    component:  () => import('@/page/extension/extension-validate-email.vue'),
   },
   {
     path: '/extension/pay-manage',
-    component: extensionPayManage
+    component:  () => import('@/page/extension/extension-pay-manage.vue'),
   },
   {
     path: '/extension/pay-status',
-    component: extensionPayStatus
+    component:  () => import('@/page/extension/extension-pay-status.vue'),
   },
   {
     path:'/share-redirect',
-    component: ShareRedirect
+    component:  () => import('@/page/extension/share-redirect.vue'),
   },
   {
     path: '/ext-welcome',
-    component: extensionWelcome
+    component:  () => import('@/page/extension/extension-welcome.vue'),
   },
   {
     path: '/extension/payment-choose',
-    component: chosenPayment
+    component:  () => import('@/page/extension/chosen-payment.vue'),
   },
   {
     path: '/extension/session-expired-prompt-page',
-    component: extensionSessionExpiredPrompt
+    component:  () => import('@/page/extension/extension-session-expired-prompt.vue'),
   },
   {
     path:'/extension/extension-pay',
-    component: extensionPay,
+    component:  () => import('@/page/extension/extension-pay.vue'),
   },
   {
     path:'/extension/extension-pay-success',
-    component: extensionPaySuccess,
+    component:  () => import('@/page/extension/extension-pay-success.vue'),
   },
- 
-];
+  {
+    path: '',
+    component: () => import('@/views/Layout.vue'),
+    name: 'layout',
+    children: [
+      {
+        path: 'home',
+        component:  () => import('@/views/HomePage.vue'),
+        name: 'homePage',
+        meta: { breadcrumbLabel: 'HomePage' }
+      },
+      {
+        path: 'payCoffee',
+        component:  () => import('@/views/PayCoffee.vue'),
+        name: 'payCoffee',
+        meta: { breadcrumbLabel: 'PayCoffee' }
+      }
+    ]
+  },
+]
 
 const router = new Router({
+  mode: 'history',
+  base: '/vendors/',
   routes,
   strict: process.env.NODE_ENV !== 'production',
 });

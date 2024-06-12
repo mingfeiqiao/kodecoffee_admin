@@ -61,10 +61,14 @@
                             <p>{{ $t('After trial') }}</p>
                             <p>US {{ params.amount ? params.amount / 100 : '' }}</p>
                         </div> -->
+                       <div class="flex-box" style="margin-top: 10px;">
+                            <p>{{ $t('Quantity') }}</p>
+                            <b>{{ params.quantity }}</b>
+                        </div>
                         <div class="flex-box" style="margin-top: 10px;">
                             <p>{{ $t('Cope with today') }}</p>
-                            <b>{{ params.currency ? params.currency.toUpperCase() : '' }} {{ params.amount
-                                ? params.amount / 100 : '' || ''
+                            <b>{{ params.currency ? params.currency.toUpperCase() : '' }}
+                              {{ params.quantity * params.amount / 100 || ''
                             }}</b>
                         </div>
                     </div>

@@ -1,8 +1,22 @@
 <template>
-  <el-upload action="" accept="image/*" class="avatar-uploader" :show-file-list="false" :before-upload="handleBeforeUpload" :on-success="handleUploadSuccess">
-    <img v-if="image_url" :src="image_url" class="avatar" alt="">
-    <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-    <i v-if="image_url" class="el-icon-error" @click.stop="delImg()"></i>
+  <el-upload
+    class="upload-cover"
+    drag
+    action=""
+    accept="image/*"
+    :show-file-list="false"
+    :multiple="false"
+    :before-upload="handleBeforeUpload"
+    :on-success="handleUploadSuccess">
+   <template v-if="image_url">
+      <img :src="image_url" class="cover" alt="cover">
+      <i v-if="image_url" class="el-icon-error" @click.stop="delImg()"></i>
+    </template>
+    <template v-else>
+      <i class="el-icon-upload"></i>
+      <div class="el-upload__text" style="color: #606266;" v-html="$t('Creator Cover Img tips')"></div>
+    </template>
+    <div class="el-upload__tip" style="color: #606266;" slot="tip">{{$t("Cover Img placeholder")}}</div>
   </el-upload>
 </template>
 
@@ -34,6 +48,7 @@ export default {
   },
   methods: {
     handleBeforeUpload(file) {
+      // 上传前的钩子函数
       this.file = file; // 保存文件对象
       const {size, ratio, message} = this.$attrs.limit
       const isJPG = true;
@@ -60,6 +75,9 @@ export default {
 };
 </script>
 <style scoped>
+/deep/ .el-upload .el-upload-dragger{
+  width: 100%;
+}
 /deep/ .el-upload {
   width: 100%;
   border: 1px solid #dcdfe6;
@@ -71,18 +89,8 @@ export default {
 /deep/ .el-upload:hover {
   border-color: #409eff;
 }
-/deep/ .avatar-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
-  width: 100px;
-  height: 100px;
-  line-height: 100px;
-  text-align: center;
-}
-/deep/ .avatar {
-  width: 100px;
-  height: 100px;
-  display: block;
+.upload-cover .cover{
+  width: 100%;
 }
 .el-icon-error {
   position: absolute;

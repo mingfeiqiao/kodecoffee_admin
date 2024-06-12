@@ -13,6 +13,8 @@ export default {
     }
   },
   created() {
+    const userInfo = localStorage.getItem(this.$mode + 'userInfo') ? JSON.parse(localStorage.getItem(this.$mode + 'userInfo')) : {};
+    this.$store.commit('setUserInfo', userInfo)
   },
   methods: {
   }

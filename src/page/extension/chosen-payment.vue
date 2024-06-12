@@ -42,9 +42,9 @@
   </div>
 </template>
 <script>
-import languageChange from "../components/language-change.vue";
-import {extensionGetSupportPaymentsApi, makeOrderApi} from "../../api/interface";
-import {timestampToDateString} from "../../utils/dateUtils";
+import languageChange from "@/page/components/language-change.vue";
+import {extensionGetSupportPaymentsApi, makeOrderApi} from "@/api/interface";
+import {timestampToDateString} from "@/utils/dateUtils";
 export default {
   components: {languageChange},
   data() {
@@ -68,7 +68,7 @@ export default {
       const headers = this.getHeaders();
       const data = {
         price_id : this.$route.query.prod_id,
-        currency: this.$route.query.currency || ""
+        currency: this.$route.query.currency || "usd"
       }
       this.support_payment_loading = true;
       extensionGetSupportPaymentsApi(headers, data).then(res => {

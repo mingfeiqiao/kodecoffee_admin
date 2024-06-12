@@ -64,10 +64,13 @@
                             <p>US {{ product_info.amount ? product_info.amount / 100 : '' }}</p>
                         </div> -->
                         <div class="flex-box" style="margin-top: 10px;">
+                            <p>{{ $t('Quantity') }}</p>
+                            <b>{{ product_info.quantity }}</b>
+                        </div>
+                        <div class="flex-box" style="margin-top: 10px;">
                             <p>{{ $t('Cope with today') }}</p>
-                            <b>{{ product_info.currency ? product_info.currency.toUpperCase() : '' }} {{
-                product_info.amount ? product_info.amount / 100 : '' || ''
-            }}</b>
+                            <b>{{ product_info.currency ? product_info.currency.toUpperCase() : '' }}
+                              {{transaction_info.amount / 100 }}</b>
                         </div>
                     </div>
                 </div>
@@ -202,7 +205,6 @@ export default {
             client_secret: '',
             transaction_info: {},
             product_info: {},
-            elements: {},
             clientKey: '',
             transaction_id: '',
             wx_img: '',
@@ -393,7 +395,7 @@ export default {
             this.elements = this.stripe.elements({
                 mode: 'payment',
                 currency: this.product_info.currency,
-                amount: this.product_info.amount,
+                amount: this.transaction_info.amount,
                 paymentMethodTypes: this.paymentMethodTypes
             });
 
@@ -413,7 +415,7 @@ export default {
             this.elements1 = this.stripe.elements({
                 mode: 'payment',
                 currency: this.product_info.currency,
-                amount: this.product_info.amount,
+                amount: this.transaction_info.amount,
             });
             const expressCheckoutElement = this.elements1.create('expressCheckout');
             expressCheckoutElement.mount('#express-checkout-element')

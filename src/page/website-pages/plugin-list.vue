@@ -1,7 +1,7 @@
 <template>
   <div style="flex-wrap: wrap; display: flex;">
     <div  class="card" >
-      <el-card :body-style="{padding: '0px',width: '300px',height:'150px'}" shadow="hover">
+      <el-card :body-style="{padding: '0px',width: '300px',height:'150px'}" shadow="hover" v-if="plugin_list.length === 0">
         <div style="display: flex;justify-content: center;align-items: center;height: 100%" @click="operatePluginCard({}, 'add')">
           {{$t('add plugin')}}
         </div>
@@ -15,8 +15,8 @@
   </div>
 </template>
 <script>
+import {pluginList} from "@/api/interface";
 import pluginCard from "../components/plugin-card.vue";
-import {pluginList} from "../../api/interface";
 import addPluginDialog from "../components/add-plugin-dialog.vue";
 export default {
   data () {
@@ -38,6 +38,9 @@ export default {
           data.forEach(item => {
             if (item.icon) {
               item.icon = 'https://kodepay-cdn.oss-us-west-1.aliyuncs.com/' + item.icon;
+            }
+            if (item.cover) {
+              item.cover = 'https://kodepay-cdn.oss-us-west-1.aliyuncs.com/' + item.cover;
             }
           });
           this.plugin_list = data;

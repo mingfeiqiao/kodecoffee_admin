@@ -1,6 +1,7 @@
 <template>
   <div class="language-switch">
     <el-popover
+      ref="popover"
       placement="bottom-start"
       trigger="hover"
     >
@@ -47,6 +48,7 @@ export default {
   },
   methods: {
     changeLanguage(lang) {
+      this.$refs.popover.doClose()
       this.selected_language = lang;
       this.$i18n.locale = lang;
       localStorage.setItem('selected_language', lang);
