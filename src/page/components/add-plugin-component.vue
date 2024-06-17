@@ -60,6 +60,7 @@
 </el-form>
 </template>
 <script>
+import {encodeEmojiObjByKeys} from '@/utils/emoji-stringify.js'
 import Clipboard from "clipboard";
 import {addPlugin, uploadFile, updatePlugin} from "@/api/interface";
 import imgUpload from "./img-upload.vue";
@@ -122,7 +123,7 @@ export default {
     rules () {
       return {
         uniq_name: [
-          { required: true, message: this.$t('6-100 characters required'), trigger: 'blur'},
+          { required: true, message: this.$t('Creator placeholder'), trigger: 'blur'},
           { validator: this.validateUniqueNameField, trigger: 'blur'}
         ],
         store_address123: [
@@ -135,7 +136,7 @@ export default {
       }
     },
     getShareLink() {
-      return this.plugin_data.store_address + '?name=' + this.plugin_data.name||''
+      return this.store_address + this.plugin_data.uniq_name||''
     },
   },
   watch : {
@@ -252,7 +253,7 @@ export default {
         args.allow_online_user_limit_count = 0;
       }
       this.btn_loading = true;
-      addPlugin(args).then((res) => {
+      addPlugin(encodeEmojiObjByKeys(args, ['name', 'on_working', 'description'])).then((res) => {
         this.btn_loading = false;
         if (parseInt(res.data.code) === 100000) {
           this.$message({
@@ -305,7 +306,7 @@ export default {
       args.client_key = this.chosen_plugin_data.client_key;
       args.store_address = this.store_address;
       this.btn_loading = true;
-      updatePlugin(args).then(res => {
+      updatePlugin(args, ['name', 'on_working', 'description']).then(res => {
         this.btn_loading = false;
         if (parseInt(res.data.code) === 100000) {
           this.$message({

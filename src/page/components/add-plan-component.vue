@@ -119,6 +119,7 @@
 </el-form>
 </template>
 <script>
+import {encodeEmojiObjByKeys} from '@/utils/emoji-stringify.js'  
 import imgUpload from "./img-upload.vue";
 import {addPlan, updatePlan, uploadFile} from "@/api/interface";
 import CURRENCY_OPTIONS from "@/options/currency_options.json";
@@ -466,7 +467,7 @@ export default {
         }
       }
       this.save_loading = true;
-      addPlan(args).then(res => {
+      addPlan(encodeEmojiObjByKeys(args, ['desc', 'name'])).then(res => {
         this.save_loading = false;
         if (parseInt(res.data.code) === 100000) {
           this.$message({
@@ -519,7 +520,7 @@ export default {
       }
       let id = this.plan.plan_id;
       this.save_loading = true;
-      updatePlan(id, args).then(res => {
+      updatePlan(id, encodeEmojiObjByKeys(args, ['desc', 'name'])).then(res => {
         this.save_loading = false;
         if (res.data && parseInt(res.data.code)=== 100000) {
           this.$message({

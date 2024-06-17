@@ -6,6 +6,7 @@
 </template>
 
 <script>
+import {decodeEmojiObjByKeys} from '@/utils/emoji-stringify.js'
 import {pluginList} from "@/api/interface";
 import addPluginComponent from "../components/add-plugin-component.vue";
 export default {
@@ -34,7 +35,7 @@ export default {
                         item.cover = 'https://kodepay-cdn.oss-us-west-1.aliyuncs.com/' + item.cover;
                         }
                     });
-                    this.pluginObj = data[0];
+                    this.pluginObj = decodeEmojiObjByKeys(data[0], ['name', 'on_working', 'description']);
                 } else {
                     if (res && res.data && res.data.message) {
                         this.$message.warning(res.data.message)
