@@ -1,4 +1,4 @@
-import emojiRegex from "emoji-regex";
+import emojiRegex from "./emoji-regex.js";
 
 export const encodeEmoji = str => {
   const regex = emojiRegex()
