@@ -151,6 +151,7 @@
   </div>
 </template>
 <script>
+import {decodeEmoji} from '@/utils/emoji-stringify.js'
 import deviceFilter from "../components/button-filter.vue";
 import addPlanDialog from "../components/add-plan-dialog.vue";
 import {planList} from "../../api/interface";
@@ -312,8 +313,8 @@ export default {
            plan_id: item.id || "",
            plan_code : item.prod_code || "",
            plan_icon: item.icon ? "https://kodepay-cdn.oss-us-west-1.aliyuncs.com/" + item.icon : "",
-           plan_name: item.name || "",
-           plan_desc: item.desc || "",
+           plan_name: item.name ? decodeEmoji(item.name) : "",
+           plan_desc: item.desc ? decodeEmoji(item.desc) : "",
            plan_type_obj : this.formatPlanType(item.app_price) || null,
            plan_trial_obj: {
               is_trial: !!item.is_trial,

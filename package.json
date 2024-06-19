@@ -27,6 +27,7 @@
     "crisp-sdk-web": "^1.0.19",
     "echarts": "^5.4.2",
     "element-ui": "^2.15.13",
+    "emoji-regex": "^10.3.0",
     "es6-promise": "^4.1.1",
     "eslint-loader": "^4.0.2",
     "goeasy": "^2.6.6",

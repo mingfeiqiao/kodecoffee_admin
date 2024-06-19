@@ -32,7 +32,7 @@ module.exports = {
 		host: '0.0.0.0',
 		autoOpenBrowser: true,
 		assetsSubDirectory: 'static',
-		assetsPublicPath: '',
+		assetsPublicPath: '/',
 		proxyTable: {
 		},
 		cssSourceMap: false,

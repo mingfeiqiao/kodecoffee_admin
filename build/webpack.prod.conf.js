@@ -34,6 +34,7 @@ const webpackConfig = merge(baseWebpackConfig, {
 		}),
 		// UglifyJs do not support ES6+, you can also use babel-minify for better treeshaking: https://github.com/babel/minify
 		new webpack.optimize.UglifyJsPlugin({
+			exclude:  ['node_modules/emoji-regex'],
 			compress: {
 				warnings: false,
 			},
@@ -56,7 +57,7 @@ const webpackConfig = merge(baseWebpackConfig, {
 		new HtmlWebpackPlugin({
 			filename: process.env.NODE_ENV === 'testing' ? 'index.html' : config.build.index,
 			template: 'index.html',
-      favicon: './src/assets/favicon.ico',
+      		favicon: './src/assets/favicon.ico',
 			inject: true,
 			minify: {
 				removeComments: true,
