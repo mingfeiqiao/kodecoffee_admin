@@ -145,8 +145,8 @@ export default {
     // Crisp.configure('29c69934-5e71-4ba8-9eff-d80342cdd79e');
     // Crisp.chat.show();
     // Vue.prototype.$Crisp = Crisp;
-    this.loginOrRegisterUser();
-    // this.test();
+    // this.loginOrRegisterUser();
+    this.test();
     this.initOptions();
     this.currentMenu = this.$route.path; // 初始化当前路由路径
   },
@@ -300,6 +300,8 @@ export default {
       this.currentMenu = url;
     },
     initOptions() {
+      Vue.prototype.OPTIONS = OPTIONS;
+      return
       getOptions().then(res => {
         return res.json();
       }).then(res => {

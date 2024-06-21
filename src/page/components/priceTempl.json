@@ -1,0 +1,32 @@
+{
+    "priceTempl": [
+        {
+            "type": "coffee",
+            "url": "https://static-global.zingfront.com/kodecoffee/static/icon/kodecoffee-coffee.png",
+            "name": "Buy me a Coffee",
+            "description": "Your coffee makes me code 10 times faster, thank you for your support.",
+            "price": 5
+        },
+        {
+            "type": "gift",
+            "url": "https://static-global.zingfront.com/kodecoffee/static/icon/kodecoffee-drink.png",
+            "name": "Gift for me",
+            "description": "Your mysterious gift was such a surprise, thank you.",
+            "price": 3
+        },
+        {
+            "type": "football",
+            "url": "https://static-global.zingfront.com/kodecoffee/static/icon/kodecoffee-football.png",
+            "name": "Donate me Football",
+            "description": "Wow, I love football the most, thank you for your generosity.",
+            "price": 20
+        },
+        {
+            "type": "drink",
+            "url": "https://static-global.zingfront.com/kodecoffee/static/icon/kodecoffee-gift.png",
+            "name": "Have me a Drink",
+            "description": "Thanks to your drinks, the summer is no longer hot.",
+            "price": 2
+        }
+    ]
+}

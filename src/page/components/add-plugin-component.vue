@@ -10,7 +10,7 @@
     </el-input>
   </el-form-item>
   <el-form-item :label="$t('Creator Home link') + ':'" prop="uniq_name" v-else>
-    <el-input class="home-link" disabled :value="store_address+plugin_data.uniq_name" style="max-width: 500px;" minlength="6" maxlength="100">
+    <el-input class="home-link" disabled :value="getShareLink" style="max-width: 500px;" minlength="6" maxlength="100">
 <!--          <el-button slot="append" icon="el-icon-search"></el-button>-->
       <el-button slot="append" type="text" @click="copyShareLink"><span id="copy_text" style="padding: 0 10px">{{$t('CopyShare')}}</span></el-button>
     </el-input>
@@ -136,7 +136,7 @@ export default {
       }
     },
     getShareLink() {
-      return this.store_address + this.plugin_data.uniq_name||''
+      return this.store_address + (this.plugin_data.uniq_name||'')
     },
   },
   watch : {
