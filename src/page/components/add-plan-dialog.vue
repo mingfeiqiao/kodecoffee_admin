@@ -81,7 +81,7 @@ export default {
           { validator: this.validateTrimmedField, trigger: 'blur'}
         ],
         plan_desc: [
-          { required: false,  trigger: 'blur', type: 'string', min: 0, max: 400 },
+          { required: false, message: this.$t('1-400 characters required'), trigger: 'blur', type: 'string', min: 0, max: 400 },
           { validator: this.validateTrimmedField, trigger: 'blur'}
         ],
 

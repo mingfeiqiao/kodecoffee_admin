@@ -62,7 +62,7 @@
 <script>
 import {encodeEmojiObjByKeys} from '@/utils/emoji-stringify.js'
 import Clipboard from "clipboard";
-import {addPlugin, uploadFile, updatePlugin} from "@/api/interface";
+import {checkUniqName, addPlugin, uploadFile, updatePlugin} from "@/api/interface";
 import imgUpload from "./img-upload.vue";
 import imgUploadCover from "./img-upload-cover.vue";
 export default {
@@ -306,7 +306,7 @@ export default {
       args.client_key = this.chosen_plugin_data.client_key;
       args.store_address = this.store_address;
       this.btn_loading = true;
-      updatePlugin(args, ['name', 'on_working', 'description']).then(res => {
+      updatePlugin(encodeEmojiObjByKeys(args, ['name', 'on_working', 'description'])).then(res => {
         this.btn_loading = false;
         if (parseInt(res.data.code) === 100000) {
           this.$message({
@@ -376,6 +376,9 @@ export default {
         })
         clipboard.destroy() // 释放内存
       })
+    },
+    checkUniqName() {
+      if(!this.plugin_data.uniq_name) return
     },
   }
 }
