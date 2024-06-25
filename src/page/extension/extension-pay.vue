@@ -249,7 +249,9 @@ export default {
         this.clientKey = client_id;
         this.transaction_id = transaction_id;
         this.pollingNub = 10;
-        this.onPaymentListApi(transaction_id, client_id);
+        if(transaction_id && client_id) {
+            this.onPaymentListApi(transaction_id, client_id);
+        }
     },
     methods: {
         onPaymentListApi(transaction_id, client_id) {

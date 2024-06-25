@@ -1,5 +1,7 @@
 <template>
-  <div class="title-28" style="height: 100%;
+  <div class="title-28" 
+    v-loading="true"
+    style="height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;">

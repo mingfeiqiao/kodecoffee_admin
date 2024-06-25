@@ -2,7 +2,7 @@
   <div>
     <el-dialog custom-class="el-dialog-w700" :title="operationType === 'add' ? $t('create new plan') : $t('update plan')"  :visible.sync="dialog_form_visible" width="50%" :modal-append-to-body="true" destroy-on-close>
       <el-form ref="elForm" :model="plan" :rules="rules" size="medium" :label-width="labelWidth">
-        <div class="form-top-tips"> <i class="el-icon-warning-outline" style="margin-right: 5px;"></i>{{$t("choose templ tips")}}</div>
+        <div class="form-top-tips" v-if="operationType === 'add'"> <i class="el-icon-warning-outline" style="margin-right: 5px;"></i>{{$t("choose templ tips")}}</div>
         <el-form-item :label="operationType === 'add' ? $t('choose templ') : $t('templ icon')" required>
           <div class="icon-box">
             <div class="icon-items" v-if="operationType === 'add'">
