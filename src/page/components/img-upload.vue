@@ -1,7 +1,7 @@
 <template>
-  <el-upload action="" accept="image/*" class="avatar-uploader" :show-file-list="false" :before-upload="handleBeforeUpload" :on-success="handleUploadSuccess">
-    <img v-if="image_url" :src="image_url" class="avatar" alt="">
-    <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+  <el-upload ref="elUpload" action="" accept="image/*" class="avatar-uploader" :show-file-list="false" :before-upload="handleBeforeUpload" :on-success="handleUploadSuccess">
+    <img :style="styleObj" v-if="image_url" :src="image_url" class="avatar" alt="">
+    <i v-else :style="styleObj" class="el-icon-plus avatar-uploader-icon"></i>
     <i v-if="image_url" class="el-icon-error" @click.stop="delImg()"></i>
   </el-upload>
 </template>
@@ -18,6 +18,16 @@ export default {
     icon_url(newValue) {
       this.image_url = newValue;
     }
+  },
+  computed: {
+    styleObj() {
+      console.log(this.$attrs, 'this.$attrs')
+      const {width=100, height} = this.$attrs.limit
+      return {
+        width: width + 'px',
+        height: (height || width) + 'px',
+      }
+    },
   },
   mounted() {
     this.image_url = this.icon_url;

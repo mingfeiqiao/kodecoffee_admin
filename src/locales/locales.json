@@ -18,7 +18,7 @@
 
     "Email": "Email",
     "Type": "Type",
-    "Amount": "Amount",
+    "Amount": "Amount(US$)",
     "Plan": "Plan",
     "one_time": "One-time Payment",
     "recurring": "Subscription",
@@ -230,7 +230,8 @@
     "Last week": "Last week",
     "Last month": "Last month",
     "Last three months": "Last 3 months",
-    "1-100 characters required": "Character length must be between 1 and 100.",
+    "1-400 characters required": "desc length must be between 0 and 400 characters.",
+    "1-50 characters required": "Character length must be between 1 and 50.",
     "please input valid URL": "Please enter a valid URL",
     "extension name is required": "The name of your website or browser extension",
     "Create Plan": "Create Sells Plan",
@@ -501,7 +502,10 @@
     "click link": "click the link",
     "Start tipping": "start tipping",
     "Guide Step Context 1": "You can modify it in the left menu bar 【Creator Profile】 [Payment Package]",
-    "Guide Step Context 2": "You can also view your account information in other menu bars on the left"
+    "Guide Step Context 2": "You can also view your account information in other menu bars on the left",
+    "choose templ tips": "By switching the package template, you can create packages quickly and  edit the content. To prevent loss of edited content, please select the template first.",
+    "choose templ": "choose template",
+    "templ icon": "price icon"
   },
   "zh-CN": {
     "Payment failed, reason for failure:": "支付失败，失败原因:",
@@ -642,7 +646,8 @@
     "Next Step": "下一步",
     "extension name is required": "请输入Web网站或浏览器插件名称",
     "please input valid URL": "请输入合法的URL",
-    "1-100 characters required": "长度必须在1-100个字符",
+    "1-400 characters required": "长度必须在1-400个字符",
+    "1-50 characters required": "长度必须在1-50个字符",
     "Last three months": "最近三个月",
     "Last month": "最近一个月",
     "Last week": "最近一周",
@@ -747,7 +752,7 @@
 
     "Email": "邮箱",
     "Type": "类型",
-    "Amount": "金额",
+    "Amount": "金额(US$)",
     "Plan": "套餐",
     "one_time": "单次支付",
     "recurring": "订阅",
@@ -809,7 +814,7 @@
     "learn more": "了解更多",
     "update": "更新",
     "create": "创建",
-    "plan update tip": "价格、计费方式提交,生效后无法修改",
+    "plan update tip": "打赏金额计费方式提交,生效后无法修改",
     "add plugin": "+创建项目",
     "create plugin": "创建项目",
     "update plugin": "更新项目",
@@ -1005,7 +1010,10 @@
     "click link": "点击链接",
     "Start tipping": "开启打赏吧！",
     "Guide Step Context 1": "您可以在左侧菜单栏【创作者简介】【支付套餐】修改",
-    "Guide Step Context 2": "您还可以在左侧其他菜单栏查看您的账户信息"
+    "Guide Step Context 2": "您还可以在左侧其他菜单栏查看您的账户信息",
+    "choose templ tips": "切换套餐模板可以快速创建套餐，可以自由编辑内容。为避免切换套餐后已编辑的内容丢失，请先选择好模板再编辑内容。",
+    "choose templ": "选择套餐",
+    "templ icon": "套餐图标"
 
   }
 }

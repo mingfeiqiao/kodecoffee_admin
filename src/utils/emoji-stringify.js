@@ -15,7 +15,7 @@ export const decodeEmoji = str => {
 
 export const encodeEmojiObjByKeys = (obj, keys) => {
   if(!keys || keys.length === 0) return obj
-  for(let key in keys) {
+  for(let key of keys) {
     if(obj[key]) {
       obj[key] = encodeEmoji(obj[key])
     }

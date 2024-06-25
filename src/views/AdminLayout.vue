@@ -300,6 +300,8 @@ export default {
       this.currentMenu = url;
     },
     initOptions() {
+      Vue.prototype.OPTIONS = OPTIONS;
+      return
       getOptions().then(res => {
         return res.json();
       }).then(res => {

@@ -1,130 +1,49 @@
 <template>
   <div>
-    <el-dialog :title="operationType === 'add' ? $t('create new plan') : $t('update plan')"  :visible.sync="dialog_form_visible" width="50%" :modal-append-to-body="false" destroy-on-close>
-     <el-form ref="ruleForm" :model="plan"  label-width="120px" label-position="top" size="mini" :rules="rules">
-       <div style="display:flex;align-items: center;justify-content: space-between; ">
-         <div style="min-width: 250px;">
-           <el-form-item :label="$t('name')" prop="plan_name">
-             <el-input :maxlength="50" v-model="plan.plan_name" :placeholder="$t('plan name placeholder')" style="width: 300px"></el-input>
-           </el-form-item>
-           <el-form-item :label="$t('description')" prop="plan_desc">
-             <el-input :maxlength="200" type="textarea" v-model="plan.plan_desc" :placeholder="$t('plan description placeholder')" style="width: 300px"></el-input>
-           </el-form-item>
-         </div>
-         <div>
-           <el-form-item :label="$t('icon')">
-             <img-upload :limit="{size:5,ratio:'1x1', message: $t('Profile placeholder')}" :icon_url="plan.plan_icon" @iconUpSourceChange="iconUpSourceChange"></img-upload>
-           </el-form-item>
-         </div>
-       </div>
-       <div>
-         <el-form-item>
-           <div style="display: flex;align-items: center">
-             <div style="padding-right: 20px">
-               {{$t('billing method')}}
-             </div>
-             <el-radio v-model="plan_type_obj.type" v-for="option of type_option" :key="option.value" :label="option.value" :disabled="!unable_modify">
-               {{ $t(option.label) }}
-             </el-radio>
-           </div>
-         </el-form-item>
-         <el-form-item v-if="plan_type_obj.type === 'recurring'">
-           <div style="display: flex;align-items: center">
-             <div style="padding-right: 20px">
-               {{$t('Billing cycle')}}
-             </div>
-             <div style="max-width: 150px">
-               <el-select v-model="interval_option" :disabled="!unable_modify" @change="intervalOptionChange">
-                 <el-option v-for="item in interval_options" :key="item.value" :label="$t(item.label)" :value="item.value">
-                 </el-option>
-               </el-select>
-             </div>
-           </div>
-         </el-form-item>
-         <div v-if="plan_type_obj.type === 'recurring' && interval_option === 'every day'"  style="display: flex;align-items: center;padding-left: 80px;color: #f5222d">
-            {{$t('Daily subscription is for testing purposes in the development environment')}}
-         </div>
-
-       </div>
-       <div style="height: 1px; background-color: rgba(232, 232, 232, 1);"></div>
-       <div v-if="operationType === 'add'">
-         <div class="title-14" style="padding: 12px 0">{{$t('Amount')}}</div>
-         <el-form-item>
-           <div style="display: flex;flex-direction: column">
-             <div style="display: flex;flex-direction: row;align-items: center">
-               <div class="p-main">
-                 US$
-               </div>
-               <div style="max-width: 100px">
-                 <el-select v-model="main_price_obj.price"  @change="priceChange">
-                   <el-option
-                     v-for="(item, index) in app_price_options"
-                     :key="index"
-                     :label="item.amount"
-                     :value="item.amount">
-                     <span style="text-align: center">
-                       {{ item.amount }}
-                     </span>
-                   </el-option>
-                 </el-select>
-               </div>
-             </div>
-             <div style="color: #939393">
-               {{$t('all prices are tax inclusive')}}
-             </div>
-           </div>
-         </el-form-item>
-         <el-form-item v-if="0">
-           <el-button type="primary" @click="setCurrencyOption">{{$t('set more currencies')}}</el-button>
-           <div style="color: #929292;font-size: 12px">
-             <span>{{$t('set more currencies tip')}}</span>
-             <span>{{$t('learn more')}}</span>
-           </div>
-           <div v-if="is_multiple_currency_support">
-             <el-table
-               ref="multipleTable"
-               :data="currency_options"
-               tooltip-effect="dark"
-               style="width: 100%"
-               :empty-text="$t('no data')"
-               :header-cell-style="{'background-color': 'var(--header-cell-background-color)','color': 'var(--header-cell-color)','font-weight': 'var(--header-cell-font-weight)'}"
-               @selection-change="handleSelectionChange">
-               <el-table-column
-                 type="selection"
-                 :label="$t('enabled')"
-                 :selectable="isSelectable"
-               >
-               </el-table-column>
-               <el-table-column
-                 :label="$t('currency')"
-                 prop="currency_format"
-               >
-               </el-table-column>
-               <el-table-column
-                 prop="price_format"
-                 :label="$t('Amount')"
-               >
-               </el-table-column>
-             </el-table>
-           </div>
-         </el-form-item>
-       </div>
-       <div>
-         <el-form-item>
-           <div v-if="operationType ==='add'" style="color: #929292;">
-             {{  $t('plan update tip') }}
-           </div>
-           <div style="float: right;padding-top: 24px">
-             <el-button @click="dialog_form_visible = false" >{{ $t('cancel') }}</el-button>
-             <el-button type="primary" @click="onSubmit('ruleForm')" :loading="save_loading">{{operationType === 'add' ? $t('create') : $t('update')}}</el-button>
-           </div>
-         </el-form-item>
-       </div>
-    </el-form>
+    <el-dialog custom-class="el-dialog-w700" :title="operationType === 'add' ? $t('create new plan') : $t('update plan')"  :visible.sync="dialog_form_visible" width="50%" :modal-append-to-body="true" destroy-on-close>
+      <el-form ref="elForm" :model="plan" :rules="rules" size="medium" :label-width="labelWidth">
+        <div class="form-top-tips" v-if="operationType === 'add'"> <i class="el-icon-warning-outline" style="margin-right: 5px;"></i>{{$t("choose templ tips")}}</div>
+        <el-form-item :label="operationType === 'add' ? $t('choose templ') : $t('templ icon')" required>
+          <div class="icon-box">
+            <div class="icon-items" v-if="operationType === 'add'">
+              <img :class="{active: i === index}" @click="chooseTempl(i)" 
+                v-for="(url, i) in templImgs" :src="url":key="i">
+            </div>
+            <imgUpload class="icon-item-upload" :limit="{size:5,ratio:'1x1', width: 40, height: 40, message: $t('Profile placeholder')}" :icon_url="icon_file_url" @iconUpSourceChange="iconUpSourceChange" />
+          </div>
+        </el-form-item>
+        <el-form-item :label="$t('name')" prop="plan_name">
+          <el-input v-model="plan.plan_name" placeholder="请输入单行文本套餐名称" clearable :style="{width: '100%'}">
+          </el-input>
+        </el-form-item>
+        <el-form-item :label="$t('description')" prop="plan_desc">
+          <el-input v-model="plan.plan_desc" type="textarea" placeholder="请输入套餐内容"
+            :autosize="{minRows: 3, maxRows: 5}" :style="{width: '100%'}"></el-input>
+        </el-form-item>
+        <el-form-item :label="$t('Amount')">
+          <el-radio-group v-model="main_price_obj.price" size="medium"  @change="priceChange" v-if="operationType === 'add'">
+            <el-radio v-for="(item, index) in app_price_options" :key="index" :label="item.amount"
+              >{{item.amount}}</el-radio>
+          </el-radio-group>
+          <el-radio v-model="main_price_obj.price" :label="main_price_obj.price" v-else>{{main_price_obj.price}}</el-radio>
+        </el-form-item>
+        <el-form-item>
+          <div style="color: #929292;">
+            {{  $t('plan update tip') }}
+          </div>
+        </el-form-item>
+      </el-form>
+      
+      <div slot="footer">
+        <!-- <div class="form-top-tips" style="text-align: left;"> <i class="el-icon-warning-outline" style="margin-right: 5px;"></i>{{$t("plan update tip")}}</div> -->
+        <el-button type="primary" @click="onSubmit('elForm')" :loading="save_loading">{{operationType === 'add' ? $t('create') : $t('update')}}</el-button>
+        <el-button @click="dialog_form_visible = false" >{{ $t('cancel') }}</el-button>
+      </div>
     </el-dialog>
   </div>
 </template>
 <script>
+import priceTempl from './priceTempl.json'  
 import {encodeEmojiObjByKeys} from '@/utils/emoji-stringify.js'
 import imgUpload from "./img-upload.vue";
 import {addPlan, updatePlan, uploadFile} from "@/api/interface";
@@ -132,7 +51,12 @@ import CURRENCY_OPTIONS from "@/options/currency_options.json";
 export default {
   data() {
     return {
-      icon_file:null,
+      priceTempl: priceTempl.priceTempl,
+      templImgs: [],
+      index: -1,
+      icon_file: '',
+      icon_file_url: '',
+      labelWidth: this.$i18n.locale ===  'zh-CN' ? '100px' : '150px',
       currency_options: [],
       multiple_selection: [],// 选中的数据
       unable_modify: false, // 是否不可修改
@@ -143,12 +67,24 @@ export default {
         {"label":"monthly","value": "monthly"},
         {"label":"every 3 months","value": "every quarter"}
       ],
+      plan_icon: '',
       plan: {
         plan_id: "",
         plan_code : "",
         plan_icon: null,
         plan_name: "",
         plan_desc: "",
+      },
+      rules: {
+        plan_name: [
+          { required: true, message: this.$t('1-50 characters required'), trigger: 'blur', min: 1, max: 50 },
+          { validator: this.validateTrimmedField, trigger: 'blur'}
+        ],
+        plan_desc: [
+          { required: false, message: this.$t('1-400 characters required'), trigger: 'blur', type: 'string', min: 0, max: 400 },
+          { validator: this.validateTrimmedField, trigger: 'blur'}
+        ],
+
       },
       LOCAL_NAMES: {
         usd: "US Dollar",
@@ -198,23 +134,9 @@ export default {
   components: {
     imgUpload
   },
-  computed: {
-    rules () {
-      return {
-        plan_name: [
-          { required: true, message: this.$t('1-100 characters required'), trigger: 'blur', min: 1, max: 100 },
-          { validator: this.validateTrimmedField, trigger: 'blur'}
-        ],
-        plan_desc: [
-          { required: false,  trigger: 'blur', type: 'string', min: 0, max: 1000 },
-          { validator: this.validateTrimmedField, trigger: 'blur'}
-        ],
-
-      }
-    }
-  },
   created() {
     console.log(this.OPTIONS, 'OPTIONS')
+    this.templImgs = this.priceTempl.map(item => item.url)
     this.app_price_options = this.OPTIONS.app_price_options;
     if (this.chosen_plan_data && this.chosen_plan_data.plan_id) {
       this.plan = JSON.parse(JSON.stringify(this.chosen_plan_data))
@@ -223,9 +145,12 @@ export default {
       this.main_price_obj = this.plan.main_price_obj;
       this.interval_option = this.getIntervalOption(this.main_price_obj.interval, this.main_price_obj.interval_count);
       this.other_price_obj = this.plan.other_price_obj;
+      this.icon_file_url = this.plan.plan_icon;
     }
     this.dialog_form_visible = this.visible;
-    this.priceChange(this.main_price_obj.price);
+    if(this.operationType === 'add') {
+      this.chooseTempl(0)
+    }
   },
   props: {
     operateSuccess: {
@@ -300,6 +225,7 @@ export default {
         this.plan_trial_obj = this.plan.plan_trial_obj;
         this.main_price_obj = this.plan.main_price_obj;
         this.other_price_obj = this.plan.other_price_obj;
+        this.icon_file_url = this.plan.plan_icon;
       }
       return newValue;
     }
@@ -421,6 +347,7 @@ export default {
      */
     iconUpSourceChange(file) {
       this.icon_file = file;
+      this.index = -1
     },
     /**
      * 新增套餐
@@ -428,6 +355,7 @@ export default {
      */
     async addPlanData () {
       let args = {
+        icon: this.plan.plan_icon,
         name: this.plan.plan_name,
         desc: this.plan.plan_desc,
         is_trial: this.plan_trial_obj.is_trial ? 1 : 0,
@@ -466,7 +394,7 @@ export default {
           }];
         }
       }
-      if (this.icon_file) {
+      if (this.index === -1 && this.icon_file) {
         let icon = await this.getIconUrl('plan', this.icon_file);
         if (icon) {
           args.icon = icon;
@@ -582,6 +510,15 @@ export default {
         }
       });
     },
+    chooseTempl(i) {
+      const templ = this.priceTempl[i]
+      this.index = i
+      this.plan.plan_icon = templ.url
+      this.plan.plan_name = templ.name
+      this.plan.plan_desc = templ.description
+      this.main_price_obj.price = templ.price
+      this.priceChange(this.main_price_obj.price);
+    },
     handleSelectionChange(val) {
       this.multiple_selection = val;
     },
@@ -604,5 +541,36 @@ export default {
   height: 26px;
   text-align: left;
   border: 1px solid rgba(198, 198, 198, 1);
+}
+.form-top-tips{
+  font-size: 12px;
+  color: #67C23A;
+  padding-left: 20px;
+  margin-bottom: 10px;
+  word-wrap: break-word;
+}
+.icon-box{
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  .icon-item-upload{line-height: 0;}
+  .icon-items{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    img{
+      width: 40px;
+      height: 40px;
+      padding: 2px;
+      box-sizing: border-box;
+      margin-right: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      cursor: pointer;
+      &.active{
+        background-color:#7abcff;
+      }
+    }
+  }
 }
 </style>

@@ -308,11 +308,14 @@ export default {
       this.getPlanList();
     },
     formatPlanList (data) {
+      const urlRegex = /^(https?:\/\/)\w+/;
       return data.map(item => {
+         const plan_icon = urlRegex.test(item.icon) ? item.icon : 
+            item.icon ? "https://kodepay-cdn.oss-us-west-1.aliyuncs.com/" + item.icon : "";
          return {
            plan_id: item.id || "",
            plan_code : item.prod_code || "",
-           plan_icon: item.icon ? "https://kodepay-cdn.oss-us-west-1.aliyuncs.com/" + item.icon : "",
+           plan_icon: plan_icon,
            plan_name: item.name ? decodeEmoji(item.name) : "",
            plan_desc: item.desc ? decodeEmoji(item.desc) : "",
            plan_type_obj : this.formatPlanType(item.app_price) || null,

@@ -56,7 +56,9 @@ export default {
     };
   },
   created() {
-    this.init();
+    if(this.$route.query.prod_id){
+      this.init();
+    }
   },
   computed:{
     loading () {

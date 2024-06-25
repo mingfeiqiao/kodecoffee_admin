@@ -115,7 +115,7 @@ export default {
     rules () {
       return {
         name: [
-          { required: true, message: this.$t('1-100 characters required'), trigger: 'blur'},
+          { required: true, message: this.$t('1-50 characters required'), trigger: 'blur'},
           { validator: this.validateTrimmedField, trigger: 'blur'}
         ],
         store_address123: [
