@@ -21,7 +21,6 @@ export default {
   },
   computed: {
     styleObj() {
-      console.log(this.$attrs, 'this.$attrs')
       const {width=100, height} = this.$attrs.limit
       return {
         width: width + 'px',

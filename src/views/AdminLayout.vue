@@ -215,7 +215,7 @@ export default {
         this.handleResult(res);
       }).catch( err => {
         this.$message.error(this.$t('Login failed. Please try logging in again'));
-        // window.location.href = `${this.URL}/user/login`;
+        window.location.href = `${this.URL}/user/login`;
       })
     },
     handleResult(res) {

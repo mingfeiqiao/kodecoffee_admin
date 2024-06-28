@@ -13,12 +13,12 @@
           </div>
         </el-form-item>
         <el-form-item :label="$t('name')" prop="plan_name">
-          <el-input v-model="plan.plan_name" placeholder="请输入单行文本套餐名称" clearable :style="{width: '100%'}">
+          <el-input v-model="plan.plan_name"  :placeholder="$t('plan name placeholder')" clearable :style="{width: '100%'}" :maxlength="50" show-word-limit>
           </el-input>
         </el-form-item>
         <el-form-item :label="$t('description')" prop="plan_desc">
-          <el-input v-model="plan.plan_desc" type="textarea" placeholder="请输入套餐内容"
-            :autosize="{minRows: 3, maxRows: 5}" :style="{width: '100%'}"></el-input>
+          <el-input v-model="plan.plan_desc" type="textarea" :placeholder="$t('plan description placeholder')"
+            :autosize="{minRows: 3, maxRows: 5}" :style="{width: '100%'}" :maxlength="400" show-word-limit></el-input>
         </el-form-item>
         <el-form-item :label="$t('Amount')">
           <el-radio-group v-model="main_price_obj.price" size="medium"  @change="priceChange" v-if="operationType === 'add'">
