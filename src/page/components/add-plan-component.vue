@@ -1,124 +1,6 @@
 <template>
 
 <div>
-  <el-form ref="ruleForm" v-if="0" :model="plan"  label-width="120px" label-position="top" size="mini" :rules="rules">
-    <div style="display:flex;align-items: center;justify-content: flex-start; ">
-      <div style="min-width: 250px;">
-        <el-form-item :label="$t('name')" prop="plan_name">
-          <el-input :maxlength="50" v-model="plan.plan_name" :placeholder="$t('plan name placeholder')" style="width: 300px"></el-input>
-        </el-form-item>
-        <el-form-item :label="$t('description')" prop="plan_desc">
-          <el-input :maxlength="200" type="textarea" v-model="plan.plan_desc" :placeholder="$t('plan description placeholder')" style="width: 300px"></el-input>
-        </el-form-item>
-      </div>
-      <div style="padding-left: 50px;">
-        <el-form-item :label="$t('icon')">
-          <img-upload :limit="{size:5,ratio:'1x1', message: $t('Profile placeholder')}" :icon_url="plan.plan_icon" @iconUpSourceChange="iconUpSourceChange"></img-upload>
-        </el-form-item>
-      </div>
-    </div>
-    <div>
-      <el-form-item>
-        <div style="display: flex;align-items: center">
-          <div style="padding-right: 20px">
-            {{$t('billing method')}}
-          </div>
-          <el-radio v-model="plan_type_obj.type" v-for="option of type_option" :key="option.value" :label="option.value" :disabled="!unable_modify">
-            {{ $t(option.label) }}
-          </el-radio>
-        </div>
-      </el-form-item>
-      <el-form-item v-if="plan_type_obj.type === 'recurring'">
-        <div style="display: flex;align-items: center">
-          <div style="padding-right: 20px">
-            {{$t('Billing cycle')}}
-          </div>
-          <div style="max-width: 150px">
-            <el-select v-model="interval_option" :disabled="!unable_modify" @change="intervalOptionChange">
-              <el-option v-for="item in interval_options" :key="item.value" :label="$t(item.label)" :value="item.value">
-              </el-option>
-            </el-select>
-          </div>
-        </div>
-      </el-form-item>
-      <div v-if="plan_type_obj.type === 'recurring' && interval_option === 'every day'"  style="display: flex;align-items: center;padding-left: 80px;color: #f5222d">
-         {{$t('Daily subscription is for testing purposes in the development environment')}}
-      </div>
-    </div>
-    <div style="height: 1px; background-color: rgba(232, 232, 232, 1);"></div>
-    <div v-if="operationType === 'add'">
-      <div class="title-14" style="padding: 12px 0">{{$t('Amount')}}</div>
-      <el-form-item>
-        <div style="display: flex;flex-direction: column">
-          <div style="display: flex;flex-direction: row;align-items: center">
-            <div class="p-main">
-              US$
-            </div>
-            <div style="max-width: 100px">
-              <el-select v-model="main_price_obj.price"  @change="priceChange">
-                <el-option
-                  v-for="(item, index) in app_price_options"
-                  :key="index"
-                  :label="item.amount"
-                  :value="item.amount">
-                  <span style="text-align: center">
-                    {{ item.amount }}
-                  </span>
-                </el-option>
-              </el-select>
-            </div>
-          </div>
-          <div style="color: #939393">
-            {{$t('all prices are tax inclusive')}}
-          </div>
-        </div>
-      </el-form-item>
-      <el-form-item v-if="0">
-        <el-button type="primary" @click="setCurrencyOption">{{$t('set more currencies')}}</el-button>
-        <div style="color: #929292;font-size: 12px">
-          <span>{{$t('set more currencies tip')}}</span>
-          <span>{{$t('learn more')}}</span>
-        </div>
-        <div v-if="is_multiple_currency_support">
-          <el-table
-            ref="multipleTable"
-            :data="currency_options"
-            tooltip-effect="dark"
-            style="width: 100%"
-            :empty-text="$t('no data')"
-            :header-cell-style="{'background-color': 'var(--header-cell-background-color)','color': 'var(--header-cell-color)','font-weight': 'var(--header-cell-font-weight)'}"
-            @selection-change="handleSelectionChange">
-            <el-table-column
-              type="selection"
-              :label="$t('enabled')"
-              :selectable="isSelectable"
-            >
-            </el-table-column>
-            <el-table-column
-              :label="$t('currency')"
-              prop="currency_format"
-            >
-            </el-table-column>
-            <el-table-column
-              prop="price_format"
-              :label="$t('Amount')"
-            >
-            </el-table-column>
-          </el-table>
-        </div>
-      </el-form-item>
-    </div>
-    <div>
-      <el-form-item>
-        <div v-if="operationType ==='add'" style="color: #929292;">
-          {{  $t('plan update tip') }}
-        </div>
-        <div style="text-align: center;">
-          <el-button type="primary" @click="onSubmit('ruleForm')" :loading="save_loading">{{$t('Next Step')}}</el-button>
-        </div>
-      </el-form-item>
-    </div>
- </el-form>
   <el-form ref="elForm" :model="plan" :rules="rules" size="medium" :label-width="labelWidth">
     <div class="form-top-tips"> <i class="el-icon-warning-outline" style="margin-right: 5px;"></i>{{$t("choose templ tips")}}</div>
     <el-form-item :label="operationType === 'add' ? $t('choose templ') : $t('templ icon')" required>
@@ -131,12 +13,12 @@
       </div>
     </el-form-item>
     <el-form-item :label="$t('name')" prop="plan_name">
-      <el-input v-model="plan.plan_name" placeholder="请输入单行文本套餐名称" clearable :style="{width: '100%'}">
+      <el-input v-model="plan.plan_name" :placeholder="$t('plan name placeholder')" clearable :style="{width: '100%'}" :maxlength="50" show-word-limit>
       </el-input>
     </el-form-item>
     <el-form-item :label="$t('description')" prop="plan_desc">
-      <el-input v-model="plan.plan_desc" type="textarea" placeholder="请输入套餐内容"
-        :autosize="{minRows: 3, maxRows: 5}" :style="{width: '100%'}"></el-input>
+      <el-input v-model="plan.plan_desc" type="textarea" :placeholder="$t('plan description placeholder')"
+        :autosize="{minRows: 3, maxRows: 5}" :style="{width: '100%'}" :maxlength="400" show-word-limit></el-input>
     </el-form-item>
     <el-form-item :label="$t('Amount')">
       <el-radio-group v-model="main_price_obj.price" size="medium"  @change="priceChange" v-if="operationType === 'add'">

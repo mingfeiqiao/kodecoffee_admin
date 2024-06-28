@@ -4,7 +4,7 @@
     <div>{{ plugin_data.client_key }}</div>
   </el-form-item>
   <el-form-item :label="$t('Creator Home link') + ':'" prop="uniq_name" v-if="operationType === 'add'">
-    <el-input  v-model="plugin_data.uniq_name" :placeholder="$t('Creator placeholder')" style="width: 500px;" minlength="6" maxlength="100">
+    <el-input  v-model="plugin_data.uniq_name" :placeholder="$t('Creator placeholder')" style="width: 500px;" minlength="6" maxlength="100" show-word-limit>
       <template slot="prepend">{{store_address}}</template>
 <!--          <el-button slot="append" icon="el-icon-search"></el-button>-->
     </el-input>
@@ -16,7 +16,7 @@
     </el-input>
   </el-form-item>
   <el-form-item :label="$t('Creator Name') + ':'" prop="name">
-    <el-input v-model="plugin_data.name" :placeholder="$t('Creator Name placeholder')" style="width: 200px;" maxlength="100">
+    <el-input v-model="plugin_data.name" :placeholder="$t('Creator Name placeholder')" style="width: 300px;" maxlength="100">
     </el-input>
   </el-form-item>
   <el-form-item :label="$t('Creator Profile photo') + ':'" prop="icon">
@@ -26,13 +26,13 @@
     </div>
   </el-form-item>
   <el-form-item :label="$t('Creator Product info') + ':'" prop="on_working">
-    <el-input type="textarea" v-model="plugin_data.on_working" :placeholder="$t('Product info placeholder')" maxlength="120"></el-input>
+    <el-input type="textarea" v-model="plugin_data.on_working" :placeholder="$t('Product info placeholder')" maxlength="200" show-word-limit></el-input>
   </el-form-item>
   <el-form-item :label="$t('Creator About me') + ':'" prop="description">
-    <el-input type="textarea" v-model="plugin_data.description" :placeholder="$t('About me placeholder')" maxlength="120"></el-input>
+    <el-input type="textarea" v-model="plugin_data.description" :placeholder="$t('About me placeholder')" maxlength="200" show-word-limit></el-input>
   </el-form-item>
   <el-form-item :label="$t('Creator Project Link') + ':'" prop="external_link">
-    <el-input type="text" v-model="plugin_data.external_link" :placeholder="$t('Project Link placeholder')" maxlength="120"></el-input>
+    <el-input type="text" v-model="plugin_data.external_link" :placeholder="$t('Project Link placeholder')" maxlength="100" show-word-limit></el-input>
   </el-form-item>
   <el-form-item :label="$t('Creator Cover Img') + ':'" prop="cover">
     <img-upload-cover :limit="{size:5,ratio:'1140x200', message: $t('Cover Img placeholder')}"  :icon_url="plugin_data.cover" @iconUpSourceChange="handleCoverSourceChange"></img-upload-cover>

@@ -15,8 +15,11 @@
       <el-card class="box-card" v-if="activeStep === 3">
         <el-result icon="success" :title="$t('Congratulations Creator')">
           <div slot="subTitle">
-            <div>{{$t('Your Homepage')}}<el-link type="primary">{{homeLink}}</el-link></div>
-            <div><el-link type="success"  :href="homeLink" target="_blank">{{$t('click link')}}</el-link>{{$t('Start tipping')}}
+            <div>{{$t('Your Homepage')}} 
+              <el-link type="success" :href="homeLink" target="_blank">{{homeLink}}</el-link></div>
+            <div>
+              <el-link type="success"  :href="homeLink" target="_blank"> {{$t('click link')}} </el-link>
+              {{$t('Start tipping')}}
             </div>
             <div>{{$t('Guide Step Context 1')}}</div>
             <div>{{$t('Guide Step Context 2')}}</div>
