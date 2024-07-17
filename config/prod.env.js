@@ -6,5 +6,5 @@ module.exports = {
 	VUE_APP_BASE_URL: '"https://kodecoffee.com"',
 	VUE_APP_API_URL: '"https://api.kodecoffee.com"',
 	VUE_APP_GLOBAL_URL: '"https://kodecoffee-global.zingfront.com"',
-	VUE_APP_OSS_URL: '"https://kodepay-cdn.oss-us-west-1.aliyuncs.com/"'
+	VUE_APP_OSS_URL: '"https://kodecoffee-cdn.oss-us-west-1.aliyuncs.com/"'
 };

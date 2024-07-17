@@ -76,6 +76,7 @@ export const uploadFile = data => {
   return instance.post('/upload/upload-icon', formData);
 };
 // plugin 相关
+export const checkUniqName = data =>  instance.get('/plugin/plugin-info/' + data.unqi_name, data);
 export const addPlugin = data =>  instance.post('/plugin/add-plugin', data);
 export const updatePlugin = data => instance.post('/plugin/update-plugin', JSON.stringify(data), {headers: {'Content-Type' : 'application/json'}});
 export const pluginList = () => instance.post('/plugin/plugin-list');
