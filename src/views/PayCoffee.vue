@@ -100,7 +100,7 @@ export default {
       }
       getProductList(this.header, params).then(res => {
         const {client_info, application_info, product_list} = res.data
-        client_info.userHeadImg = 'https://kodepay-cdn.oss-us-west-1.aliyuncs.com/' + client_info.icon;
+        client_info.userHeadImg = process.env.VUE_APP_OSS_URL + client_info.icon;
         client_info.homeLink = client_info.url + '?name='+ client_info.name;
         this.isLoaded = true
         this.client_info  =client_info
@@ -114,7 +114,7 @@ export default {
     },
     handleProductPrice(list) {
       list = list.map(item => {
-        item.appImg = 'https://kodepay-cdn.oss-us-west-1.aliyuncs.com/' + item.icon;
+        item.appImg = process.env.VUE_APP_OSS_URL + item.icon;
         item.app_price = item.app_price.map(price_item => {
           price_item.price_format =  this.formatPrice(price_item.amount, price_item.currency) || ""
           return price_item
@@ -130,7 +130,7 @@ export default {
          return {
            plan_id: item.id || "",
            plan_code : item.prod_code || "",
-           plan_icon: item.icon ? "https://kodepay-cdn.oss-us-west-1.aliyuncs.com/" + item.icon : "",
+           plan_icon: item.icon ? process.env.VUE_APP_OSS_URL + item.icon : "",
            plan_name: item.name || "",
            plan_desc: item.desc || "",
            plan_type_obj : this.formatPlanType(item.app_price) || null,

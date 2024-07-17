@@ -95,10 +95,10 @@
             </div>
         </div>
         <div class="agreement-box" style="font-size: 12px;">
-            <div><b style="font-size: 14px;margin-right: 5px;">KodePay</b><span
+            <div><b style="font-size: 14px;margin-right: 5px;">KodeCoffee</b><span
                     v-html="$t('extensions tips').replace('${name}', params.name || '')"></span>
             </div>
-            <div>Powered by <b>KodePay</b></div>
+            <div>Powered by <b>KodeCoffee</b></div>
             <div class="protocol-manual">{{ $t('Policy Manual') }}</div>
         </div>
     </div>

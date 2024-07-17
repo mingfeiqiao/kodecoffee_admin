@@ -145,10 +145,10 @@
             </div>
         </div>
         <div class="agreement-box" style="font-size: 12px;">
-            <div><b style="font-size: 14px;margin-right: 5px;">KodePay</b><span
+            <div><b style="font-size: 14px;margin-right: 5px;">KodeCoffee</b><span
                     v-html="$t('extensions tips').replace('${name}', transaction_info.client_name || '')"></span>
             </div>
-            <div>Powered by <b>KodePay</b></div>
+            <div>Powered by <b>KodeCoffee</b></div>
             <div class="protocol-manual" @click="onPolicyManualOpen()">{{ $t('Policy Manual') }}</div>
         </div>
 
@@ -374,7 +374,7 @@ export default {
             document.body.style.setProperty('--OrderDetailsBox', this.isShowOrderDetails ? 'block' : 'none');
         },
         onPolicyManualOpen() {
-            window.open('https://kodepay.io/privacy?utm_source=new_extension_pay', '_blank');
+            window.open('https://kodecoffee.com/privacy?utm_source=new_extension_pay', '_blank');
         },
         /**
          * 验证邮箱格式

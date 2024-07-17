@@ -29,10 +29,10 @@ export default {
                     let data = res.data.data;
                     data.forEach(item => {
                         if (item.icon) {
-                        item.icon = 'https://kodepay-cdn.oss-us-west-1.aliyuncs.com/' + item.icon;
+                        item.icon = process.env.VUE_APP_OSS_URL + item.icon;
                         }
                         if (item.cover) {
-                        item.cover = 'https://kodepay-cdn.oss-us-west-1.aliyuncs.com/' + item.cover;
+                        item.cover = process.env.VUE_APP_OSS_URL + item.cover;
                         }
                     });
                     this.pluginObj = decodeEmojiObjByKeys(data[0], ['name', 'on_working', 'description']);

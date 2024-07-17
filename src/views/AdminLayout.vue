@@ -9,7 +9,7 @@
                @open="handleOpen" @close="handleClose"
                class="el-menu-vertical-demo"
       >
-        <el-menu-item style="height: 64px;cursor: default;">
+        <el-menu-item style="height: 64px;cursor: default;"  @click="goRouter('dashboard')">
           <img src="@/assets/logo-500x500-black-new.png" alt="kodecoffee" style="width: 30px;height: 30px">
           <span slot="title" style="color: #fff">KodeCoffee</span>
         </el-menu-item>
@@ -311,7 +311,11 @@ export default {
         Vue.prototype.OPTIONS = OPTIONS;
         console.log(err);
       })
-    }
+    },
+    goRouter(url) {
+      this.handleMenuItemClick(url)
+      this.$router.push(url)
+    },
   },
   components: {
     headTop,

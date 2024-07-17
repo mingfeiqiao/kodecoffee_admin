@@ -8,5 +8,5 @@ module.exports = merge(prodEnv, {
   VUE_APP_BASE_URL: '"https://dev.kodecoffee.com"',
 	VUE_APP_API_URL: '"https://devapi.kodecoffee.com"',
   VUE_APP_GLOBAL_URL: '"https://kodecoffee-global.zingfront.com"',
-	VUE_APP_OSS_URL: '"https://kodepay-cdn.oss-us-west-1.aliyuncs.com/"'
+	VUE_APP_OSS_URL: '"https://kodecoffee-cdn.oss-us-west-1.aliyuncs.com/"'
 });
